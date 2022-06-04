@@ -8,6 +8,15 @@ client.once("ready", () => {
   console.log("Ready!");
 });
 
+const hasProtocol = (s: string) => {
+  try {
+    const url = new URL(s);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch (e) {
+    return false;
+  }
+};
+
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isCommand()) return;
 
@@ -16,8 +25,7 @@ client.on("interactionCreate", async (interaction) => {
   if (commandName === "ping") {
     await interaction.reply("Pong!");
   } else if (commandName === "start") {
-    const startUrl =
-      interaction.options.getString("start_url") || "https://duckduckgo.com/";
+    const startUrl = interaction.options.getString("start_url");
 
     const response = await fetch("https://enginetest.hyperbeam.com/v0/vm", {
       method: "POST",
@@ -25,7 +33,11 @@ client.on("interactionCreate", async (interaction) => {
         Authorization: `Bearer ${hyperbeamApiKey}`,
       },
       body: JSON.stringify({
-        start_url: startUrl,
+        start_url: startUrl
+          ? hasProtocol(startUrl)
+            ? startUrl
+            : `https://duckduckgo.com/?q=${encodeURIComponent(startUrl)}`
+          : "https://duckduckgo.com",
         offline_timeout: 300,
       }),
     });
