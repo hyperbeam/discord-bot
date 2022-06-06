@@ -42,8 +42,10 @@ client.on("interactionCreate", async (interaction) => {
       }),
     });
 
-    const { embed_url } = await response.json();
-
+    const { embed_url }: {
+      embed_url?: string
+    } = await response.json()
+    
     if (embed_url)
       await interaction.reply(
         `Started a multiplayer browser session at ${embed_url}`
