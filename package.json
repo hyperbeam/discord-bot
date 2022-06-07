@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx ts-node src/index.ts",
-    "deploy-commands": "npx ts-node src/deploy-commands.ts"
+    "start": "npx ts-node --esm src/index.ts",
+    "deploy-commands": "npx ts-node --esm src/deploy-commands.ts"
   },
   "author": "",
   "license": "MIT",

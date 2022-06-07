@@ -1,6 +1,10 @@
 import { Client, Intents } from "discord.js";
+import { readFileSync } from "fs";
 import fetch from "node-fetch";
-import { hyperbeamApiKey, token } from "../config.json";
+
+const { hyperbeamApiKey, token } = JSON.parse(
+  readFileSync(new URL("../config.json", import.meta.url), "utf-8")
+);
 
 const client = new Client({ intents: Intents.FLAGS.GUILDS });
 
@@ -42,10 +46,8 @@ client.on("interactionCreate", async (interaction) => {
       }),
     });
 
-    const { embed_url }: {
-      embed_url?: string
-    } = await response.json()
-    
+    const { embed_url } = await (response.json() as { embed_url?: string });
+
     if (embed_url)
       await interaction.reply(
         `Started a multiplayer browser session at ${embed_url}`

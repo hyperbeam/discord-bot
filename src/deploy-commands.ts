@@ -1,7 +1,11 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
-import { clientId, token } from "../config.json";
+import { readFileSync } from "fs";
+
+const { clientId, token } = JSON.parse(
+  readFileSync(new URL("../config.json", import.meta.url), "utf-8")
+);
 
 const commands = [
   new SlashCommandBuilder()
