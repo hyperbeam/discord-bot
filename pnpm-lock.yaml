@@ -6,7 +6,9 @@ specifiers:
   '@types/node': ^17.0.39
   discord-api-types: ^0.33.2
   discord.js: ^13.7.0
+  dotenv: ^16.0.1
   node-fetch: ^3.2.5
+  slash-create: ^5.6.1
   ts-node: ^10.8.1
   typescript: ^4.7.2
 
@@ -15,7 +17,9 @@ dependencies:
   '@discordjs/rest': 0.4.1
   discord-api-types: 0.33.2
   discord.js: 13.7.0
+  dotenv: 16.0.1
   node-fetch: 3.2.5
+  slash-create: 5.6.1
 
 devDependencies:
   '@types/node': 17.0.39
@@ -217,6 +221,15 @@ packages:
       - utf-8-validate
     dev: false
 
+  /dotenv/16.0.1:
+    resolution: {integrity: sha512-1K6hR6wtk2FviQ4kEiSjFiH5rpzEVi8WW0x96aztHVMhEspNpc4DVOUTEHtEva5VThQ8IaBX1Pe4gSzpVVUsKQ==}
+    engines: {node: '>=12'}
+    dev: false
+
+  /eventemitter3/4.0.7:
+    resolution: {integrity: sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==}
+    dev: false
+
   /fast-deep-equal/3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
     dev: false
@@ -252,6 +265,10 @@ packages:
     engines: {node: '>=12.20.0'}
     dependencies:
       fetch-blob: 3.1.5
+    dev: false
+
+  /lodash.isequal/4.5.0:
+    resolution: {integrity: sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==}
     dev: false
 
   /make-error/1.3.6:
@@ -296,6 +313,23 @@ packages:
       formdata-polyfill: 4.0.10
     dev: false
 
+  /slash-create/5.6.1:
+    resolution: {integrity: sha512-XlnVw7FleyUa4ruaXFmGeKMVYHnVH9xKVjtIDX9bKONnQXeRiHFNEU6pn+Jgn6/ft49Tu5VBBytJ0on4sg4MZA==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      express: ^4.17.1
+      fastify: ^3.9.1
+    peerDependenciesMeta:
+      express:
+        optional: true
+      fastify:
+        optional: true
+    dependencies:
+      eventemitter3: 4.0.7
+      lodash.isequal: 4.5.0
+      tweetnacl: 1.0.3
+    dev: false
+
   /tr46/0.0.3:
     resolution: {integrity: sha1-gYT9NH2snNwYWZLzpmIuFLnZq2o=}
     dev: false
@@ -337,6 +371,10 @@ packages:
 
   /tslib/2.4.0:
     resolution: {integrity: sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==}
+    dev: false
+
+  /tweetnacl/1.0.3:
+    resolution: {integrity: sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==}
     dev: false
 
   /typescript/4.7.2:
