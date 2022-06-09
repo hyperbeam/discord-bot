@@ -1,10 +1,6 @@
 import { Client, Intents } from "discord.js";
-import { readFileSync } from "fs";
 import fetch from "node-fetch";
-
-const { hyperbeamApiKey, token } = JSON.parse(
-  readFileSync(new URL("../config.json", import.meta.url), "utf-8")
-);
+import "dotenv/config";
 
 const client = new Client({ intents: Intents.FLAGS.GUILDS });
 
@@ -34,7 +30,7 @@ client.on("interactionCreate", async (interaction) => {
     const response = await fetch("https://enginetest.hyperbeam.com/v0/vm", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${hyperbeamApiKey}`,
+        Authorization: `Bearer ${process.env.HYPERBEAM_API_KEY}`,
       },
       body: JSON.stringify({
         start_url: startUrl
@@ -46,7 +42,7 @@ client.on("interactionCreate", async (interaction) => {
       }),
     });
 
-    const { embed_url } = await (response.json() as { embed_url?: string });
+    const { embed_url } = await (response.json() as { embed_url?: string; });
 
     if (embed_url)
       await interaction.reply(
@@ -56,4 +52,4 @@ client.on("interactionCreate", async (interaction) => {
   }
 });
 
-client.login(token);
+client.login(process.env.BOT_TOKEN);

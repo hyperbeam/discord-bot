@@ -1,11 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
-import { readFileSync } from "fs";
-
-const { clientId, token } = JSON.parse(
-  readFileSync(new URL("../config.json", import.meta.url), "utf-8")
-);
+import "dotenv/config";
 
 const commands = [
   new SlashCommandBuilder()
@@ -21,9 +17,9 @@ const commands = [
     ),
 ].map((command) => command.toJSON());
 
-const rest = new REST({ version: "9" }).setToken(token);
+const rest = new REST({ version: "9" }).setToken(process.env.BOT_TOKEN);
 
 rest
-  .put(Routes.applicationCommands(clientId), { body: commands })
+  .put(Routes.applicationCommands(process.env.BOT_CLIENT_ID), { body: commands })
   .then(() => console.log("Successfully registered application commands."))
   .catch(console.error);

@@ -9,10 +9,15 @@ A bot to integrate the Hyperbeam API with Discord.
 
 ## Configuration
 
-- Specify `hyperbeamApiKey`, `clientId` and `token` in a `config.json` file in the root directory.
+- Specify `HYPERBEAM_API_KEY`, `BOT_CLIENT_ID` and `BOT_TOKEN` in a `.env` file in the root directory.
 - Deploy commands with `pnpm run deploy-commands` before running the bot.
 - Run the bot with `pnpm start`
 
 ## Contributing
 
 tbd
+
+## Notes
+
+- Use `pnpm dlx` instead of `npx` everywhere
+- Run `pnpm dlx dotenv-types-generator` after modifying `.env`
