@@ -1,55 +1,33 @@
+import dotenv from 'dotenv';
+import { SlashCreator, GatewayServer } from 'slash-create';
 import { Client, Intents } from "discord.js";
-import fetch from "node-fetch";
-import "dotenv/config";
+import path from 'path';
 
-const client = new Client({ intents: Intents.FLAGS.GUILDS });
+dotenv.config({ path: path.join(__dirname, '../.env') });
+
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 
 client.once("ready", () => {
-  console.log("Ready!");
+	console.log("Ready!");
 });
 
-const hasProtocol = (s: string) => {
-  try {
-    const url = new URL(s);
-    return url.protocol === "https:" || url.protocol === "http:";
-  } catch (e) {
-    return false;
-  }
-};
-
-client.on("interactionCreate", async (interaction) => {
-  if (!interaction.isCommand()) return;
-
-  const { commandName } = interaction;
-
-  if (commandName === "ping") {
-    await interaction.reply("Pong!");
-  } else if (commandName === "start") {
-    const startUrl = interaction.options.getString("start_url");
-
-    const response = await fetch("https://enginetest.hyperbeam.com/v0/vm", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.HYPERBEAM_API_KEY}`,
-      },
-      body: JSON.stringify({
-        start_url: startUrl
-          ? hasProtocol(startUrl)
-            ? startUrl
-            : `https://duckduckgo.com/?q=${encodeURIComponent(startUrl)}`
-          : "https://duckduckgo.com",
-        offline_timeout: 300,
-      }),
-    });
-
-    const { embed_url } = await (response.json() as { embed_url?: string; });
-
-    if (embed_url)
-      await interaction.reply(
-        `Started a multiplayer browser session at ${embed_url}`
-      );
-    else await interaction.reply("Something went wrong! Please try again.");
-  }
+const creator = new SlashCreator({
+	applicationID: process.env.DISCORD_APP_ID!,
+	token: process.env.DISCORD_BOT_TOKEN!,
+	client
 });
 
-client.login(process.env.BOT_TOKEN);
+creator.on('warn', (message) => console.warn(message));
+creator.on('error', (error) => console.error(error));
+creator.on('synced', () => console.info('Commands synced!'));
+creator.on('commandRun', (command, _, ctx) =>
+	console.info(`${ctx.user.username}#${ctx.user.discriminator} (${ctx.user.id}) ran command ${command.commandName}`)
+);
+creator.on('commandRegister', (command) => console.info(`Registered command ${command.commandName}`));
+creator.on('commandError', (command, error) => console.error(`Command ${command.commandName}:`, error));
+
+creator.withServer(new GatewayServer((handler) => client.ws.on("INTERACTION_CREATE", handler)))
+	.registerCommandsIn(path.join(__dirname, 'commands'))
+	.syncCommands();
+
+client.login(process.env.DISCORD_BOT_TOKEN);

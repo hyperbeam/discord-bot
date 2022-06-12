@@ -1,0 +1,82 @@
+{
+  "env": {
+    "commonjs": true,
+    "es6": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended"
+  ],
+  "globals": {
+    "NodeJS": true,
+    "BigInt": true
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 11,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "rules": {
+    "no-cond-assign": [
+      2,
+      "except-parens"
+    ],
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": 1,
+    "no-empty": [
+      "error",
+      {
+        "allowEmptyCatch": true
+      }
+    ],
+    "prefer-const": [
+      "warn",
+      {
+        "destructuring": "all"
+      }
+    ],
+    "spaced-comment": "warn",
+    "no-console": "off",
+    "no-constant-condition": "off",
+    "indent": [
+      "error",
+      "tab",
+      {
+        "SwitchCase": 1
+      }
+    ],
+    "no-empty-pattern": "off",
+    "quotes": [
+      "error",
+      "double"
+    ],
+    "linebreak-style": "off",
+    "semi": [
+      "error",
+      "always"
+    ],
+    "comma-dangle": [
+      "error",
+      "never"
+    ],
+    "no-return-await": "warn",
+    "no-unneeded-ternary": "warn",
+    "object-shorthand": [
+      "warn",
+      "always"
+    ],
+  },
+  "overrides": [
+    {
+      "files": [
+        "slash-up.config.js"
+      ],
+      "env": {
+        "node": true
+      }
+    }
+  ]
+}
