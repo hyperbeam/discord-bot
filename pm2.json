@@ -1,9 +1,9 @@
 {
   "apps": [
     {
-      "name": "slash-commands",
-			"script": "node",
-			"args": "dist/index.js"
+      "name": "hyperbeam-bot",
+      "script": "node",
+      "args": "dist/index.js"
     }
   ]
 }
