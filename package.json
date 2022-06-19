@@ -8,9 +8,9 @@
     "sync": "slash-up sync",
     "sync:dev": "slash-up sync -e development",
     "start": "cd dist && node index.js",
-    "build": "npx tsc",
-    "lint": "npx eslint --ext .ts ./src",
-    "lint:fix": "npx eslint --ext .ts ./src --fix"
+    "build": "pnpm dlx tsc",
+    "lint": "pnpm dlx eslint --ext .ts ./src",
+    "lint:fix": "pnpm dlx eslint --ext .ts ./src --fix"
   },
   "dependencies": {
     "discord.js": "^13.8.0",
