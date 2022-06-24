@@ -3,7 +3,8 @@ import { SlashCreator, GatewayServer } from "slash-create";
 import { Client, Intents } from "discord.js";
 import path from "path";
 
-dotenv.config({ path: path.join(__dirname, "../.env") });
+console.log(__dirname);
+dotenv.config({ path: path.join(__dirname, "../../.env") });
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 
