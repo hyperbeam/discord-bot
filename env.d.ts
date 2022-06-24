@@ -8,12 +8,8 @@ declare global {
       HYPERBEAM_API_KEY: string;
       VITE_CLIENT_PORT: string;
       VITE_OAUTH_URL: string;
-      client_id: string;
-      redirect_uri: string;
-      response_type: string;
-      scope: string;
     }
   }
 }
 
-export {};
+export { };
