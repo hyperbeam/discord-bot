@@ -61,8 +61,7 @@
 			"always"
 		],
 		"comma-dangle": [
-			"error",
-			"never"
+			"always-multiline"
 		],
 		"no-return-await": "warn",
 		"no-unneeded-ternary": "warn",

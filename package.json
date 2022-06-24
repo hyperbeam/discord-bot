@@ -6,6 +6,8 @@
 	"license": "MIT",
 	"scripts": {
 		"start": "pm2 start ./pm2.config.js",
+		"bot": "pnpm run build:bot && pnpm run launch:bot",
+		"client": "pnpm run launch:client",
 		"listcommands": "slash-up local",
 		"build:bot": "tsc --project tsconfig.bot.json",
 		"launch:bot": "cd dist/bot && node index.js",
@@ -21,6 +23,7 @@
 		"dotenv": "^16.0.1",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
+		"react-router-dom": "^6.3.0",
 		"slash-create": "^5.6.1",
 		"vite": "^2.9.12"
 	},
@@ -36,6 +39,7 @@
 		"eslint-plugin-react": "^7.30.1",
 		"eslint-plugin-simple-import-sort": "^7.0.0",
 		"slash-up": "^1.2.0",
-		"typescript": "^4.7.4"
+		"typescript": "^4.7.4",
+		"vite-plugin-mkcert": "^1.7.2"
 	}
 }

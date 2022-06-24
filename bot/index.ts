@@ -3,7 +3,6 @@ import { SlashCreator, GatewayServer } from "slash-create";
 import { Client, Intents } from "discord.js";
 import path from "path";
 
-console.log(__dirname);
 dotenv.config({ path: path.join(__dirname, "../../.env") });
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
@@ -13,7 +12,7 @@ client.once("ready", () => {
 });
 
 const creator = new SlashCreator({
-	applicationID: process.env.DISCORD_APP_ID!,
+	applicationID: process.env.DISCORD_CLIENT_ID!,
 	token: process.env.DISCORD_BOT_TOKEN!,
 	client
 });
