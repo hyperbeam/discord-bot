@@ -1,9 +1,0 @@
-{
-  "apps": [
-    {
-      "name": "hyperbeam-bot",
-      "script": "node",
-      "args": "dist/index.js"
-    }
-  ]
-}

@@ -1,0 +1,23 @@
+{
+	"compilerOptions": {
+		"target": "es2020",
+		"module": "commonjs",
+		"outDir": "dist/bot",
+		"strict": false,
+		"strictNullChecks": true,
+		"esModuleInterop": true,
+		"checkJs": false,
+		"allowSyntheticDefaultImports": true,
+		"resolveJsonModule": true,
+		"typeRoots": [
+			"./node_modules/@types",
+			"types"
+		]
+	},
+	"include": [
+		"./bot/**/*.ts",
+	],
+	"exclude": [
+		"./slash-up.config.js",
+	]
+}
