@@ -15,12 +15,19 @@
 		"lint:fix": "eslint . --fix",
 		"launch:client": "vite",
 		"build:client": "vite build",
-		"preview:client": "vite preview"
+		"preview:client": "vite preview",
+		"build:api": "tsc --project tsconfig.api.json",
+		"launch:api": "cd dist/api && node index.js",
+		"api": "pnpm run build:api && pnpm run launch:api"
 	},
 	"dependencies": {
+		"@types/better-sqlite3": "^7.5.0",
 		"@vitejs/plugin-react": "^1.3.2",
+		"better-sqlite3": "^7.5.3",
 		"discord.js": "^13.8.0",
 		"dotenv": "^16.0.1",
+		"express": "^4.18.1",
+		"nanoid": "3.3.4",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"react-router-dom": "^6.3.0",

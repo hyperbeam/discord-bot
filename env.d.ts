@@ -8,6 +8,7 @@ declare global {
       HYPERBEAM_API_KEY: string;
       VITE_CLIENT_PORT: string;
       VITE_OAUTH_URL: string;
+      DATABASE_PATH: string;
     }
   }
 }
