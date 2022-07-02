@@ -1,4 +1,8 @@
-import { SlashCommand, SlashCreator, CommandContext, CommandOptionType } from "slash-create";
+import Database from "better-sqlite3";
+import { nanoid } from "nanoid";
+import { CommandContext, CommandOptionType, SlashCommand, SlashCreator } from "slash-create";
+
+const database = new Database(process.env.DATABASE_PATH!);
 
 export default class Start extends SlashCommand {
 	constructor(creator: SlashCreator) {
@@ -37,7 +41,6 @@ export default class Start extends SlashCommand {
 
 	async run(ctx: CommandContext) {
 		const start_url = ctx.options.start_url;
-
 		const response = await fetch("https://enginetest.hyperbeam.com/v0/vm", {
 			method: "POST",
 			headers: {
@@ -53,10 +56,16 @@ export default class Start extends SlashCommand {
 				region: ctx.options.region || "NA"
 			})
 		});
-
-		const { embed_url } = (await response.json()) as { embed_url: string; };
-		if (embed_url) return ctx.send(`Started a multiplayer browser session at ${embed_url}`);
-		else return ctx.send("Something went wrong! Please try again.", { ephemeral: true });
+		if (!response.ok) {
+			return ctx.send("Something went wrong! Please try again.", { ephemeral: true });
+		}
+		const id = nanoid();
+		database
+			.prepare("INSERT INTO rooms (id, hyperbeam_session_id) VALUES (?, ?)")
+			.run(id, (await response.json()).session_id);
+		return ctx.send(
+			`Started a multiplayer browser session at https://localhost:3000/${id}`
+		);
 	}
 
 	hasProtocol(s: string) {
