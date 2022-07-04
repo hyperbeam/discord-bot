@@ -65,7 +65,7 @@ export default class Start extends SlashCommand {
 			.prepare("INSERT INTO rooms (id, hyperbeam_session_id) VALUES (?, ?)")
 			.run(id, (await response.json()).session_id);
 		return ctx.send(
-			`Started a multiplayer browser session at ${process.env.VITE_CLIENT_ROOMS_BASE_URL}/rooms/${id}`,
+			`Started a multiplayer browser session at ${process.env.VITE_CLIENT_BASE_URL}/rooms/${id}`,
 		);
 	}
 

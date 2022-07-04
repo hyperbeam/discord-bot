@@ -19,7 +19,7 @@ export default class OAuthHandler extends React.Component<IProps, IState> {
 	async componentDidMount() {
 		const searchParams = new URLSearchParams(window.location.hash.slice(1));
 		if (!searchParams.has("access_token") || !searchParams.has("token_type")) {
-			const oAuthUrl = `https://discord.com/oauth2/authorize?client_id=${process.env.VITE_CLIENT_ID}&redirect_uri=${encodeURIComponent(process.env.VITE_CLIENT_BASE_URL)}%2Fauthorize&response_type=token&scope=identify%20email`;
+			const oAuthUrl = `https://discord.com/oauth2/authorize?client_id=${process.env.VITE_CLIENT_ID!}&redirect_uri=${encodeURIComponent(process.env.VITE_CLIENT_BASE_URL!)}%2Fauthorize&response_type=token&scope=identify%20email`;
 			window.location.href = oAuthUrl;
 		}
 		const [accessToken, tokenType] = [searchParams.get("access_token"), searchParams.get("token_type")];

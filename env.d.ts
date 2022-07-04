@@ -11,6 +11,7 @@ declare global {
       DATABASE_PATH: string;
       VITE_CLIENT_BASE_URL: string;
       VITE_CLIENT_ID: string;
+      API_SERVER_PORT: string;
     }
   }
 }
