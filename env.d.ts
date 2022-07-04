@@ -9,8 +9,10 @@ declare global {
       VITE_CLIENT_PORT: string;
       VITE_OAUTH_URL: string;
       DATABASE_PATH: string;
+      VITE_CLIENT_BASE_URL: string;
+      VITE_CLIENT_ID: string;
     }
   }
 }
 
-export { };
+export {};

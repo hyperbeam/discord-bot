@@ -13,7 +13,7 @@ module.exports = {
 	env: {
 		development: {
 			// The "globalToGuild" option makes global commands sync to the specified guild instead.
-			globalToGuild: process.env.DEVELOPMENT_GUILD_ID
-		}
-	}
+			globalToGuild: process.env.DEVELOPMENT_GUILD_ID,
+		},
+	},
 };

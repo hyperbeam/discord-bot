@@ -7,7 +7,8 @@
 	"scripts": {
 		"start": "pm2 start ./pm2.config.js",
 		"bot": "pnpm run build:bot && pnpm run launch:bot",
-		"client": "pnpm run launch:client",
+		"client": "pnpm run build:client && pnpm run launch:client",
+		"api": "pnpm run build:api && pnpm run launch:api",
 		"listcommands": "slash-up local",
 		"build:bot": "tsc --project tsconfig.bot.json",
 		"launch:bot": "cd dist/bot && node index.js",
@@ -18,9 +19,10 @@
 		"preview:client": "vite preview",
 		"build:api": "tsc --project tsconfig.api.json",
 		"launch:api": "cd dist/api && node index.js",
-		"api": "pnpm run build:api && pnpm run launch:api"
+		"envtypes": "pnpm exec dotenv-types-generator --file ./.env --mergeTypes true"
 	},
 	"dependencies": {
+		"@hyperbeam/iframe": "^0.0.10",
 		"@types/better-sqlite3": "^7.5.0",
 		"@vitejs/plugin-react": "^1.3.2",
 		"better-sqlite3": "^7.5.3",
@@ -41,6 +43,7 @@
 		"@types/react-dom": "^18.0.5",
 		"@typescript-eslint/eslint-plugin": "^5.28.0",
 		"@typescript-eslint/parser": "^5.28.0",
+		"dotenv-types-generator": "^1.1.2",
 		"eslint": "^8.18.0",
 		"eslint-plugin-jsx-a11y": "^6.6.0",
 		"eslint-plugin-react": "^7.30.1",

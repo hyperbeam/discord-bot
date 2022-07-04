@@ -1,8 +1,9 @@
 import Database from "better-sqlite3";
 import { nanoid } from "nanoid";
 import { CommandContext, CommandOptionType, SlashCommand, SlashCreator } from "slash-create";
+import path from "path";
 
-const database = new Database(process.env.DATABASE_PATH!);
+const database = new Database(path.join(__dirname, "../../../database.db"));
 
 export default class Start extends SlashCommand {
 	constructor(creator: SlashCreator) {
@@ -13,7 +14,7 @@ export default class Start extends SlashCommand {
 				{
 					type: CommandOptionType.STRING,
 					name: "start_url",
-					description: "The initial URL that is set in the browser"
+					description: "The initial URL that is set in the browser",
 				},
 				{
 					type: CommandOptionType.STRING,
@@ -22,19 +23,19 @@ export default class Start extends SlashCommand {
 					choices: [
 						{
 							name: "North America",
-							value: "NA"
+							value: "NA",
 						},
 						{
 							name: "Europe",
-							value: "EU"
+							value: "EU",
 						},
 						{
 							name: "Asia",
-							value: "AS"
-						}
-					]
-				}
-			]
+							value: "AS",
+						},
+					],
+				},
+			],
 		});
 		this.filePath = __filename;
 	}
@@ -44,7 +45,7 @@ export default class Start extends SlashCommand {
 		const response = await fetch("https://enginetest.hyperbeam.com/v0/vm", {
 			method: "POST",
 			headers: {
-				Authorization: `Bearer ${process.env.HYPERBEAM_API_KEY}`
+				Authorization: `Bearer ${process.env.HYPERBEAM_API_KEY}`,
 			},
 			body: JSON.stringify({
 				start_url: start_url
@@ -53,8 +54,8 @@ export default class Start extends SlashCommand {
 						: `https://duckduckgo.com/?q=${encodeURIComponent(start_url)}`
 					: "https://duckduckgo.com",
 				offline_timeout: 300,
-				region: ctx.options.region || "NA"
-			})
+				region: ctx.options.region || "NA",
+			}),
 		});
 		if (!response.ok) {
 			return ctx.send("Something went wrong! Please try again.", { ephemeral: true });
@@ -64,7 +65,7 @@ export default class Start extends SlashCommand {
 			.prepare("INSERT INTO rooms (id, hyperbeam_session_id) VALUES (?, ?)")
 			.run(id, (await response.json()).session_id);
 		return ctx.send(
-			`Started a multiplayer browser session at https://localhost:3000/${id}`
+			`Started a multiplayer browser session at ${process.env.VITE_CLIENT_ROOMS_BASE_URL}/rooms/${id}`,
 		);
 	}
 

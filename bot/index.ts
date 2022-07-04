@@ -14,14 +14,14 @@ client.once("ready", () => {
 const creator = new SlashCreator({
 	applicationID: process.env.DISCORD_CLIENT_ID!,
 	token: process.env.DISCORD_BOT_TOKEN!,
-	client
+	client,
 });
 
 creator.on("warn", (message) => console.warn(message));
 creator.on("error", (error) => console.error(error));
 creator.on("synced", () => console.info("Commands synced!"));
 creator.on("commandRun", (command, _, ctx) =>
-	console.info(`${ctx.user.username}#${ctx.user.discriminator} (${ctx.user.id}) ran command ${command.commandName}`)
+	console.info(`${ctx.user.username}#${ctx.user.discriminator} (${ctx.user.id}) ran command ${command.commandName}`),
 );
 creator.on("commandRegister", (command) => console.info(`Registered command ${command.commandName}`));
 creator.on("commandError", (command, error) => console.error(`Command ${command.commandName}:`, error));

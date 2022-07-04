@@ -22,7 +22,7 @@
 		"jsx": "react-jsx"
 	},
 	"include": [
-		"client"
+		"client",
 	],
 	"exclude": [
 		"node_modules"
