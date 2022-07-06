@@ -2,10 +2,18 @@ import dotenv from "dotenv";
 import { SlashCreator, GatewayServer } from "slash-create";
 import { Client, Intents } from "discord.js";
 import path from "path";
+import { PrismaClient } from "@prisma/client";
+import apiServer from "./server/api";
+import { BotClient } from "./types";
 
 dotenv.config({ path: path.join(__dirname, "../../.env") });
+const db = new PrismaClient();
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
+const port = parseInt(process.env.API_SERVER_PORT || "3000", 10);
+apiServer(db).listen(port, () => console.log(`API server listening on port ${port}`));
+
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] }) as BotClient;
+client.db = db;
 
 client.once("ready", () => {
 	console.log("Ready!");

@@ -1,11 +1,8 @@
-import Database from "better-sqlite3";
 import { nanoid } from "nanoid";
 import { CommandContext, CommandOptionType, SlashCommand, SlashCreator } from "slash-create";
-import path from "path";
+import { BotClient } from "../types";
 
-const database = new Database(path.join(__dirname, "../../../database.db"));
-
-export default class Start extends SlashCommand {
+export default class Start extends SlashCommand<BotClient> {
 	constructor(creator: SlashCreator) {
 		super(creator, {
 			name: "start",
@@ -60,12 +57,11 @@ export default class Start extends SlashCommand {
 		if (!response.ok) {
 			return ctx.send("Something went wrong! Please try again.", { ephemeral: true });
 		}
-		const id = nanoid();
-		database
-			.prepare("INSERT INTO rooms (id, hyperbeam_session_id) VALUES (?, ?)")
-			.run(id, (await response.json()).session_id);
+		const room_id = nanoid();
+		const hb_session_id: string = await response.json().then(data => data.session_id);
+		await this.client.db.room.create({ data: { room_id, hb_session_id } });
 		return ctx.send(
-			`Started a multiplayer browser session at ${process.env.VITE_CLIENT_BASE_URL}/rooms/${id}`,
+			`Started a multiplayer browser session at ${process.env.VITE_CLIENT_BASE_URL}/rooms/${room_id}`,
 		);
 	}
 
