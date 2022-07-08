@@ -1,9 +1,11 @@
 import {
 	BrowserRouter as Router,
+	Route,
 	Routes,
-	Route
 } from "react-router-dom";
+
 import OauthHandler from "./components/OAuthHandler";
+import VM from "./components/VM";
 
 function App() {
 
@@ -13,6 +15,7 @@ function App() {
 			<Router>
 				<Routes>
 					<Route path="/authorize" element={<OauthHandler />} />
+					<Route path="/rooms/:id" element={<VM />} />
 				</Routes>
 			</Router>
 		</div>

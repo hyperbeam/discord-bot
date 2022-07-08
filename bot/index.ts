@@ -2,10 +2,18 @@ import dotenv from "dotenv";
 import { SlashCreator, GatewayServer } from "slash-create";
 import { Client, Intents } from "discord.js";
 import path from "path";
+import { PrismaClient } from "@prisma/client";
+import apiServer from "./server/api";
+import { BotClient } from "./types";
 
 dotenv.config({ path: path.join(__dirname, "../../.env") });
+const db = new PrismaClient();
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
+const port = parseInt(process.env.API_SERVER_PORT || "3000", 10);
+apiServer(db).listen(port, () => console.log(`API server listening on port ${port}`));
+
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] }) as BotClient;
+client.db = db;
 
 client.once("ready", () => {
 	console.log("Ready!");
@@ -14,14 +22,14 @@ client.once("ready", () => {
 const creator = new SlashCreator({
 	applicationID: process.env.DISCORD_CLIENT_ID!,
 	token: process.env.DISCORD_BOT_TOKEN!,
-	client
+	client,
 });
 
 creator.on("warn", (message) => console.warn(message));
 creator.on("error", (error) => console.error(error));
 creator.on("synced", () => console.info("Commands synced!"));
 creator.on("commandRun", (command, _, ctx) =>
-	console.info(`${ctx.user.username}#${ctx.user.discriminator} (${ctx.user.id}) ran command ${command.commandName}`)
+	console.info(`${ctx.user.username}#${ctx.user.discriminator} (${ctx.user.id}) ran command ${command.commandName}`),
 );
 creator.on("commandRegister", (command) => console.info(`Registered command ${command.commandName}`));
 creator.on("commandError", (command, error) => console.error(`Command ${command.commandName}:`, error));

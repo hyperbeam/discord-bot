@@ -7,7 +7,7 @@
 	"scripts": {
 		"start": "pm2 start ./pm2.config.js",
 		"bot": "pnpm run build:bot && pnpm run launch:bot",
-		"client": "pnpm run launch:client",
+		"client": "pnpm run build:client && pnpm run launch:client",
 		"listcommands": "slash-up local",
 		"build:bot": "tsc --project tsconfig.bot.json",
 		"launch:bot": "cd dist/bot && node index.js",
@@ -15,12 +15,19 @@
 		"lint:fix": "eslint . --fix",
 		"launch:client": "vite",
 		"build:client": "vite build",
-		"preview:client": "vite preview"
+		"preview:client": "vite preview",
+		"envtypes": "pnpm exec dotenv-types-generator --file ./.env"
 	},
 	"dependencies": {
+		"@hyperbeam/iframe": "^0.0.10",
+		"@prisma/client": "^4.0.0",
+		"@types/better-sqlite3": "^7.5.0",
 		"@vitejs/plugin-react": "^1.3.2",
+		"better-sqlite3": "^7.5.3",
 		"discord.js": "^13.8.0",
 		"dotenv": "^16.0.1",
+		"express": "^4.18.1",
+		"nanoid": "3.3.4",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"react-router-dom": "^6.3.0",
@@ -34,12 +41,17 @@
 		"@types/react-dom": "^18.0.5",
 		"@typescript-eslint/eslint-plugin": "^5.28.0",
 		"@typescript-eslint/parser": "^5.28.0",
+		"dotenv-types-generator": "^1.1.2",
 		"eslint": "^8.18.0",
 		"eslint-plugin-jsx-a11y": "^6.6.0",
 		"eslint-plugin-react": "^7.30.1",
 		"eslint-plugin-simple-import-sort": "^7.0.0",
+		"prisma": "^4.0.0",
 		"slash-up": "^1.2.0",
 		"typescript": "^4.7.4",
 		"vite-plugin-mkcert": "^1.7.2"
+	},
+	"prisma": {
+		"schema": "bot/prisma/schema.prisma"
 	}
 }

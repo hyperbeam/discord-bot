@@ -12,7 +12,8 @@
 		"typeRoots": [
 			"./node_modules/@types",
 			"types"
-		]
+		],
+		"moduleResolution": "node"
 	},
 	"include": [
 		"./bot/**/*.ts",

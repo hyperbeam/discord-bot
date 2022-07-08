@@ -1,6 +1,8 @@
-import { SlashCommand, SlashCreator, CommandContext, CommandOptionType } from "slash-create";
+import { nanoid } from "nanoid";
+import { CommandContext, CommandOptionType, SlashCommand, SlashCreator } from "slash-create";
+import { BotClient } from "../types";
 
-export default class Start extends SlashCommand {
+export default class Start extends SlashCommand<BotClient> {
 	constructor(creator: SlashCreator) {
 		super(creator, {
 			name: "start",
@@ -9,7 +11,7 @@ export default class Start extends SlashCommand {
 				{
 					type: CommandOptionType.STRING,
 					name: "start_url",
-					description: "The initial URL that is set in the browser"
+					description: "The initial URL that is set in the browser",
 				},
 				{
 					type: CommandOptionType.STRING,
@@ -18,30 +20,29 @@ export default class Start extends SlashCommand {
 					choices: [
 						{
 							name: "North America",
-							value: "NA"
+							value: "NA",
 						},
 						{
 							name: "Europe",
-							value: "EU"
+							value: "EU",
 						},
 						{
 							name: "Asia",
-							value: "AS"
-						}
-					]
-				}
-			]
+							value: "AS",
+						},
+					],
+				},
+			],
 		});
 		this.filePath = __filename;
 	}
 
 	async run(ctx: CommandContext) {
 		const start_url = ctx.options.start_url;
-
 		const response = await fetch("https://enginetest.hyperbeam.com/v0/vm", {
 			method: "POST",
 			headers: {
-				Authorization: `Bearer ${process.env.HYPERBEAM_API_KEY}`
+				Authorization: `Bearer ${process.env.HYPERBEAM_API_KEY}`,
 			},
 			body: JSON.stringify({
 				start_url: start_url
@@ -50,13 +51,18 @@ export default class Start extends SlashCommand {
 						: `https://duckduckgo.com/?q=${encodeURIComponent(start_url)}`
 					: "https://duckduckgo.com",
 				offline_timeout: 300,
-				region: ctx.options.region || "NA"
-			})
+				region: ctx.options.region || "NA",
+			}),
 		});
-
-		const { embed_url } = (await response.json()) as { embed_url: string; };
-		if (embed_url) return ctx.send(`Started a multiplayer browser session at ${embed_url}`);
-		else return ctx.send("Something went wrong! Please try again.", { ephemeral: true });
+		if (!response.ok) {
+			return ctx.send("Something went wrong! Please try again.", { ephemeral: true });
+		}
+		const room_id = nanoid();
+		const hb_session_id: string = await response.json().then(data => data.session_id);
+		await this.client.db.room.create({ data: { room_id, hb_session_id } });
+		return ctx.send(
+			`Started a multiplayer browser session at ${process.env.VITE_CLIENT_BASE_URL}/rooms/${room_id}`,
+		);
 	}
 
 	hasProtocol(s: string) {
