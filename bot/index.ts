@@ -10,7 +10,8 @@ dotenv.config({ path: path.join(__dirname, "../../.env") });
 const db = new PrismaClient();
 
 const port = parseInt(process.env.API_SERVER_PORT || "3000", 10);
-apiServer(db).listen(port, () => console.log(`API server listening on port ${port}`));
+const { httpServer } = apiServer(db);
+httpServer.listen(port, () => console.log(`API server listening on port ${port}`));
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] }) as BotClient;
 client.db = db;

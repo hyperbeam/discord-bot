@@ -16,12 +16,30 @@ export default class OAuthHandler extends React.Component<IProps, IState> {
 		this.state = { loaded: false };
 	}
 
+	generateRandomString() {
+		let randomString = "";
+		const randomNumber = Math.floor(Math.random() * 10);
+		for (let i = 0; i < 20 + randomNumber; i++) {
+			randomString += String.fromCharCode(33 + Math.floor(Math.random() * 94));
+		}
+		return btoa(randomString);
+	}
+
 	async componentDidMount() {
 		const searchParams = new URLSearchParams(window.location.hash.slice(1));
-		if (!searchParams.has("access_token") || !searchParams.has("token_type")) {
-			const oAuthUrl = `https://discord.com/oauth2/authorize?client_id=${process.env.VITE_CLIENT_ID!}&redirect_uri=${encodeURIComponent(process.env.VITE_CLIENT_BASE_URL!)}%2Fauthorize&response_type=token&scope=identify%20email`;
+		const code = searchParams.get("code");
+
+		if (!code) {
+			const randomString = this.generateRandomString();
+			localStorage.setItem("oauth-state", randomString);
+			const oAuthUrl = `https://discord.com/oauth2/authorize?client_id=${import.meta.env.VITE_CLIENT_ID!}&redirect_uri=${encodeURIComponent(import.meta.env.VITE_CLIENT_BASE_URL!)}%2Fauthorize&response_type=code&scope=identify%20email&state=${randomString}`;
 			window.location.href = oAuthUrl;
 		}
+
+		const state = searchParams.get("state");
+		if (localStorage.getItem("oauth-state") !== state)
+			return console.log("You may have been clickjacked!");
+
 		const [accessToken, tokenType] = [searchParams.get("access_token"), searchParams.get("token_type")];
 		const response = await fetch("https://discord.com/api/users/@me", {
 			headers: {

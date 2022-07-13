@@ -7,7 +7,7 @@
 	"scripts": {
 		"start": "pm2 start ./pm2.config.js",
 		"bot": "pnpm run build:bot && pnpm run launch:bot",
-		"client": "pnpm run build:client && pnpm run launch:client",
+		"client": "pnpm run build:client && pnpm run preview:client",
 		"listcommands": "slash-up local",
 		"build:bot": "tsc --project tsconfig.bot.json",
 		"launch:bot": "cd dist/bot && node index.js",
@@ -32,6 +32,8 @@
 		"react-dom": "^18.2.0",
 		"react-router-dom": "^6.3.0",
 		"slash-create": "^5.6.1",
+		"socket.io": "^4.5.1",
+		"socket.io-client": "^4.5.1",
 		"vite": "^2.9.12"
 	},
 	"devDependencies": {

@@ -1,8 +1,19 @@
 import { PrismaClient } from "@prisma/client";
 import express from "express";
+import { Server } from "socket.io";
+import { createServer } from "http";
 
 export default function apiServer(db: PrismaClient) {
 	const app = express();
+	const httpServer = createServer(app);
+	const io = new Server(httpServer, {
+		serveClient: false,
+		cors: {
+			origin: process.env.VITE_CLIENT_BASE_URL,
+		},
+	});
+
+	// Express functions
 
 	app.use(function (_req, res, next) {
 		res.header("Access-Control-Allow-Origin", process.env.VITE_CLIENT_BASE_URL);
@@ -30,5 +41,20 @@ export default function apiServer(db: PrismaClient) {
 		res.send({ embed_url });
 	});
 
-	return app;
+	// Socket functions
+
+	io.on("connection", (socket) => {
+		socket.on("join", async (room_id) => {
+			const room = await db.room.findFirst({ where: { room_id } });
+			if (!room)
+				return socket.emit("error", "Room not found");
+			socket.join(room_id);
+			socket.emit("joined", room);
+		});
+		socket.on("leave", async (room_id) => {
+			socket.leave(room_id);
+		});
+	});
+
+	return { app, httpServer, io };
 }
