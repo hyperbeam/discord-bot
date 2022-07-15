@@ -26,27 +26,32 @@ export default class OAuthHandler extends React.Component<IProps, IState> {
 	}
 
 	async componentDidMount() {
-		const searchParams = new URLSearchParams(window.location.hash.slice(1));
+		const searchParams = new URLSearchParams(window.location.href.substring(window.location.href.indexOf("?")));
 		const code = searchParams.get("code");
+
+		console.log({ searchParams, href: window.location.href });
 
 		if (!code) {
 			const randomString = this.generateRandomString();
 			localStorage.setItem("oauth-state", randomString);
 			const oAuthUrl = `https://discord.com/oauth2/authorize?client_id=${import.meta.env.VITE_CLIENT_ID!}&redirect_uri=${encodeURIComponent(import.meta.env.VITE_CLIENT_BASE_URL!)}%2Fauthorize&response_type=code&scope=identify%20email&state=${randomString}`;
 			window.location.href = oAuthUrl;
+			return;
 		}
 
 		const state = searchParams.get("state");
 		if (localStorage.getItem("oauth-state") !== state)
 			return console.log("You may have been clickjacked!");
 
-		const [accessToken, tokenType] = [searchParams.get("access_token"), searchParams.get("token_type")];
-		const response = await fetch("https://discord.com/api/users/@me", {
-			headers: {
-				authorization: `${tokenType} ${accessToken}`,
-			},
-		}).then(res => res.json());
-		this.setState({ loaded: true, data: response });
+		const response = await fetch(`${import.meta.env.VITE_API_SERVER_BASE_URL}/authorize/${code}`);
+		console.log({ response, body: JSON.stringify(response.body) });
+		if (!response.ok)
+			return console.log("Could not authorize user.");
+
+		const data = await response.json();
+		localStorage.setItem("userId", data.userId);
+		localStorage.setItem("hash", data.hash);
+		this.setState({ loaded: true, data });
 	}
 
 	render(): ReactNode {

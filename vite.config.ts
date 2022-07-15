@@ -16,6 +16,9 @@ export default defineConfig({
 	server: {
 		port,
 	},
+	preview: {
+		port,
+	},
 	build: {
 		outDir: "../dist/client",
 		emptyOutDir: true,

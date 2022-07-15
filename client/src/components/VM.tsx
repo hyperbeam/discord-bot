@@ -24,7 +24,7 @@ class VMElement extends React.Component<IProps, IState> {
 		});
 		const hbiframe = document.getElementById("hyperbeam") as HTMLIFrameElement | null;
 		if (hbiframe) {
-			await Hyperbeam(hbiframe, apiResponse.embed_url);
+			await Hyperbeam(hbiframe, apiResponse.embedUrl);
 		}
 	}
 

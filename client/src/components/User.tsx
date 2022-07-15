@@ -4,7 +4,6 @@ export interface UserData {
 	id: string;
 	username: string;
 	avatar: string;
-	avatar_decoration: string | null;
 	discriminator: string;
 	banner: string | null;
 	email: string | null;
