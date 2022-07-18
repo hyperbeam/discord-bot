@@ -1,64 +1,51 @@
-import React from "react";
-import { ReactNode } from "react";
+/* eslint-disable no-unused-vars */
+import { nanoid } from "nanoid";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-import User, { UserData } from "./User";
+import { authorizeUser, isLoggedIn, oauthUrl, UserProps, verifyUser } from "../scripts/auth";
 
-interface IProps { }
-
-interface IState {
-	loaded: boolean;
-	data?: object;
+function reAuth() {
+	const oauthState = nanoid();
+	localStorage.setItem("oauthState", oauthState);
+	window.location.href = oauthUrl(oauthState);
 }
 
-export default class OAuthHandler extends React.Component<IProps, IState> {
-	constructor(props) {
-		super(props);
-		this.state = { loaded: false };
+function handleAuth(props: UserProps, navigate) {
+	if (isLoggedIn()) {
+		verifyUser().then(user => {
+			if (user) {
+				props.setUser(user);
+				navigate("/");
+			}
+			else reAuth();
+		});
 	}
-
-	generateRandomString() {
-		let randomString = "";
-		const randomNumber = Math.floor(Math.random() * 10);
-		for (let i = 0; i < 20 + randomNumber; i++) {
-			randomString += String.fromCharCode(33 + Math.floor(Math.random() * 94));
+	else {
+		const href = window.location.href;
+		const params = new URLSearchParams(href.substring(href.indexOf("?")));
+		const code = params.get("code");
+		const state = params.get("state");
+		if (!code || !state) reAuth();
+		else if (code && state) {
+			const oauthState = localStorage.getItem("oauthState");
+			if (oauthState !== state) {
+				console.log("Invalid OAuth state");
+			}
+			authorizeUser(code).then(user => {
+				if (user)
+					props.setUser(user);
+				else
+					navigate("/");
+			});
 		}
-		return btoa(randomString);
 	}
+}
 
-	async componentDidMount() {
-		const searchParams = new URLSearchParams(window.location.href.substring(window.location.href.indexOf("?")));
-		const code = searchParams.get("code");
-
-		console.log({ searchParams, href: window.location.href });
-
-		if (!code) {
-			const randomString = this.generateRandomString();
-			localStorage.setItem("oauth-state", randomString);
-			const oAuthUrl = `https://discord.com/oauth2/authorize?client_id=${import.meta.env.VITE_CLIENT_ID!}&redirect_uri=${encodeURIComponent(import.meta.env.VITE_CLIENT_BASE_URL!)}%2Fauthorize&response_type=code&scope=identify%20email&state=${randomString}`;
-			window.location.href = oAuthUrl;
-			return;
-		}
-
-		const state = searchParams.get("state");
-		if (localStorage.getItem("oauth-state") !== state)
-			return console.log("You may have been clickjacked!");
-
-		const response = await fetch(`${import.meta.env.VITE_API_SERVER_BASE_URL}/authorize/${code}`);
-		console.log({ response, body: JSON.stringify(response.body) });
-		if (!response.ok)
-			return console.log("Could not authorize user.");
-
-		const data = await response.json();
-		localStorage.setItem("userId", data.userId);
-		localStorage.setItem("hash", data.hash);
-		this.setState({ loaded: true, data });
-	}
-
-	render(): ReactNode {
-		return <div className="OAuth">
-			<h2>OauthThingy</h2>
-			{this.state.loaded && <User
-				user={this.state.data! as UserData} />}
-		</div>;
-	}
+export default function oauthHandler(props: UserProps) {
+	const navigate = useNavigate();
+	useEffect(() => {
+		handleAuth(props, navigate);
+	});
+	return <div>Loading...</div>;
 }

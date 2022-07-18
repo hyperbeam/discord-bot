@@ -39,6 +39,10 @@ export default class Database {
 		return this.dbClient.room.findFirst({ where });
 	}
 
+	async getRooms(where: Prisma.RoomWhereInput): Promise<Room[]> {
+		return this.dbClient.room.findMany({ where });
+	}
+
 	async getRoomSessions(where: Prisma.RoomWhereInput): Promise<Session[]> {
 		const room = await this.getRoom(where);
 		if (!room) return [];
