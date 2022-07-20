@@ -38,39 +38,28 @@ export default class Start extends SlashCommand<BotClient> {
 	}
 
 	async run(ctx: CommandContext) {
-		const start_url = ctx.options.start_url;
-		const response = await fetch("https://enginetest.hyperbeam.com/v0/vm", {
-			method: "POST",
-			headers: {
-				Authorization: `Bearer ${process.env.HYPERBEAM_API_KEY}`,
-			},
-			body: JSON.stringify({
-				start_url: start_url
-					? this.hasProtocol(start_url)
-						? start_url
-						: `https://duckduckgo.com/?q=${encodeURIComponent(start_url)}`
-					: "https://duckduckgo.com",
-				offline_timeout: 300,
-				region: ctx.options.region || "NA",
-			}),
+		// Update user details in the db to recent data
+		await this.client.db.upsertUser({
+			userId: ctx.user.id,
+			username: ctx.user.username,
+			discriminator: ctx.user.discriminator,
+			avatar: ctx.user.avatar,
 		});
-		if (!response.ok) {
-			return ctx.send("Something went wrong! Please try again.", { ephemeral: true });
-		}
-		const room_id = nanoid();
-		const hb_session_id: string = await response.json().then(data => data.session_id);
-		await this.client.db.room.create({ data: { room_id, hb_session_id } });
+		// We only keep one room per user for now
+		let room = await this.client.db.getRoom({ ownerId: ctx.user.id });
+		if (!room)
+			room = await this.client.db.createRoom({
+				owner: { connect: { userId: ctx.user.id } },
+				url: nanoid(),
+				name: `${ctx.user.username}'s room`,
+			});
+		// Create a new session and set it as latest, overriding current sessions
+		await this.client.db.createHyperbeamSession(room.url, {
+			start_url: ctx.options.start_url,
+			region: ctx.options.region,
+		});
 		return ctx.send(
-			`Started a multiplayer browser session at ${process.env.VITE_CLIENT_BASE_URL}/rooms/${room_id}`,
+			`Started a multiplayer browser session at ${process.env.VITE_CLIENT_BASE_URL}/${room.url}`,
 		);
-	}
-
-	hasProtocol(s: string) {
-		try {
-			const url = new URL(s);
-			return url.protocol === "https:" || url.protocol === "http:";
-		} catch (e) {
-			return false;
-		}
 	}
 }

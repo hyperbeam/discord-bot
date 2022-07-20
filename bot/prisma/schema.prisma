@@ -8,7 +8,49 @@ datasource db {
 }
 
 model Room {
-  id            Int    @id @default(autoincrement())
-  room_id       String @unique
-  hb_session_id String @unique
+  id           Int          @id @default(autoincrement())
+  url          String       @unique // rooms have a unique url
+  name         String // name can be anything
+  createdAt    DateTime     @default(now())
+  accessedAt   DateTime     @default(now())
+  owner        User         @relation(fields: [ownerId], references: [userId])
+  ownerId      String       @unique // one room per user for now
+  requiresAuth Boolean      @default(false) // unused
+  memberCount  Int          @default(0)
+  Session      Session[] // one to many
+  RoomMembers  RoomMember[] // one to many
+}
+
+model User {
+  id            Int          @id @default(autoincrement())
+  userId        String       @unique
+  hash          String?      @unique // keep serverside only
+  email         String?      @unique
+  avatar        String?
+  username      String
+  discriminator String
+  accessToken   String? // keep serverside only
+  refreshToken  String? // keep serverside only
+  Room          Room[] // owner map
+  RoomMembers   RoomMember[] // member map
+}
+
+model Session {
+  id              Int      @id @default(autoincrement())
+  room            Room     @relation(fields: [roomId], references: [id])
+  roomId          Int
+  sessionId       String // hyperbeam session id
+  embedUrl        String // iframe embed url
+  adminToken      String // admin token for this session
+  terminationDate String? // usually null, returned by hb api
+  createdAt       DateTime @default(now())
+  duration        Int      @default(0) // unused
+}
+
+model RoomMember {
+  id     Int    @id @default(autoincrement())
+  room   Room   @relation(fields: [roomId], references: [id])
+  user   User   @relation(fields: [userId], references: [userId])
+  roomId Int // use select in query to get the room
+  userId String // use select in query to get the member as user
 }

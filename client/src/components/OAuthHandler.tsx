@@ -1,41 +1,53 @@
-import React from "react";
-import { ReactNode } from "react";
+/* eslint-disable no-unused-vars */
+import { nanoid } from "nanoid";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-import User, { UserData } from "./User";
+import { authorizeUser, isLoggedIn, oauthUrl, UserProps, verifyUser } from "../scripts/auth";
 
-interface IProps { }
-
-interface IState {
-	loaded: boolean;
-	data?: object;
+// oauthState is used to prevent CSRF attacks
+function reAuth() {
+	const oauthState = nanoid();
+	localStorage.setItem("oauthState", oauthState);
+	window.location.href = oauthUrl(oauthState);
 }
 
-export default class OAuthHandler extends React.Component<IProps, IState> {
-	constructor(props) {
-		super(props);
-		this.state = { loaded: false };
+// this logic could probs also be moved to auth.ts
+function handleAuth(props: UserProps, navigate) {
+	if (isLoggedIn()) { // check if token exists
+		verifyUser().then(user => {
+			if (user) {
+				props.setUser(user);
+				navigate("/"); // redirect to home
+			}
+			else reAuth(); // if token is not valid, re-auth
+		});
 	}
-
-	async componentDidMount() {
-		const searchParams = new URLSearchParams(window.location.hash.slice(1));
-		if (!searchParams.has("access_token") || !searchParams.has("token_type")) {
-			const oAuthUrl = `https://discord.com/oauth2/authorize?client_id=${process.env.VITE_CLIENT_ID!}&redirect_uri=${encodeURIComponent(process.env.VITE_CLIENT_BASE_URL!)}%2Fauthorize&response_type=token&scope=identify%20email`;
-			window.location.href = oAuthUrl;
+	else {
+		const href = window.location.href;
+		const params = new URLSearchParams(href.substring(href.indexOf("?")));
+		const code = params.get("code");
+		const state = params.get("state");
+		if (!code || !state) reAuth(); // if no token + no code, re-auth
+		else if (code && state) {
+			const oauthState = localStorage.getItem("oauthState");
+			if (oauthState !== state) {
+				console.log("Invalid OAuth state");
+			}
+			authorizeUser(code).then(user => {
+				if (user)
+					props.setUser(user);
+				else
+					navigate("/"); // redirect to root after auth failed
+			});
 		}
-		const [accessToken, tokenType] = [searchParams.get("access_token"), searchParams.get("token_type")];
-		const response = await fetch("https://discord.com/api/users/@me", {
-			headers: {
-				authorization: `${tokenType} ${accessToken}`,
-			},
-		}).then(res => res.json());
-		this.setState({ loaded: true, data: response });
 	}
+}
 
-	render(): ReactNode {
-		return <div className="OAuth">
-			<h2>OauthThingy</h2>
-			{this.state.loaded && <User
-				user={this.state.data! as UserData} />}
-		</div>;
-	}
+export default function oauthHandler(props: UserProps) {
+	const navigate = useNavigate();
+	useEffect(() => {
+		handleAuth(props, navigate); // allow handleAuth to navigate on load
+	});
+	return <div>Loading...</div>;
 }

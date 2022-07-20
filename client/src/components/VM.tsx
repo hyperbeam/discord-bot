@@ -1,43 +1,26 @@
 import Hyperbeam from "@hyperbeam/iframe";
-import React from "react";
-import { ReactNode } from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-interface IProps {
-	params: { id: string | null | undefined; };
-}
-
-interface IState {
-}
-
-class VMElement extends React.Component<IProps, IState> {
-	constructor(props) {
-		super(props);
-		this.state = {};
-	}
-
-	async componentDidMount() {
-		const { id } = this.props.params;
-		const apiResponse = await fetch(`http://localhost:3000/api/rooms/${id}`).then(response => {
-			console.log(response);
-			return response.json();
-		});
+// TODO: consolidate api interactions in one place?
+async function startHyperbeamSession(id: string) {
+	const response = await fetch(`${import.meta.env.VITE_API_SERVER_BASE_URL}/rooms/${id}`);
+	if (response.ok) {
+		const data = await response.json();
 		const hbiframe = document.getElementById("hyperbeam") as HTMLIFrameElement | null;
-		if (hbiframe) {
-			await Hyperbeam(hbiframe, apiResponse.embed_url);
-		}
-	}
-
-	render(): ReactNode {
-		return <div className="OAuth">
-			<h2>VM</h2>
-			<iframe id="hyperbeam" title="Hyperbeam" />
-		</div>;
+		if (hbiframe) return Hyperbeam(hbiframe, data.embedUrl);
 	}
 }
 
-const VM = (props) => {
-	return <VMElement {...props} params={useParams()} />;
-};
-
-export default VM;
+// TODO: vm do be tiny tho
+export default function VM() {
+	const { id } = useParams();
+	useEffect(() => {
+		if (id)
+			startHyperbeamSession(id);
+	}, [id]);
+	return <div>
+		<h2>VM</h2>
+		<iframe id="hyperbeam" title="Hyperbeam" />
+	</div>;
+}

@@ -1,0 +1,21 @@
+.header {
+  display: flex;
+  width: 100%;
+  height: 64px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.user-avatar {
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  height: 32px;
+}
