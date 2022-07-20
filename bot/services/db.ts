@@ -1,5 +1,5 @@
 import { VMRequestBody } from "./../hyperbeamAPI.d";
-import { Prisma, PrismaClient, Room, User, Session } from "@prisma/client";
+import { Prisma, PrismaClient, Room, User, Session, RoomMember } from "@prisma/client";
 import HyperbeamAPI from "../utils/hyperbeamAPI";
 
 export default class Database {
@@ -43,6 +43,31 @@ export default class Database {
 		return this.dbClient.room.findMany({ where });
 	}
 
+	async joinRoom(data: Prisma.RoomMemberCreateInput): Promise<RoomMember> {
+		const member = await this.dbClient.roomMember.create({ data });
+		await this.dbClient.room.update({ where: { id: member.roomId }, data: { memberCount: { increment: 1 } } });
+		return member;
+	}
+
+	async leaveRoom(where: Prisma.RoomMemberWhereUniqueInput): Promise<User> {
+		const member = await this.dbClient.roomMember.delete({ where, select: { user: true, roomId: true } });
+		await this.dbClient.room.update({ where: { id: member.roomId }, data: { memberCount: { decrement: 1 } } });
+		return member.user;
+	}
+
+	async getRoomMembers(where: Prisma.RoomWhereInput): Promise<User[]> {
+		const room = await this.getRoom(where);
+		if (!room) return [];
+		const users = await this.dbClient.roomMember.findMany({ select: { user: true }, where: { roomId: room.id }, distinct: "userId" });
+		return users.map((u) => u.user);
+	}
+
+	async getMemberCount(where: Prisma.RoomWhereInput): Promise<number> {
+		const room = await this.getRoom(where);
+		if (!room) return 0;
+		return this.dbClient.roomMember.count({ where: { roomId: room.id }, distinct: "userId" });
+	}
+
 	async getRoomSessions(where: Prisma.RoomWhereInput): Promise<Session[]> {
 		const room = await this.getRoom(where);
 		if (!room) return [];
@@ -52,9 +77,7 @@ export default class Database {
 	async getLatestSession(where: Prisma.RoomWhereInput): Promise<Session | null> {
 		const room = await this.getRoom(where);
 		if (!room) return null;
-		const sessions = await this.getRoomSessions(where);
-		if (sessions.length === 0) return null;
-		return sessions[sessions.length - 1];
+		return this.dbClient.session.findFirst({ where: { roomId: room.id }, orderBy: { createdAt: "desc" } });
 	}
 
 	async createHyperbeamSession(roomUrl: string, data?: VMRequestBody): Promise<Session> {

@@ -8,29 +8,31 @@ datasource db {
 }
 
 model Room {
-  id          Int           @id @default(autoincrement())
-  url         String        @unique
-  name        String
-  createdAt   DateTime      @default(now())
-  accessedAt  DateTime      @default(now())
-  owner       User          @relation(fields: [ownerId], references: [userId])
-  ownerId     String        @unique
-  Session     Session[]
-  RoomMembers RoomMembers[]
+  id           Int          @id @default(autoincrement())
+  url          String       @unique
+  name         String
+  createdAt    DateTime     @default(now())
+  accessedAt   DateTime     @default(now())
+  owner        User         @relation(fields: [ownerId], references: [userId])
+  ownerId      String       @unique
+  requiresAuth Boolean      @default(false)
+  memberCount  Int          @default(0)
+  Session      Session[]
+  RoomMembers  RoomMember[]
 }
 
 model User {
-  id            Int           @id @default(autoincrement())
-  userId        String        @unique
-  hash          String?       @unique
-  email         String?       @unique
+  id            Int          @id @default(autoincrement())
+  userId        String       @unique
+  hash          String?      @unique
+  email         String?      @unique
   avatar        String?
   username      String
   discriminator String
   accessToken   String?
   refreshToken  String?
   Room          Room[]
-  RoomMembers   RoomMembers[]
+  RoomMembers   RoomMember[]
 }
 
 model Session {
@@ -45,7 +47,7 @@ model Session {
   duration        Int      @default(0)
 }
 
-model RoomMembers {
+model RoomMember {
   id     Int    @id @default(autoincrement())
   room   Room   @relation(fields: [roomId], references: [id])
   user   User   @relation(fields: [userId], references: [userId])

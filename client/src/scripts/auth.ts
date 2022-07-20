@@ -7,9 +7,9 @@ export interface UserData {
 }
 
 export interface UserProps {
-	user: UserData | null;
+	user?: UserData;
 	// eslint-disable-next-line no-unused-vars
-	setUser: (user: UserData | null) => void;
+	setUser: (user: UserData) => void;
 }
 
 export const getToken = () => localStorage.getItem("token");
@@ -32,7 +32,7 @@ export async function apiRequest<T>(route: string, method = "GET", body?: any): 
 
 
 export async function verifyUser(): Promise<UserData | null> {
-	return apiRequest<UserData | null>("/verify/");
+	return apiRequest<UserData | null>("/login/");
 }
 
 export async function authorizeUser(code): Promise<UserData | null> {
