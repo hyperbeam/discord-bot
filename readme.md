@@ -15,7 +15,7 @@ A bot to integrate the Hyperbeam API with Discord.
 - Optionally, store a server ID as `DISCORD_DEVELOPMENT_GUILD_ID` to register guild commands instead of global commands for quicker development.
 - Copy the `DISCORD_CLIENT_ID` value to the `VITE_CLIENT_ID` env variable as well.
 - Define the `VITE_CLIENT_PORT` and the `API_SERVER_PORT` for serving the frontend client and the backend server respectively.
-- Set the `VITE_CLIENT_URL` to the URL that the frontend client is served at. (ex: https://localhost:4000)
+- Set the `VITE_CLIENT_URL` to the URL that the frontend client is served at. (ex: `https://localhost:4000`)
 - Add the `VITE_CLIENT_URL` to the OAuth2 redirect URI list in your Discord application settings.
 - Set the `DATABASE_URL` to the relative path to the SQLite db (relative to the prisma schema file)
 

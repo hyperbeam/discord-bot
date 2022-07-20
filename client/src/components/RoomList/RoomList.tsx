@@ -23,6 +23,7 @@ async function getRooms() {
 	return apiRequest<RoomListResponse>("/rooms");
 }
 
+// this renders at root for now, but should be moved to /rooms
 export default function RoomList() {
 	if (!isLoggedIn()) return <div className="room-list">Login to view your rooms.</div>;
 	const [rooms, setRooms] = useState<RoomListState>({ ownedRooms: [], memberRooms: [], loaded: false });

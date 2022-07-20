@@ -2,6 +2,10 @@ import { VMRequestBody } from "./../hyperbeamAPI.d";
 import { Prisma, PrismaClient, Room, User, Session, RoomMember } from "@prisma/client";
 import HyperbeamAPI from "../utils/hyperbeamAPI";
 
+// prisma does most of this really
+// we just have to chain some calls
+// having a common class makes that simpler and more type-safe i suppose
+
 export default class Database {
 	private dbClient: PrismaClient;
 	private hbAPI: HyperbeamAPI;
@@ -43,18 +47,21 @@ export default class Database {
 		return this.dbClient.room.findMany({ where });
 	}
 
+	// could get out of sync with membercount maybe?
 	async joinRoom(data: Prisma.RoomMemberCreateInput): Promise<RoomMember> {
 		const member = await this.dbClient.roomMember.create({ data });
 		await this.dbClient.room.update({ where: { id: member.roomId }, data: { memberCount: { increment: 1 } } });
 		return member;
 	}
 
+	// could get out of sync with membercount maybe?
 	async leaveRoom(where: Prisma.RoomMemberWhereUniqueInput): Promise<User> {
 		const member = await this.dbClient.roomMember.delete({ where, select: { user: true, roomId: true } });
 		await this.dbClient.room.update({ where: { id: member.roomId }, data: { memberCount: { decrement: 1 } } });
 		return member.user;
 	}
 
+	// distinct userIds = unique members
 	async getRoomMembers(where: Prisma.RoomWhereInput): Promise<User[]> {
 		const room = await this.getRoom(where);
 		if (!room) return [];
@@ -68,6 +75,7 @@ export default class Database {
 		return this.dbClient.roomMember.count({ where: { roomId: room.id }, distinct: "userId" });
 	}
 
+	// ordering might be off here, but it works for now
 	async getRoomSessions(where: Prisma.RoomWhereInput): Promise<Session[]> {
 		const room = await this.getRoom(where);
 		if (!room) return [];
@@ -80,6 +88,8 @@ export default class Database {
 		return this.dbClient.session.findFirst({ where: { roomId: room.id }, orderBy: { createdAt: "desc" } });
 	}
 
+	// this interacts with the api, keep it here for now
+	// later down the line we'll have more hyperbeam api interactions auto handled here itself
 	async createHyperbeamSession(roomUrl: string, data?: VMRequestBody): Promise<Session> {
 		const room = await this.getRoom({ url: roomUrl });
 		if (!room) throw new Error("Room not found");

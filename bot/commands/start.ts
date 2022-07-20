@@ -38,12 +38,14 @@ export default class Start extends SlashCommand<BotClient> {
 	}
 
 	async run(ctx: CommandContext) {
+		// Update user details in the db to recent data
 		await this.client.db.upsertUser({
 			userId: ctx.user.id,
 			username: ctx.user.username,
 			discriminator: ctx.user.discriminator,
 			avatar: ctx.user.avatar,
 		});
+		// We only keep one room per user for now
 		let room = await this.client.db.getRoom({ ownerId: ctx.user.id });
 		if (!room)
 			room = await this.client.db.createRoom({
@@ -51,21 +53,13 @@ export default class Start extends SlashCommand<BotClient> {
 				url: nanoid(),
 				name: `${ctx.user.username}'s room`,
 			});
+		// Create a new session and set it as latest, overriding current sessions
 		await this.client.db.createHyperbeamSession(room.url, {
 			start_url: ctx.options.start_url,
 			region: ctx.options.region,
 		});
 		return ctx.send(
-			`Started a multiplayer browser session at ${process.env.VITE_CLIENT_BASE_URL}/rooms/${room.url}`,
+			`Started a multiplayer browser session at ${process.env.VITE_CLIENT_BASE_URL}/${room.url}`,
 		);
-	}
-
-	hasProtocol(s: string) {
-		try {
-			const url = new URL(s);
-			return url.protocol === "https:" || url.protocol === "http:";
-		} catch (e) {
-			return false;
-		}
 	}
 }

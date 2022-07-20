@@ -12,8 +12,10 @@ export interface UserProps {
 	setUser: (user: UserData) => void;
 }
 
+// okay maybe this wasn't necessary lol
 export const getToken = () => localStorage.getItem("token");
 
+// adds headers and token for convenience
 export async function apiRequest<T>(route: string, method = "GET", body?: any): Promise<T> {
 	const token = getToken();
 	if (!token) throw new Error("No token found");
@@ -35,6 +37,7 @@ export async function verifyUser(): Promise<UserData | null> {
 	return apiRequest<UserData | null>("/login/");
 }
 
+// can't use apiRequest cause token is unknown at this point
 export async function authorizeUser(code): Promise<UserData | null> {
 	const response = await fetch(`${import.meta.env.VITE_API_SERVER_BASE_URL}/authorize/${code}`, {
 		headers: {
@@ -48,6 +51,7 @@ export async function authorizeUser(code): Promise<UserData | null> {
 	return data;
 }
 
+// TODO: call /logout to remove tokens from server
 export function logoutUser() {
 	localStorage.removeItem("token");
 }

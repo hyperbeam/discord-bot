@@ -12,16 +12,16 @@ import RoomList from "./components/RoomList/RoomList";
 import VM from "./components/VM";
 import { UserData } from "./scripts/auth";
 
+// TODO: get sockets working
 function socketHandler() {
-	const socket = io(import.meta.env.VITE_API_SERVER_BASE_URL, {
-
-	});
+	const socket = io(import.meta.env.VITE_API_SERVER_BASE_URL);
 	socket.on("connect", () => {
 		console.log("Connected to server");
 	});
 	return socket;
 }
 
+// global user state
 interface AppState {
 	user?: UserData;
 	socket?: Socket;

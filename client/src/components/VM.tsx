@@ -2,6 +2,7 @@ import Hyperbeam from "@hyperbeam/iframe";
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
+// TODO: consolidate api interactions in one place?
 async function startHyperbeamSession(id: string) {
 	const response = await fetch(`${import.meta.env.VITE_API_SERVER_BASE_URL}/rooms/${id}`);
 	if (response.ok) {
@@ -11,6 +12,7 @@ async function startHyperbeamSession(id: string) {
 	}
 }
 
+// TODO: vm do be tiny tho
 export default function VM() {
 	const { id } = useParams();
 	useEffect(() => {

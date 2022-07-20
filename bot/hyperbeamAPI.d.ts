@@ -1,3 +1,4 @@
+// get rid of these once there's a Hyperbeam REST API wrapper
 export interface VMResponse {
 	session_id: string;
 	embed_url: string;
