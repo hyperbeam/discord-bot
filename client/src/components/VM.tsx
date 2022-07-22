@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 
 // TODO: consolidate api interactions in one place?
 async function startHyperbeamSession(id: string) {
-	const response = await fetch(`${import.meta.env.VITE_API_SERVER_BASE_URL}/rooms/${id}`);
+	const response = await fetch(`${import.meta.env.VITE_API_SERVER_BASE_URL}/${id}`);
 	if (response.ok) {
 		const data = await response.json();
 		const hbiframe = document.getElementById("hyperbeam") as HTMLIFrameElement | null;
