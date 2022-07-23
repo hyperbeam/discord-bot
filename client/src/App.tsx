@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import {
 	BrowserRouter as Router,
 	Route,
-	Routes,
+	Routes
 } from "react-router-dom";
 import { io, Socket } from "socket.io-client";
 
@@ -26,11 +26,11 @@ interface AppState {
 	user?: UserData;
 	socket?: Socket;
 	loaded: boolean;
+	isVmLoaded: boolean;
 }
 
-
 function App() {
-	const [state, setState] = React.useState<AppState>({ loaded: false });
+	const [state, setState] = React.useState<AppState>({ loaded: false, isVmLoaded: false });
 	const setUser = (user?: UserData) => { setState({ ...state, user }); };
 	useEffect(() => {
 		if (!state.loaded) {
@@ -44,11 +44,13 @@ function App() {
 	return (
 		<Router>
 			<div className="App">
-				<Header user={state.user} setUser={setUser} />
+				<Header user={state.user} setUser={setUser} isVmLoaded={state.isVmLoaded} />
 				<Routes>
 					<Route path="/" element={<RoomList />} />
 					<Route path="/authorize" element={<OauthHandler user={state.user} setUser={setUser} />} />
-					<Route path="/rooms/:id" element={<VM />} />
+					<Route path="/:id" element={<VM onLoad={() => {
+						setState({ ...state, isVmLoaded: true });
+					}}/>} />
 				</Routes>
 			</div>
 		</Router>

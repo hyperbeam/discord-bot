@@ -1,3 +1,5 @@
+import "./VM.css";
+
 import Hyperbeam from "@hyperbeam/iframe";
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
@@ -12,15 +14,20 @@ async function startHyperbeamSession(id: string) {
 	}
 }
 
+interface IProps {
+	onLoad: () => void;
+}
+
 // TODO: vm do be tiny tho
-export default function VM() {
+export default function VM({ onLoad }: IProps) {
 	const { id } = useParams();
 	useEffect(() => {
 		if (id)
-			startHyperbeamSession(id);
+			startHyperbeamSession(id).then(() => {
+				onLoad();
+			});
 	}, [id]);
-	return <div>
-		<h2>VM</h2>
+	return <div id="VM">
 		<iframe id="hyperbeam" title="Hyperbeam" />
 	</div>;
 }

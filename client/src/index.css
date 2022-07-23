@@ -174,3 +174,14 @@ button {
   padding: 4px 8px;
   border-radius: 4px;
 }
+
+* {
+  font-family: 'Lato', sans-serif;
+}
+
+button {
+  font-weight: bold;
+  padding: 8px 12px;
+  background-color: blueviolet;
+  color: white;
+}

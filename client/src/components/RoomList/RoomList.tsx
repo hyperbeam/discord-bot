@@ -37,7 +37,7 @@ export default function RoomList() {
 			<h4>Owned rooms</h4>
 			<ul>
 				{rooms.ownedRooms.map(r => <li key={r.url}>
-					<a href={`/rooms/${r.url}`}>{r.name}</a>
+					<a href={`${r.url}`}>{r.name}</a>
 				</li>)}
 			</ul>
 		</div>}
@@ -45,7 +45,7 @@ export default function RoomList() {
 			<h4>Member rooms</h4>
 			<ul>
 				{rooms.memberRooms.map(r => <li key={r.url}>
-					<a href={`/rooms/${r.url}`}>{r.name}</a>
+					<a href={`${r.url}`}>{r.name}</a>
 				</li>)}
 			</ul>
 		</div>}

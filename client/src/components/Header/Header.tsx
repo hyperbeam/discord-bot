@@ -4,14 +4,20 @@ import "./Header.css";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { isLoggedIn, UserProps, verifyUser } from "../../scripts/auth";
-
+import { isLoggedIn, UserData, verifyUser } from "../../scripts/auth";
+import Avatar from "../Avatar/Avatar";
 function logout(callback) {
 	localStorage.removeItem("token");
 	callback(null);
 }
 
-export function Header(props: UserProps) {
+interface IProps {
+	user?: UserData;
+	setUser: (user: UserData) => void;
+	isVmLoaded: boolean;
+}
+
+export function Header(props: IProps) {
 	const navigate = useNavigate();
 	const user = props.user;
 	useEffect(() => {
@@ -24,25 +30,35 @@ export function Header(props: UserProps) {
 	}, [user]);
 	return <div className="header">
 		<div className="header-left">
-			<h2 className="header-logo">
-				Hyperbeam Bot
-			</h2>
+			<h3 className="header-logo">
+				{`${user?.username}'s room`}
+			</h3>
 		</div>
-		{
-			user ? (
-				<div className="header-right">
-					<img className="user-avatar" src={`https://cdn.discordapp.com/avatars/${user.userId}/${user.avatar}`} alt="User Avatar" />
+		<div className="header-right">
+			{
+				//TODO: Replace with share button after implementing modal
+				props.isVmLoaded ? (
+					<button onClick={() => {
+						navigator.clipboard.writeText(window.location.href);
+					}}>Copy invite link</button>
+				) : null
+			}
+			{
+				user ? (
 					<button onClick={() => logout(props.setUser)} className="logout">
 						Logout
 					</button>
-				</div>
-			) : (
-				<div className="header-right">
+				) : (
 					<button onClick={() => navigate("/authorize")} className="login">
 						Login
 					</button>
-				</div>
-			)
-		}
+				)
+			}
+			{
+				user ? (
+					<Avatar img={`https://cdn.discordapp.com/avatars/${user.userId}/${user.avatar}`} alt={user.username} />
+				) : null
+			}
+		</div>
 	</div>;
 }
