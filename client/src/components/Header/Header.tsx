@@ -5,7 +5,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { isLoggedIn, UserData, verifyUser } from "../../scripts/auth";
-
+import Avatar from "../Avatar/Avatar";
 function logout(callback) {
 	localStorage.removeItem("token");
 	callback(null);
@@ -56,7 +56,7 @@ export function Header(props: IProps) {
 			}
 			{
 				user ? (
-					<img className="user-avatar" src={`https://cdn.discordapp.com/avatars/${user.userId}/${user.avatar}`} alt="User Avatar" />
+					<Avatar img={`https://cdn.discordapp.com/avatars/${user.userId}/${user.avatar}`} alt={user.username} />
 				) : null
 			}
 		</div>
