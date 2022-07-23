@@ -5,7 +5,7 @@ import Database from "./db";
 import Discord from "discord-oauth2";
 import { nanoid } from "nanoid";
 import jwt from "jsonwebtoken";
-import { pick } from "../utils/helpers";
+import { pick, publicObject } from "../utils/helpers";
 import session from "express-session";
 import { Request, Response, NextFunction } from "express";
 import morgan from "morgan";
@@ -130,7 +130,10 @@ export default function apiServer(db: Database) {
 		// send back token and user info
 		const token = jwt.sign({ id: dbUser.id }, dbUser.hash!);
 		req.session.authenticated = true;
-		return res.status(200).send(pick({ ...dbUser, token }, "id", "username", "discriminator", "avatar", "email", "token"));
+		return res.status(200).send({
+			...publicObject.user(dbUser),
+			token,
+		});
 	});
 
 	app.get("/login", async (req, res) => {
@@ -143,8 +146,22 @@ export default function apiServer(db: Database) {
 		// decode and verify token against user hash
 		try {
 			const user = await verifyUser(token);
-			req.session.authenticated = true;
-			return res.status(200).send(pick({ ...user, token }, "id", "username", "discriminator", "avatar", "email", "token"));
+			if (user) {
+				req.session.authenticated = true;
+				const rooms = await db.getRooms({
+					ownerId: user.id,
+					OR: {
+						RoomMembers: {
+							some: { userId: user.id }
+						}
+					}
+				}).then(rooms => rooms.map(publicObject.room));
+				return res.status(200).send({
+					...publicObject.user(user),
+					rooms,
+					token,
+				});
+			}
 		}
 		catch (error) {
 			console.error(error);
@@ -175,8 +192,14 @@ export default function apiServer(db: Database) {
 
 		// get all rooms for room list
 		if (!user) return res.status(400).send({ error: "Invalid user" });
-		const roomPick = room => pick(room, "name", "url", "ownerId", "createdAt");
-		const rooms = await db.getRooms({ ownerId: user.id, OR: { RoomMembers: { some: { userId: user.id } } } }).then(rooms => rooms.map(roomPick));
+		const rooms = await db.getRooms({
+			ownerId: user.id,
+			OR: {
+				RoomMembers: {
+					some: { userId: user.id }
+				}
+			}
+		}).then(rooms => rooms.map(publicObject.room));
 		return res.status(200).send({ rooms });
 	});
 
@@ -185,6 +208,17 @@ export default function apiServer(db: Database) {
 		const room = await db.getRoom({ url: req.params.roomurl });
 		if (!room)
 			return res.status(404).send({ error: "Room not found" });
+
+		if (room.requiresAuth) {
+			// verify user first
+			if (!req.headers.authorization)
+				return res.status(401).send({ error: "Not authorized: Room requires authorization." });
+			const token = req.headers.authorization.split(" ")[1];
+			if (!token)
+				return res.status(400).send({ error: "No token provided: Room requires authorization." });
+			try { jwt.decode(token); } catch (e) { return res.status(400).send({ error: "Invalid token" }); }
+			try { await verifyUser(token); } catch (e) { return res.status(400).send({ error: e }); }
+		}
 
 		// TODO: optimize this flow
 		// currently there's like 3 queries per request, all async
@@ -195,7 +229,7 @@ export default function apiServer(db: Database) {
 		if (session) {
 			const sessionResponse = await fetch(session.embedUrl);
 			if (sessionResponse.ok)
-				return res.status(200).json(session);
+				return res.status(200).json({ ...publicObject.room(room), session: publicObject.session(session) });
 			else session = null;
 		}
 		// if the session is expired, make a new session
@@ -203,7 +237,7 @@ export default function apiServer(db: Database) {
 			session = await db.createHyperbeamSession(room.url);
 
 		// TODO: send admin token only to room owner
-		return res.status(200).json(session);
+		return res.status(200).json({ ...publicObject.room(room), session: publicObject.session(session) });
 	});
 
 	io.use((socket, next) => {

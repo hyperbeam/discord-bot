@@ -7,14 +7,13 @@ export interface User {
 }
 
 export interface Room {
-	id: string;
 	name: string;
 	url: string;
-	owner: User;
-	members: User[];
+	ownerId: string;
+	members?: User[];
 }
 
 export interface Session {
-	room: Room;
 	embedUrl: string;
+	createdAt: string;
 }

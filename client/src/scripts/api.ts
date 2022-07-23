@@ -5,13 +5,17 @@ import { currentUser } from "./state";
 // adds headers and token for convenience
 export async function apiRequest<T>(route: string, method = "GET", body?: any): Promise<T> {
 	const token = localStorage.getItem("token");
-	if (!token || token === "undefined") throw new Error("Invalid token.");
+	let shouldSpecifyToken = true;
+	if (!token || token === "undefined") {
+		localStorage.removeItem("token");
+		shouldSpecifyToken = false;
+	}
 	const response = await fetch(`${import.meta.env.VITE_API_SERVER_BASE_URL}${route}`, {
 		method,
 		body: JSON.stringify(body),
 		headers: {
 			"Content-Type": "application/json",
-			"Authorization": `Bearer ${token}`,
+			...(shouldSpecifyToken ? { "Authorization": `Bearer ${token}` } : {}),
 		},
 	});
 	const data = await response.json();

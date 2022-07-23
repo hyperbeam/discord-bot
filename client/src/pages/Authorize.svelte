@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { navigate } from "svelte-navigator";
+  export let navigate;
   import {
     parseDiscordResponse,
     redirectToDiscord,
@@ -9,7 +9,6 @@
   onMount(async () => {
     console.log("Mounted auth component");
     const token = localStorage.getItem("token");
-    console.log({ token });
     if (token && token !== "undefined") {
       // we already have a token, so we can skip the discord flow
       try {

@@ -23,11 +23,11 @@
 </script>
 
 <div>
-  <Router>
+  <Router primary={false}>
     <Header />
     <Route path="/" component={Lander} />
     <Route path="/rooms" component={Roomlist} />
     <Route path="/authorize" component={Authorize} />
-    <Route path="/:id" component={Room} />
+    <Route path="/:roomUrl" component={Room} />
   </Router>
 </div>

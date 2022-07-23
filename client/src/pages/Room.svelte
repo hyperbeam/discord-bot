@@ -9,7 +9,7 @@
     joinedRooms,
     currentUser,
   } from "../scripts/state";
-  import { Room } from "../scripts/types";
+  import { Room, Session } from "../scripts/types";
 
   export let roomUrl: string;
 
@@ -17,20 +17,26 @@
 
   onMount(async () => {
     if (roomUrl) {
-      const room = await apiRequest<Room>(`/room/${roomUrl}`);
-      if (room) $currentRoom = room;
+      const room = await apiRequest<Room & { session: Session }>(
+        `/room/${roomUrl}`
+      );
+      if (room) {
+        $currentRoom = room;
+        console.log({ currentRoom: $currentRoom });
+        embedUrl = room.session.embedUrl;
+      }
     }
     if ($ownedRooms.some((room) => room.url)) {
       $currentRoom = $ownedRooms.find((room) => room.url === roomUrl);
     } else if ($joinedRooms.some((room) => room.url)) {
       $currentRoom = $joinedRooms.find((room) => room.url === roomUrl);
-    } else {
+    } else if (!$currentRoom) {
       const newRoom = await apiRequest<Room>(roomUrl, "GET").catch((err) => {
         console.error(err);
       });
       if (!newRoom) return;
       $currentRoom = newRoom;
-      if ($currentUser && newRoom.owner.id === $currentUser.id) {
+      if ($currentUser && newRoom.ownerId === $currentUser.id) {
         $ownedRooms = [...$ownedRooms, newRoom];
       } else {
         $joinedRooms = [...$joinedRooms, newRoom];

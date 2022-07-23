@@ -2,21 +2,18 @@
   import Hyperbeam from "@hyperbeam/iframe";
   export let embedUrl: string;
 
-  // TODO: consolidate api interactions in one place?
-  async function startHyperbeamSession() {
+  async function startHyperbeamSession(url) {
     const hbiframe = document.getElementById(
       "hyperbeam"
     ) as HTMLIFrameElement | null;
-    if (hbiframe) return Hyperbeam(hbiframe, embedUrl);
+    if (hbiframe) return Hyperbeam(hbiframe, url);
   }
+  // TODO: consolidate api interactions in one place?
+  $: hbSession = startHyperbeamSession(embedUrl);
 </script>
 
 <div id="VM">
-  <iframe
-    id="hyperbeam"
-    title="Hyperbeam"
-    on:load={() => startHyperbeamSession()}
-  />
+  <iframe id="hyperbeam" title="Hyperbeam" />
 </div>
 
 <style>
