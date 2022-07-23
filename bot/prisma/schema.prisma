@@ -8,12 +8,12 @@ datasource db {
 }
 
 model Room {
-  id           Int          @id @default(autoincrement())
+  id           String       @id @default(uuid())
   url          String       @unique // rooms have a unique url
   name         String // name can be anything
   createdAt    DateTime     @default(now())
   accessedAt   DateTime     @default(now())
-  owner        User         @relation(fields: [ownerId], references: [userId])
+  owner        User         @relation(fields: [ownerId], references: [id])
   ownerId      String       @unique // one room per user for now
   requiresAuth Boolean      @default(false) // unused
   memberCount  Int          @default(0)
@@ -22,8 +22,7 @@ model Room {
 }
 
 model User {
-  id            Int          @id @default(autoincrement())
-  userId        String       @unique
+  id            String       @id @unique
   hash          String?      @unique // keep serverside only
   email         String?      @unique
   avatar        String?
@@ -38,7 +37,7 @@ model User {
 model Session {
   id              Int      @id @default(autoincrement())
   room            Room     @relation(fields: [roomId], references: [id])
-  roomId          Int
+  roomId          String
   sessionId       String // hyperbeam session id
   embedUrl        String // iframe embed url
   adminToken      String // admin token for this session
@@ -50,7 +49,7 @@ model Session {
 model RoomMember {
   id     Int    @id @default(autoincrement())
   room   Room   @relation(fields: [roomId], references: [id])
-  user   User   @relation(fields: [userId], references: [userId])
-  roomId Int // use select in query to get the room
+  user   User   @relation(fields: [userId], references: [id])
+  roomId String // use select in query to get the room
   userId String // use select in query to get the member as user
 }

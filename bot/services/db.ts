@@ -1,6 +1,5 @@
-import { VMRequestBody } from "./../hyperbeamAPI.d";
 import { Prisma, PrismaClient, Room, User, Session, RoomMember } from "@prisma/client";
-import HyperbeamAPI from "../utils/hyperbeamAPI";
+import HyperbeamAPI, { VMRequestBody } from "../utils/hyperbeamAPI";
 
 // prisma does most of this really
 // we just have to chain some calls
@@ -20,7 +19,7 @@ export default class Database {
 	}
 
 	async upsertUser(data: Prisma.UserCreateInput): Promise<User> {
-		return this.dbClient.user.upsert({ create: data, update: data, where: { userId: data.userId } });
+		return this.dbClient.user.upsert({ create: data, update: data, where: { id: data.id } });
 	}
 
 	async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<void> {
