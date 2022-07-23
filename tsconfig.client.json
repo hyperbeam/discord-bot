@@ -2,29 +2,23 @@
 	"compilerOptions": {
 		"outDir": "dist/client",
 		"target": "ESNext",
-		"useDefineForClassFields": true,
+		"module": "ESNext",
 		"lib": [
 			"DOM",
 			"DOM.Iterable",
 			"ESNext"
 		],
 		"allowJs": false,
-		"skipLibCheck": true,
-		"esModuleInterop": false,
-		"allowSyntheticDefaultImports": true,
-		"strict": true,
-		"forceConsistentCasingInFileNames": true,
-		"module": "ESNext",
-		"moduleResolution": "Node",
-		"resolveJsonModule": true,
 		"isolatedModules": true,
-		"noEmit": true,
-		"jsx": "react-jsx"
+		"useDefineForClassFields": true,
+		"resolveJsonModule": true,
+		"sourceMap": true,
+		"forceConsistentCasingInFileNames": true,
 	},
 	"include": [
-		"client",
+		"./client",
+		"./client/**/*.ts",
+		"./client/**/*.d.ts",
+		"./client/**/*.svelte",
 	],
-	"exclude": [
-		"node_modules"
-	]
 }

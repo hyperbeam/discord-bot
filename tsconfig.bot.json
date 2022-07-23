@@ -9,14 +9,11 @@
 		"checkJs": false,
 		"allowSyntheticDefaultImports": true,
 		"resolveJsonModule": true,
-		"typeRoots": [
-			"./node_modules/@types",
-			"types"
-		],
 		"moduleResolution": "node"
 	},
 	"include": [
 		"./bot/**/*.ts",
+		"./bot/**/*.d.ts",
 	],
 	"exclude": [
 		"./slash-up.config.js",

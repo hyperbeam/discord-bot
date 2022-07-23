@@ -82,31 +82,45 @@
 		},
 		{
 			"files": [
-				"client/**/*.ts",
-				"client/**/*.tsx"
+				"./client/**/*.ts",
+				"./client/**/*.d.ts"
+			],
+			"parser": "@typescript-eslint/parser",
+			"parserOptions": {
+				"ecmaVersion": 11,
+				"sourceType": "module"
+			},
+			"plugins": [
+				"@typescript-eslint"
 			],
 			"env": {
 				"browser": true
+			}
+		},
+		{
+			"files": [
+				"**/*.svelte"
+			],
+			"processor": "svelte3/svelte3",
+			"env": {
+				"es6": true,
+				"browser": true
 			},
 			"extends": [
-				"eslint:recommended",
-				"plugin:react/recommended",
-				"plugin:jsx-a11y/recommended"
+				"eslint:recommended"
 			],
 			"plugins": [
-				"simple-import-sort"
+				"simple-import-sort",
+				"import",
+				"svelte3"
 			],
+			"settings": {
+				"svelte3/typescript": true
+			},
 			"rules": {
-				"react/react-in-jsx-scope": "off",
 				"jsx-a11y/accessible-emoji": "off",
-				"react/prop-types": "off",
 				"simple-import-sort/imports": "warn",
 				"simple-import-sort/exports": "warn"
-			},
-			"settings": {
-				"react": {
-					"version": "detect"
-				}
 			}
 		}
 	]

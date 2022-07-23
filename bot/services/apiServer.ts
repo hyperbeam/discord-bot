@@ -5,9 +5,12 @@ import Database from "./db";
 import Discord from "discord-oauth2";
 import { nanoid } from "nanoid";
 import jwt from "jsonwebtoken";
-import { pick } from "../utils/helpers";
+import { publicObject } from "../utils/helpers";
 import session from "express-session";
 import { Request, Response, NextFunction } from "express";
+import morgan from "morgan";
+import fetch from "node-fetch";
+
 
 // most of the api stuff is in here
 // TODO: add logging, get sockets working
@@ -56,16 +59,20 @@ export default function apiServer(db: Database) {
 			console.error(e);
 		}
 		if (typeof decoded !== "object") return null;
-		if (!decoded.userId) return null;
-		const user = await db.getUser({ userId: decoded.userId });
+		if (!decoded.id) return null;
+		const user = await db.getUser({ id: decoded.id });
 		if (!user)
-			throw new Error("Invalid token");
+			throw new Error("Invalid token: User not found");
+		if (!user.hash)
+			throw new Error("Invalid token: Not logged in");
 		if (!jwt.verify(token, user.hash!))
-			throw new Error("Invalid token");
+			throw new Error("Invalid token: Verification failed");
 		return user;
 	};
 
 	// Express functions
+
+	app.use(morgan("dev"));
 
 	app.use(function (req, res, next) {
 		// handle CORS
@@ -100,7 +107,7 @@ export default function apiServer(db: Database) {
 				client_id: process.env.DISCORD_CLIENT_ID!,
 				client_secret: process.env.DISCORD_CLIENT_SECRET!,
 			}).toString(),
-		}).then(response => response.json());
+		}).then(response => response.json() as unknown as Discord.TokenRequestResult);
 
 		// we should get back an access and refresh token
 		if (!tokenResponse.access_token || !tokenResponse.refresh_token)
@@ -110,7 +117,7 @@ export default function apiServer(db: Database) {
 		const user = await discord.getUser(tokenResponse.access_token);
 		if (!user) return res.status(400).send({ error: "Invalid user" });
 		const dbUser = await db.upsertUser({
-			userId: user.id,
+			id: user.id,
 			username: user.username,
 			discriminator: user.discriminator,
 			avatar: user.avatar,
@@ -121,9 +128,12 @@ export default function apiServer(db: Database) {
 		});
 
 		// send back token and user info
-		const token = jwt.sign({ userId: dbUser.userId }, dbUser.hash!);
+		const token = jwt.sign({ id: dbUser.id }, dbUser.hash!);
 		req.session.authenticated = true;
-		return res.status(200).send(pick({ ...dbUser, token }, "userId", "username", "discriminator", "avatar", "email", "token"));
+		return res.status(200).send({
+			...publicObject.user(dbUser),
+			token,
+		});
 	});
 
 	app.get("/login", async (req, res) => {
@@ -134,9 +144,29 @@ export default function apiServer(db: Database) {
 		if (!token) return res.status(400).send({ error: "No token provided" });
 
 		// decode and verify token against user hash
-		const user = await verifyUser(token);
-		req.session.authenticated = true;
-		return res.status(200).send(pick({ ...user, token }, "userId", "username", "discriminator", "avatar", "email", "token"));
+		try {
+			const user = await verifyUser(token);
+			if (user) {
+				req.session.authenticated = true;
+				const rooms = await db.getRooms({
+					ownerId: user.id,
+					OR: {
+						RoomMembers: {
+							some: { userId: user.id },
+						},
+					},
+				}).then(rooms => rooms.map(publicObject.room));
+				return res.status(200).send({
+					...publicObject.user(user),
+					rooms,
+					token,
+				});
+			}
+		}
+		catch (error) {
+			console.error(error);
+			res.status(400).send({ error });
+		}
 	});
 
 	// TODO: implement this clientside
@@ -162,17 +192,33 @@ export default function apiServer(db: Database) {
 
 		// get all rooms for room list
 		if (!user) return res.status(400).send({ error: "Invalid user" });
-		const roomPick = room => pick(room, "name", "url", "ownerId", "createdAt");
-		const ownedRooms = await db.getRooms({ ownerId: user.userId }).then(rooms => rooms.map(roomPick));
-		const memberRooms = await db.getRooms({ RoomMembers: { some: { userId: user.userId } } }).then(rooms => rooms.map(roomPick));
-		return res.status(200).send({ ownedRooms, memberRooms });
+		const rooms = await db.getRooms({
+			ownerId: user.id,
+			OR: {
+				RoomMembers: {
+					some: { userId: user.id },
+				},
+			},
+		}).then(rooms => rooms.map(publicObject.room));
+		return res.status(200).send({ rooms });
 	});
 
-	app.get("/:roomurl", async (req, res) => {
+	app.get("/room/:roomurl", async (req, res) => {
 		// TODO: verify only if room requires auth
 		const room = await db.getRoom({ url: req.params.roomurl });
 		if (!room)
 			return res.status(404).send({ error: "Room not found" });
+
+		if (room.requiresAuth) {
+			// verify user first
+			if (!req.headers.authorization)
+				return res.status(401).send({ error: "Not authorized: Room requires authorization." });
+			const token = req.headers.authorization.split(" ")[1];
+			if (!token)
+				return res.status(400).send({ error: "No token provided: Room requires authorization." });
+			try { jwt.decode(token); } catch (e) { return res.status(400).send({ error: "Invalid token" }); }
+			try { await verifyUser(token); } catch (e) { return res.status(400).send({ error: e }); }
+		}
 
 		// TODO: optimize this flow
 		// currently there's like 3 queries per request, all async
@@ -183,7 +229,7 @@ export default function apiServer(db: Database) {
 		if (session) {
 			const sessionResponse = await fetch(session.embedUrl);
 			if (sessionResponse.ok)
-				return res.status(200).json(session);
+				return res.status(200).json({ ...publicObject.room(room), session: publicObject.session(session) });
 			else session = null;
 		}
 		// if the session is expired, make a new session
@@ -191,7 +237,7 @@ export default function apiServer(db: Database) {
 			session = await db.createHyperbeamSession(room.url);
 
 		// TODO: send admin token only to room owner
-		return res.status(200).json(session);
+		return res.status(200).json({ ...publicObject.room(room), session: publicObject.session(session) });
 	});
 
 	io.use((socket, next) => {

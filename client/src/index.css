@@ -17,7 +17,7 @@
   padding: 0;
   /* Calc `em` based line height, bigger line height for smaller font size and smaller line height for bigger font size: https://kittygiraudel.com/2020/05/18/using-calc-to-figure-out-optimal-line-height/ */
   line-height: calc(0.25rem + 1em + 0.25rem);
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Lato, Inter, Avenir, Helvetica, Arial, sans-serif;
 }
 
 /* Use a more-intuitive box-sizing model on everything */
@@ -145,14 +145,14 @@ a:not([class]) {
 /* Animate focus outline */
 @media (prefers-reduced-motion: no-preference) {
   :focus-visible {
-    transition: outline-offset 145ms cubic-bezier(0.25, 0, 0.4, 1);
+    transition: outline-offset 150ms ease-out;
   }
   :where(:not(:active)):focus-visible {
-    transition-duration: 0.25s;
+    transition-duration: 150ms;
   }
 }
 :where(:not(:active)):focus-visible {
-  outline-offset: 5px;
+  outline-offset: 1px;
 }
 
 /* Make sure users can't select button text */
@@ -171,17 +171,13 @@ a:not([class]) {
 }
 
 button {
-  padding: 4px 8px;
-  border-radius: 4px;
-}
-
-* {
-  font-family: 'Lato', sans-serif;
-}
-
-button {
   font-weight: bold;
   padding: 8px 12px;
+  border-radius: 4px;
   background-color: blueviolet;
   color: white;
+}
+
+:where(h1, h2, h3, h4, h5, h6):focus {
+  outline: none;
 }

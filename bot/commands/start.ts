@@ -40,7 +40,7 @@ export default class Start extends SlashCommand<BotClient> {
 	async run(ctx: CommandContext) {
 		// Update user details in the db to recent data
 		await this.client.db.upsertUser({
-			userId: ctx.user.id,
+			id: ctx.user.id,
 			username: ctx.user.username,
 			discriminator: ctx.user.discriminator,
 			avatar: ctx.user.avatar,
@@ -49,7 +49,7 @@ export default class Start extends SlashCommand<BotClient> {
 		let room = await this.client.db.getRoom({ ownerId: ctx.user.id });
 		if (!room)
 			room = await this.client.db.createRoom({
-				owner: { connect: { userId: ctx.user.id } },
+				owner: { connect: { id: ctx.user.id } },
 				url: nanoid(7),
 				name: `${ctx.user.username}'s room`,
 			});
