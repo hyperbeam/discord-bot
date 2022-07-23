@@ -174,3 +174,7 @@ button {
   padding: 4px 8px;
   border-radius: 4px;
 }
+
+* {
+  font-family: 'Lato', sans-serif;
+}
