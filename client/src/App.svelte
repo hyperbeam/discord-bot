@@ -1,24 +1,24 @@
 <script lang="ts">
-  import { Router, Route } from "svelte-navigator";
-
-  import Header from "./components/Header.svelte";
-  import Roomlist from "./pages/Roomlist.svelte";
-  import Authorize from "./pages/Authorize.svelte";
-  import Room from "./pages/Room.svelte";
-  import Lander from "./pages/Lander.svelte";
-  import { login } from "./scripts/api";
   import { onMount } from "svelte";
+  import { Route,Router } from "svelte-navigator";
+  
+  import Header from "./components/Header.svelte";
+  import Authorize from "./pages/Authorize.svelte";
+  import Lander from "./pages/Lander.svelte";
+  import Room from "./pages/Room.svelte";
+  import Roomlist from "./pages/Roomlist.svelte";
+  import { login } from "./scripts/api";
 
   onMount(() => {
-    console.log("Mounted app component");
-    if (localStorage.getItem("token")) {
-      try {
-        login();
-      } catch (e) {
-        console.error(e);
-        localStorage.removeItem("token");
-      }
-    }
+  	console.log("Mounted app component");
+  	if (localStorage.getItem("token")) {
+  		try {
+  			login();
+  		} catch (e) {
+  			console.error(e);
+  			localStorage.removeItem("token");
+  		}
+  	}
   });
 </script>
 

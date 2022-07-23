@@ -152,9 +152,9 @@ export default function apiServer(db: Database) {
 					ownerId: user.id,
 					OR: {
 						RoomMembers: {
-							some: { userId: user.id }
-						}
-					}
+							some: { userId: user.id },
+						},
+					},
 				}).then(rooms => rooms.map(publicObject.room));
 				return res.status(200).send({
 					...publicObject.user(user),
@@ -196,9 +196,9 @@ export default function apiServer(db: Database) {
 			ownerId: user.id,
 			OR: {
 				RoomMembers: {
-					some: { userId: user.id }
-				}
-			}
+					some: { userId: user.id },
+				},
+			},
 		}).then(rooms => rooms.map(publicObject.room));
 		return res.status(200).send({ rooms });
 	});

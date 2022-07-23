@@ -48,6 +48,15 @@ A bot to integrate the Hyperbeam API with Discord.
 - `pnpm run envtypes`
   Generates typings from the `.env` file for typedefs in code
 
+## Managing the database
+
+- `prisma db push`
+  Push current schema onto the database and generate a new client
+- `prisma generate`
+  Generate a new database client
+- `prisma studio`
+  Browse through database contents in your browser
+
 ## Recommended VSCode plugins
 
 - [DotENV](https://marketplace.visualstudio.com/items?itemName=mikestead.dotenv)

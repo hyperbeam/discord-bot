@@ -82,10 +82,28 @@
 		},
 		{
 			"files": [
+				"./client/**/*.ts",
+				"./client/**/*.d.ts"
+			],
+			"parser": "@typescript-eslint/parser",
+			"parserOptions": {
+				"ecmaVersion": 11,
+				"sourceType": "module"
+			},
+			"plugins": [
+				"@typescript-eslint"
+			],
+			"env": {
+				"browser": true
+			}
+		},
+		{
+			"files": [
 				"**/*.svelte"
 			],
 			"processor": "svelte3/svelte3",
 			"env": {
+				"es6": true,
 				"browser": true
 			},
 			"extends": [
@@ -96,6 +114,9 @@
 				"import",
 				"svelte3"
 			],
+			"settings": {
+				"svelte3/typescript": true
+			},
 			"rules": {
 				"jsx-a11y/accessible-emoji": "off",
 				"simple-import-sort/imports": "warn",

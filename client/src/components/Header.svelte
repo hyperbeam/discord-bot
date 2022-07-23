@@ -1,8 +1,9 @@
 <script lang="ts">
-  import Avatar from "./Avatar.svelte";
+  import { useNavigate } from "svelte-navigator";
+  
   import { logoutUser } from "../scripts/api";
   import { currentRoom, currentUser } from "../scripts/state";
-  import { useNavigate } from "svelte-navigator";
+  import Avatar from "./Avatar.svelte";
   export let title: string = "Hyperbeam bot";
 
   const navigate = useNavigate();

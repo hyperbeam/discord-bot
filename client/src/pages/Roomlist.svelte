@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { useNavigate } from "svelte-navigator";
-  import { currentUser, ownedRooms, joinedRooms } from "../scripts/state";
+  import { currentUser, joinedRooms, ownedRooms } from "../scripts/state";
 </script>
 
 <div class="room-list">
