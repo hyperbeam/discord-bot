@@ -1,0 +1,10 @@
+#VM {
+    height: calc(100vh - 64px);
+    width: 100vw;
+}
+
+#hyperbeam {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 16 / 9; /* TODO: check support */
+}

@@ -1,3 +1,5 @@
+import "./VM.css";
+
 import Hyperbeam from "@hyperbeam/iframe";
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
@@ -19,8 +21,7 @@ export default function VM() {
 		if (id)
 			startHyperbeamSession(id);
 	}, [id]);
-	return <div>
-		<h2>VM</h2>
+	return <div id="VM">
 		<iframe id="hyperbeam" title="Hyperbeam" />
 	</div>;
 }
