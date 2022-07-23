@@ -50,7 +50,7 @@ export default class Start extends SlashCommand<BotClient> {
 		if (!room)
 			room = await this.client.db.createRoom({
 				owner: { connect: { userId: ctx.user.id } },
-				url: nanoid(),
+				url: nanoid(10),
 				name: `${ctx.user.username}'s room`,
 			});
 		// Create a new session and set it as latest, overriding current sessions

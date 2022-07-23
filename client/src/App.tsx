@@ -48,7 +48,7 @@ function App() {
 				<Routes>
 					<Route path="/" element={<RoomList />} />
 					<Route path="/authorize" element={<OauthHandler user={state.user} setUser={setUser} />} />
-					<Route path="/rooms/:id" element={<VM onLoad={() => {
+					<Route path="/:id" element={<VM onLoad={() => {
 						setState({ ...state, isVmLoaded: true });
 					}}/>} />
 				</Routes>
