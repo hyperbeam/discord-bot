@@ -30,9 +30,9 @@ export function Header(props: IProps) {
 	}, [user]);
 	return <div className="header">
 		<div className="header-left">
-			<h2 className="header-logo">
-				Hyperbeam Bot 
-			</h2>
+			<h3 className="header-logo">
+				{`${user?.username}'s room`}
+			</h3>
 		</div>
 		<div className="header-right">
 			{
