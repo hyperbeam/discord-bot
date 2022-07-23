@@ -5,7 +5,7 @@ import Database from "./db";
 import Discord from "discord-oauth2";
 import { nanoid } from "nanoid";
 import jwt from "jsonwebtoken";
-import { pick, publicObject } from "../utils/helpers";
+import { publicObject } from "../utils/helpers";
 import session from "express-session";
 import { Request, Response, NextFunction } from "express";
 import morgan from "morgan";
