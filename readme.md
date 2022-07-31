@@ -19,6 +19,13 @@ A bot to integrate the Hyperbeam API with Discord.
 - Add the `VITE_CLIENT_URL` to the OAuth2 redirect URI list in your Discord application settings.
 - Set the `DATABASE_URL` to the relative path to the SQLite db (relative to the prisma schema file)
 
+## Development notes
+
+- Update typings with `pnpm envtypes` after modifying the `.env` file structure
+- Generate migration files with `pnpm db:migrate` and commit them after changing the database schema
+- Lint and fix issues before committing with `pnpm lint:fix`
+- Use `pnpm dlx` (or `pnpm exec` if its already installed) instead of `npx` everywhere
+
 ## Scripts
 
 ### Deploying
@@ -62,9 +69,3 @@ A bot to integrate the Hyperbeam API with Discord.
 - [DotENV](https://marketplace.visualstudio.com/items?itemName=mikestead.dotenv)
 - [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
 - [Prisma](https://marketplace.visualstudio.com/items?itemName=Prisma.prisma)
-
-## Contribution Notes
-
-- Use `pnpm dlx` (or `pnpm exec` if its already installed) instead of `npx` everywhere
-- Update typings with `pnpm run envtypes` after modifying the `.env` file structure
-- Lint before committing
