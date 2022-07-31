@@ -1,21 +1,26 @@
 import express from "express";
-import { Server } from "socket.io";
-import { createServer } from "http";
+import { Server as SocketServer } from "socket.io";
+import { createServer, Server as HttpServer } from "http";
 import Database from "./db";
 import Discord from "discord-oauth2";
 import { nanoid } from "nanoid";
 import jwt from "jsonwebtoken";
 import { publicObject } from "../utils/helpers";
 import session from "express-session";
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, Application } from "express";
 import morgan from "morgan";
 import fetch from "node-fetch";
 
+interface APIServer {
+	io: SocketServer;
+	app: Application;
+	httpServer: HttpServer;
+}
 
 // most of the api stuff is in here
 // TODO: add logging, get sockets working
 
-export default function apiServer(db: Database) {
+export default function apiServer(db: Database): APIServer {
 	const app = express();
 	const httpServer = createServer(app);
 
@@ -28,7 +33,7 @@ export default function apiServer(db: Database) {
 	app.use(sessionMiddleware);
 
 	// OPTIONS preflight req type is needed to check if cors is viable
-	const io = new Server(httpServer, {
+	const io = new SocketServer(httpServer, {
 		cors: {
 			origin: process.env.VITE_CLIENT_BASE_URL,
 			methods: ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
@@ -93,7 +98,7 @@ export default function apiServer(db: Database) {
 
 	app.get("/authorize/:code", async (req, res) => {
 		if (!req.params.code)
-			return res.status(400).send({ error: "No code provided" });
+			return res.status(400).send({ error: "No code provided" }).end();
 		// the package's request function is a bit weird, so we need to use the raw request
 		const tokenResponse: Discord.TokenRequestResult = await fetch("https://discordapp.com/api/oauth2/token", {
 			method: "POST",
@@ -111,11 +116,11 @@ export default function apiServer(db: Database) {
 
 		// we should get back an access and refresh token
 		if (!tokenResponse.access_token || !tokenResponse.refresh_token)
-			return res.status(400).send({ error: "Invalid token response" });
+			return res.status(400).send({ error: "Invalid token response" }).end();
 
 		// get the user info from the discord api
 		const user = await discord.getUser(tokenResponse.access_token);
-		if (!user) return res.status(400).send({ error: "Invalid user" });
+		if (!user) return res.status(400).send({ error: "Invalid user" }).end();
 		const dbUser = await db.upsertUser({
 			id: user.id,
 			username: user.username,
@@ -133,21 +138,23 @@ export default function apiServer(db: Database) {
 		return res.status(200).send({
 			...publicObject.user(dbUser),
 			token,
-		});
+		}).end();
 	});
 
 	app.get("/login", async (req, res) => {
 		// token is sent in the header
 		const authHeader = req.headers.authorization;
-		if (!authHeader) return res.status(400).send({ error: "No authorization header" });
+		if (!authHeader) return res.status(400).send({ error: "No authorization header" }).end();
 		const token = authHeader.split(" ")[1];
-		if (!token) return res.status(400).send({ error: "No token provided" });
+		if (!token) return res.status(400).send({ error: "No token provided" }).end();
 
 		// decode and verify token against user hash
 		try {
 			const user = await verifyUser(token);
 			if (user) {
 				req.session.authenticated = true;
+				console.log(`Session: ${JSON.stringify(req.session)}`);
+				console.log(`Session ID: ${req.session.id}`);
 				const rooms = await db.getRooms({
 					ownerId: user.id,
 					OR: {
@@ -156,16 +163,18 @@ export default function apiServer(db: Database) {
 						},
 					},
 				}).then(rooms => rooms.map(publicObject.room));
-				return res.status(200).send({
+				res.status(200).send({
 					...publicObject.user(user),
 					rooms,
 					token,
 				});
+				res.end();
 			}
 		}
 		catch (error) {
 			console.error(error);
 			res.status(400).send({ error });
+			res.end();
 		}
 	});
 
@@ -200,24 +209,24 @@ export default function apiServer(db: Database) {
 				},
 			},
 		}).then(rooms => rooms.map(publicObject.room));
-		return res.status(200).send({ rooms });
+		return res.status(200).send({ rooms }).end();
 	});
 
 	app.get("/room/:roomurl", async (req, res) => {
 		// TODO: verify only if room requires auth
 		const room = await db.getRoom({ url: req.params.roomurl });
 		if (!room)
-			return res.status(404).send({ error: "Room not found" });
+			return res.status(404).send({ error: "Room not found" }).end();
 
 		if (room.requiresAuth) {
 			// verify user first
 			if (!req.headers.authorization)
-				return res.status(401).send({ error: "Not authorized: Room requires authorization." });
+				return res.status(401).send({ error: "Not authorized: Room requires authorization." }).end();
 			const token = req.headers.authorization.split(" ")[1];
 			if (!token)
-				return res.status(400).send({ error: "No token provided: Room requires authorization." });
-			try { jwt.decode(token); } catch (e) { return res.status(400).send({ error: "Invalid token" }); }
-			try { await verifyUser(token); } catch (e) { return res.status(400).send({ error: e }); }
+				return res.status(400).send({ error: "No token provided: Room requires authorization." }).end();
+			try { jwt.decode(token); } catch (e) { return res.status(400).send({ error: "Invalid token" }).end(); }
+			try { await verifyUser(token); } catch (e) { return res.status(400).send({ error: e }).end(); }
 		}
 
 		// TODO: optimize this flow
@@ -229,7 +238,7 @@ export default function apiServer(db: Database) {
 		if (session) {
 			const sessionResponse = await fetch(session.embedUrl);
 			if (sessionResponse.ok)
-				return res.status(200).json({ ...publicObject.room(room), session: publicObject.session(session) });
+				return res.status(200).json({ ...publicObject.room(room), session: publicObject.session(session) }).end();
 			else session = null;
 		}
 		// if the session is expired, make a new session
@@ -237,21 +246,29 @@ export default function apiServer(db: Database) {
 			session = await db.createHyperbeamSession(room.url);
 
 		// TODO: send admin token only to room owner
-		return res.status(200).json({ ...publicObject.room(room), session: publicObject.session(session) });
+		return res.status(200).json({ ...publicObject.room(room), session: publicObject.session(session) }).end();
 	});
 
 	io.use((socket, next) => {
 		// socket auth check
 		const session = socket.request.session;
-		if (session && session.authenticated) {
-			next();
-		} else {
-			next(new Error("unauthorized"));
-		}
+		console.log(`Websocket Session: ${JSON.stringify(session)}`);
+		console.log(`Websocket Session ID: ${session.id}`);
+		next();
+		// if (session && session.authenticated) {
+		// 	next();
+		// } else {
+		// 	next(new Error("unauthorized"));
+		// }
 	});
 
 	// TODO: implement this clientside
-	io.on("connection", socket => console.log(socket.request.session));
+	io.on("connection", socket => {
+		console.log(`Websocket connection: ${socket.id}`);
+		socket.on("disconnect", () => {
+			console.log(`Websocket disconnection: ${socket.id}`);
+		});
+	});
 
 	return { app, httpServer, io };
 }

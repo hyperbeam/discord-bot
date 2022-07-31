@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"composite": true,
+		"rootDir": "./",
+		"outDir": "./dist",
+	},
+	"files": [],
+	"references": [
+		{
+			"path": "./bot/"
+		},
+		{
+			"path": "./client/"
+		}
+	]
+}

@@ -1,7 +1,8 @@
 <script lang="ts">
+  import { io } from "socket.io-client";
   import { onMount } from "svelte";
-  import { Route,Router } from "svelte-navigator";
-  
+  import { Route, Router } from "svelte-navigator";
+
   import Header from "./components/Header.svelte";
   import Authorize from "./pages/Authorize.svelte";
   import Lander from "./pages/Lander.svelte";
@@ -9,11 +10,26 @@
   import Roomlist from "./pages/Roomlist.svelte";
   import { login } from "./scripts/api";
 
-  onMount(() => {
+  const socket = io(import.meta.env.VITE_API_SERVER_BASE_URL, {
+  	autoConnect: false,
+  });
+
+  socket.on("connect", () => {
+  	console.log("Connected");
+  });
+
+  socket.on("connect_error", (error) => {
+  	console.error(error);
+  });
+
+  onMount(async () => {
   	console.log("Mounted app component");
   	if (localStorage.getItem("token")) {
   		try {
-  			login();
+  			await login().then(() => {
+  				console.log("Logged in");
+  				socket.connect();
+  			});
   		} catch (e) {
   			console.error(e);
   			localStorage.removeItem("token");

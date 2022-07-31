@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { SlashCreator, GatewayServer } from "slash-create";
-import { Client, Intents } from "discord.js";
+import { Client, GatewayDispatchEvents, GatewayIntentBits } from "discord.js";
 import path from "path";
 import { PrismaClient } from "@prisma/client";
 import apiServer from "./services/apiServer";
@@ -14,7 +14,7 @@ const port = parseInt(process.env.VITE_API_SERVER_PORT || "3000", 10);
 const { httpServer } = apiServer(db);
 httpServer.listen(port, () => console.log(`API server listening on port ${port}`));
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] }) as BotClient;
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] }) as BotClient;
 client.db = db;
 
 client.once("ready", () => {
@@ -36,7 +36,7 @@ creator.on("commandRun", (command, _, ctx) =>
 creator.on("commandRegister", (command) => console.info(`Registered command ${command.commandName}`));
 creator.on("commandError", (command, error) => console.error(`Command ${command.commandName}:`, error));
 
-creator.withServer(new GatewayServer((handler) => client.ws.on("INTERACTION_CREATE", handler)))
+creator.withServer(new GatewayServer((handler) => client.ws.on(GatewayDispatchEvents.InteractionCreate, handler)))
 	.registerCommandsIn(path.join(__dirname, "commands"))
 	.syncCommands();
 
