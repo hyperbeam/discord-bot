@@ -135,4 +135,7 @@ config.json
 .vscode/
 .env
 dist/
+
+# Database
 database.db
+database.db-journal
