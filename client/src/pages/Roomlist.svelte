@@ -5,9 +5,9 @@
   import { currentUser, joinedRooms, ownedRooms } from "../scripts/state";
 
   onMount(() => {
-    apiRequest("/rooms").then((data) => {
-      console.log(data);
-    });
+  	apiRequest("/rooms").then((data) => {
+  		console.log(data);
+  	});
   });
 </script>
 

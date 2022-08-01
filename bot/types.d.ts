@@ -1,6 +1,6 @@
 import { Client } from "discord.js";
 import Database from "./services/db";
-import { Session } from "express-session";
+import { Session, SessionData } from "express-session";
 
 // slash-create
 export interface BotClient extends Client {
@@ -10,8 +10,12 @@ export interface BotClient extends Client {
 // express-session
 declare module "http" {
 	interface IncomingMessage {
-		session: Session & {
-			authenticated: boolean;
-		};
+		session: Session & Partial<SessionData>;
+	}
+}
+
+declare module "express-session" {
+	export interface SessionData {
+		authenticated?: boolean;
 	}
 }

@@ -12,6 +12,7 @@
 
   const socket = io(import.meta.env.VITE_API_SERVER_BASE_URL, {
   	autoConnect: false,
+  	withCredentials: true,
   });
 
   socket.on("connect", () => {

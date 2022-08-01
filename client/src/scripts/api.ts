@@ -12,6 +12,7 @@ export async function apiRequest<T>(route: string, method = "GET", body?: any): 
 	}
 	const response = await fetch(`${import.meta.env.VITE_API_SERVER_BASE_URL}${route}`, {
 		method,
+		credentials: "include",
 		body: JSON.stringify(body),
 		headers: {
 			"Content-Type": "application/json",
