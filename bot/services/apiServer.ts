@@ -1,3 +1,4 @@
+import { cors } from "cors";
 import express from "express";
 import { Server as SocketServer } from "socket.io";
 import { createServer, Server as HttpServer } from "http";
@@ -84,22 +85,12 @@ export default function apiServer(db: Database): APIServer {
 
 	app.use(morgan("dev"));
 
-	app.use(function (req, res, next) {
-		// handle CORS
-		const headers = {
-			"Access-Control-Allow-Origin": process.env.VITE_CLIENT_BASE_URL,
-			"Access-Control-Allow-Headers": "Content-Type, Origin, Authorization, Accept, X-Requested-With",
-			"Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-			"Access-Control-Allow-Credentials": "true",
-		};
-		if (req.method === "OPTIONS") {
-			res.writeHead(204, headers);
-			res.end();
-			return;
-		}
-		Object.entries(headers).forEach(([key, value]) => res.header(key, value));
-		next();
-	});
+	app.use(cors({
+		origin: process.env.VITE_CLIENT_BASE_URL,
+		methods: ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
+		allowedHeaders: ["Content-Type", "Authorization", "Origin"],
+		credentials: true,
+	}));
 
 	app.get("/authorize/:code", async (req, res) => {
 		if (!req.params.code)
@@ -184,7 +175,7 @@ export default function apiServer(db: Database): APIServer {
 		const sessionId = req.session.id;
 		req.session.destroy(() => {
 			io.to(sessionId).disconnectSockets();
-			res.status(204);
+			res.status(204).end();
 		});
 	});
 
