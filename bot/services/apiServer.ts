@@ -156,7 +156,7 @@ export default function apiServer(db: Database): APIServer {
 						},
 					},
 				}).then(rooms => rooms.map(publicObject.room));
-				res.status(200).send({
+				return res.status(200).send({
 					...publicObject.user(user),
 					rooms,
 					token,
