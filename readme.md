@@ -39,14 +39,14 @@ A bot to integrate the Hyperbeam API with Discord.
 
 ### Building/Compiling
 
-- `pnpm run build:bot`
+- `pnpm run bot:build`
   Builds the bot to the `dist/bot` folder
-- `pnpm run build:client`
+- `pnpm run client:build`
   Builds the frontend client to the `dist/client` folder
 
 ### Development
 
-- `pnpm run launch:client`
+- `pnpm run client:dev`
   Launches the frontend client server without typechecking
 - `pnpm run listcommands`
   Lists all local commands
