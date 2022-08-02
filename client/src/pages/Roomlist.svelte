@@ -1,5 +1,14 @@
 <script lang="ts">
+  import { onMount } from "svelte";
+
+  import { apiRequest } from "../scripts/api";
   import { currentUser, joinedRooms, ownedRooms } from "../scripts/state";
+
+  onMount(() => {
+  	apiRequest("/rooms").then((data) => {
+  		console.log(data);
+  	});
+  });
 </script>
 
 <div class="room-list">

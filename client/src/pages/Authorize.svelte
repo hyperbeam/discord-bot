@@ -27,7 +27,10 @@
   		if (urlParams.has("code") && urlParams.has("state")) {
   			// discord redirected back to this page with a code and state
   			try {
-  				parseDiscordResponse(urlParams.get("code"), urlParams.get("state"));
+  				await parseDiscordResponse(
+  					urlParams.get("code"),
+  					urlParams.get("state"),
+  				);
   				navigate("/");
   			} catch (e) {
   				console.error(e);

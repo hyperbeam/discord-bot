@@ -1,8 +1,10 @@
 {
 	"compilerOptions": {
+		"rootDir": "./",
+		"composite": true,
 		"target": "es2020",
 		"module": "commonjs",
-		"outDir": "dist/bot",
+		"outDir": "../dist/bot",
 		"strict": false,
 		"strictNullChecks": true,
 		"esModuleInterop": true,
@@ -12,10 +14,8 @@
 		"moduleResolution": "node"
 	},
 	"include": [
-		"./bot/**/*.ts",
-		"./bot/**/*.d.ts",
+		"./**/*.ts",
+		"./**/*.d.ts",
+		"../env.d.ts",
 	],
-	"exclude": [
-		"./slash-up.config.js",
-	]
 }

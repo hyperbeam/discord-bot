@@ -1,25 +1,35 @@
-import express from "express";
-import { Server } from "socket.io";
-import { createServer } from "http";
-import Database from "./db";
+import cors from "cors";
 import Discord from "discord-oauth2";
-import { nanoid } from "nanoid";
-import jwt from "jsonwebtoken";
-import { publicObject } from "../utils/helpers";
+import express, { Application, NextFunction, Request, Response } from "express";
 import session from "express-session";
-import { Request, Response, NextFunction } from "express";
+import { createServer, Server as HttpServer } from "http";
+import jwt from "jsonwebtoken";
+import createMemoryStore from "memorystore";
 import morgan from "morgan";
+import { nanoid } from "nanoid";
 import fetch from "node-fetch";
+import { Server as SocketServer } from "socket.io";
+import { publicObject } from "../utils/helpers";
+import Database from "./db";
 
+interface APIServer {
+	io: SocketServer;
+	app: Application;
+	httpServer: HttpServer;
+}
 
 // most of the api stuff is in here
 // TODO: add logging, get sockets working
 
-export default function apiServer(db: Database) {
+export default function apiServer(db: Database): APIServer {
 	const app = express();
 	const httpServer = createServer(app);
+	const sessionStore = createMemoryStore(session);
 
 	const sessionMiddleware = session({
+		store: new sessionStore({
+			checkPeriod: 86400000, // prune expired entries every 24h
+		}) as session.MemoryStore,
 		secret: process.env.DISCORD_CLIENT_SECRET,
 		resave: false,
 		saveUninitialized: false,
@@ -28,7 +38,7 @@ export default function apiServer(db: Database) {
 	app.use(sessionMiddleware);
 
 	// OPTIONS preflight req type is needed to check if cors is viable
-	const io = new Server(httpServer, {
+	const io = new SocketServer(httpServer, {
 		cors: {
 			origin: process.env.VITE_CLIENT_BASE_URL,
 			methods: ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
@@ -74,22 +84,12 @@ export default function apiServer(db: Database) {
 
 	app.use(morgan("dev"));
 
-	app.use(function (req, res, next) {
-		// handle CORS
-		const headers = {
-			"Access-Control-Allow-Origin": process.env.VITE_CLIENT_BASE_URL,
-			"Access-Control-Allow-Headers": "Content-Type, Origin, Authorization, Accept, X-Requested-With",
-			"Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-			"Access-Control-Allow-Credentials": "true",
-		};
-		if (req.method === "OPTIONS") {
-			res.writeHead(204, headers);
-			res.end();
-			return;
-		}
-		Object.entries(headers).forEach(([key, value]) => res.header(key, value));
-		next();
-	});
+	app.use(cors({
+		origin: process.env.VITE_CLIENT_BASE_URL,
+		methods: ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
+		allowedHeaders: ["Content-Type", "Authorization", "Origin"],
+		credentials: true,
+	}));
 
 	app.get("/authorize/:code", async (req, res) => {
 		if (!req.params.code)
@@ -142,7 +142,6 @@ export default function apiServer(db: Database) {
 		if (!authHeader) return res.status(400).send({ error: "No authorization header" });
 		const token = authHeader.split(" ")[1];
 		if (!token) return res.status(400).send({ error: "No token provided" });
-
 		// decode and verify token against user hash
 		try {
 			const user = await verifyUser(token);
@@ -172,10 +171,9 @@ export default function apiServer(db: Database) {
 	// TODO: implement this clientside
 	app.get("/logout", async (req, res) => {
 		req.session.authenticated = false;
-		// TODO: handle sessionIds with sockets
-		// const sessionId = req.session.id;
+		const sessionId = req.session.id;
 		req.session.destroy(() => {
-			// io.to(sessionId).disconnectSockets();
+			io.to(sessionId).disconnectSockets();
 			res.status(204).end();
 		});
 	});
@@ -189,9 +187,9 @@ export default function apiServer(db: Database) {
 			return res.status(400).send({ error: "No token provided" });
 		try { jwt.decode(token); } catch (e) { return res.status(400).send({ error: "Invalid token" }); }
 		const user = await verifyUser(token);
-
-		// get all rooms for room list
 		if (!user) return res.status(400).send({ error: "Invalid user" });
+		req.session.authenticated = true;
+		// get all rooms for room list
 		const rooms = await db.getRooms({
 			ownerId: user.id,
 			OR: {
@@ -208,7 +206,6 @@ export default function apiServer(db: Database) {
 		const room = await db.getRoom({ url: req.params.roomurl });
 		if (!room)
 			return res.status(404).send({ error: "Room not found" });
-
 		if (room.requiresAuth) {
 			// verify user first
 			if (!req.headers.authorization)
@@ -251,7 +248,12 @@ export default function apiServer(db: Database) {
 	});
 
 	// TODO: implement this clientside
-	io.on("connection", socket => console.log(socket.request.session));
+	io.on("connection", socket => {
+		console.log(`Websocket connection: ${socket.id}`);
+		socket.on("disconnect", () => {
+			console.log(`Websocket disconnection: ${socket.id}`);
+		});
+	});
 
 	return { app, httpServer, io };
 }

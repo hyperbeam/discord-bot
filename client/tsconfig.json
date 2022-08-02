@@ -1,0 +1,21 @@
+{
+	"compilerOptions": {
+		"moduleResolution": "node",
+		"target": "ESNext",
+		"module": "ESNext",
+		"isolatedModules": true,
+		"sourceMap": true,
+		"strict": false,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"composite": true,
+		"outDir": "../dist/client",
+		"rootDir": "./",
+	},
+	"include": [
+		"./**/*.ts",
+		"./**/*.d.ts",
+		"./**/*.svelte",
+	]
+}

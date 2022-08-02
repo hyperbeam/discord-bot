@@ -3,10 +3,10 @@
   export let embedUrl: string;
 
   async function startHyperbeamSession(url) {
-    const hbiframe = document.getElementById(
-      "hyperbeam"
-    ) as HTMLIFrameElement | null;
-    if (hbiframe) return Hyperbeam(hbiframe, url);
+  	const hbiframe = document.getElementById(
+  		"hyperbeam",
+  	) as HTMLIFrameElement | null;
+  	if (hbiframe) return Hyperbeam(hbiframe, url);
   }
   // TODO: consolidate api interactions in one place?
   $: hbSession = startHyperbeamSession(embedUrl);
