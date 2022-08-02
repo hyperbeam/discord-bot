@@ -1,17 +1,16 @@
-import { cors } from "cors";
-import express from "express";
-import { Server as SocketServer } from "socket.io";
-import { createServer, Server as HttpServer } from "http";
-import Database from "./db";
+import cors from "cors";
 import Discord from "discord-oauth2";
-import { nanoid } from "nanoid";
-import jwt from "jsonwebtoken";
-import { publicObject } from "../utils/helpers";
+import express, { Application, NextFunction, Request, Response } from "express";
 import session from "express-session";
-import { Request, Response, NextFunction, Application } from "express";
-import morgan from "morgan";
-import fetch from "node-fetch";
+import { createServer, Server as HttpServer } from "http";
+import jwt from "jsonwebtoken";
 import createMemoryStore from "memorystore";
+import morgan from "morgan";
+import { nanoid } from "nanoid";
+import fetch from "node-fetch";
+import { Server as SocketServer } from "socket.io";
+import { publicObject } from "../utils/helpers";
+import Database from "./db";
 
 interface APIServer {
 	io: SocketServer;

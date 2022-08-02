@@ -27,6 +27,7 @@
 		"@prisma/client": "^4.1.1",
 		"@sveltejs/vite-plugin-svelte": "^1.0.1",
 		"@tsconfig/svelte": "^3.0.0",
+		"@types/cors": "^2.8.12",
 		"better-sqlite3": "^7.6.2",
 		"cors": "^2.8.5",
 		"discord-oauth2": "^2.10.0",
