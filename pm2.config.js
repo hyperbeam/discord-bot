@@ -2,14 +2,13 @@ module.exports = {
 	apps: [
 		{
 			name: "hyperbeam-bot",
-			script: "node",
-			args: "dist/bot/index.js",
+			script: "pnpm run bot",
 			max_restarts: 10,
 		},
 		{
 			name: "hyperbeam-client",
-			script: "pnpm",
-			args: "run launch:client",
+			script: "pnpm run client",
+			max_restarts: 10,
 		},
 	],
 };
