@@ -13,6 +13,7 @@
   const socket = io(import.meta.env.VITE_API_SERVER_BASE_URL, {
   	autoConnect: false,
   	withCredentials: true,
+  	path: import.meta.env.VITE_CLIENT_SOCKET_URL,
   });
 
   socket.on("connect", () => {

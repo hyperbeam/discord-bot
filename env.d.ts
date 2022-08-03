@@ -10,6 +10,7 @@ declare global {
       VITE_CLIENT_ID: string;
       VITE_CLIENT_PORT: string;
       VITE_CLIENT_BASE_URL: string;
+      VITE_CLIENT_SOCKET_URL: string;
       VITE_API_SERVER_PORT: string;
       VITE_API_SERVER_BASE_URL: string;
       DATABASE_URL: string;
@@ -17,4 +18,4 @@ declare global {
   }
 }
 
-export { };
+export {};

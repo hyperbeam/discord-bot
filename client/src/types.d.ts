@@ -6,6 +6,7 @@ declare global {
 		readonly VITE_CLIENT_ID: string;
 		readonly VITE_CLIENT_PORT: string;
 		readonly VITE_CLIENT_BASE_URL: string;
+		readonly VITE_CLIENT_SOCKET_URL: string;
 		readonly VITE_API_SERVER_PORT: string;
 		readonly VITE_API_SERVER_BASE_URL: string;
 	}
