@@ -17,7 +17,7 @@
 		"client:dev": "vite",
 		"client:build": "vite build",
 		"client:preview": "vite preview",
-		"client:serve": "env-cmd -x -f .env sirv -s -p \\$VITE_CLIENT_PORT dist/client",
+		"client:serve": "env-cmd -x -f .env sirv -H -s -p \\$VITE_CLIENT_PORT dist/client",
 		"envtypes": "pnpm exec dotenv-types-generator --file ./.env",
 		"db:migrate": "pnpm exec prisma migrate dev && pnpm exec prisma generate",
 		"db:update": "pnpm exec prisma migrate deploy && pnpm exec prisma generate"
