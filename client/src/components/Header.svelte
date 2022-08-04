@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { useNavigate } from "svelte-navigator";
-  
+  import { Link,useNavigate } from "svelte-navigator";
+
   import { logoutUser } from "../scripts/api";
   import { currentRoom, currentUser } from "../scripts/state";
   import Avatar from "./Avatar.svelte";
@@ -12,8 +12,11 @@
 <div class="header">
   <div class="header-left">
     <h3 class="header-logo">
-      {title}
+      <span class="page-title" on:click={() => navigate("/")}>{title}</span>
     </h3>
+    <div class="nav-link">
+      <Link to="/rooms"><span>Rooms</span></Link>
+    </div>
   </div>
   <div class="header-right">
     <!-- TODO: Replace with share button after implementing modal -->
@@ -39,9 +42,16 @@
   </div>
 </div>
 
-<style>
+<style lang="scss">
+  .page-title {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
   .header {
     display: flex;
+    flex-direction: row;
     width: 100%;
     height: 64px;
     align-items: center;
@@ -49,8 +59,17 @@
     padding: 12px;
   }
 
+  .header-left {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+  }
+
   .header-right {
     display: flex;
+    flex-direction: row;
     align-items: center;
     justify-content: flex-end;
     gap: 12px;

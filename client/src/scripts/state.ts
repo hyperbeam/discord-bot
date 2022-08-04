@@ -4,5 +4,4 @@ import { User, Room } from "./types";
 export const currentUser = writable<User | null>(null);
 export const currentRoom = writable<Room | null>(null);
 
-export const ownedRooms = writable<Room[]>([]);
-export const joinedRooms = writable<Room[]>([]);
+export const rooms = writable<Room[]>([]);

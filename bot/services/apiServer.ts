@@ -194,12 +194,11 @@ export default function apiServer(db: Database): APIServer {
 		req.session.authenticated = true;
 		// get all rooms for room list
 		const rooms = await db.getRooms({
-			ownerId: user.id,
-			OR: {
-				RoomMembers: {
-					some: { userId: user.id },
-				},
-			},
+			OR: [{
+				ownerId: user.id,
+			}, {
+				RoomMembers: { some: { userId: user.id } },
+			}],
 		}).then(rooms => rooms.map(publicObject.room));
 		return res.status(200).send({ rooms });
 	});

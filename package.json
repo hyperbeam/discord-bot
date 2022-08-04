@@ -43,6 +43,7 @@
 		"morgan": "^1.10.0",
 		"nanoid": "3.3.4",
 		"node-fetch": "^2.6.7",
+		"sass": "^1.54.2",
 		"sirv-cli": "^2.0.2",
 		"slash-create": "^5.7.1",
 		"socket.io": "^4.5.1",
