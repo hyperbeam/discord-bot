@@ -1,5 +1,5 @@
 import { Prisma, PrismaClient, Room, User, Session, RoomMember } from "@prisma/client";
-import HyperbeamAPI, { VMRequestBody } from "../utils/hyperbeamAPI";
+import HyperbeamAPI, { VMRequestBody } from "./hbRestAPI";
 
 // prisma does most of this really
 // we just have to chain some calls
@@ -11,7 +11,7 @@ export default class Database {
 
 	constructor(dbClient: PrismaClient) {
 		this.dbClient = dbClient;
-		this.hbAPI = new HyperbeamAPI(process.env.HB_API_KEY!, process.env.HB_API_ENV! as "testing" | "production");
+		this.hbAPI = new HyperbeamAPI(process.env.HB_API_KEY!);
 	}
 
 	async createUser(data: Prisma.UserCreateInput): Promise<User> {

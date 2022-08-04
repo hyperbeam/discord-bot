@@ -1,4 +1,4 @@
-import fetch from "node-fetch";
+import { hbApiRequest } from "../utils/helpers";
 
 export interface VMResponse {
 	session_id: string;
@@ -23,14 +23,13 @@ export interface VMRequestBody {
 	hide_cursor?: boolean;
 }
 
-export default class HyperbeamAPI {
+export default class HbRestAPI {
 	private apiKey: string;
-	private environment: "testing" | "production" = "testing";
 	private searchProvider: "duckduckgo" | "google" = "google";
+	private baseUrl = "https://engine.hyperbeam.com/v0";
 
-	constructor(apiKey: string, environment: "testing" | "production") {
+	constructor(apiKey: string) {
 		this.apiKey = apiKey;
-		this.environment = environment;
 	}
 
 	setSearchProvider(searchProvider: "duckduckgo" | "google") {
@@ -45,25 +44,10 @@ export default class HyperbeamAPI {
 		return `${searchUrls[this.searchProvider]}${encodeURIComponent(query)}`;
 	}
 
-	private get baseUrl(): string {
-		return `https://${this.environment === "production" ? "engine" : "enginetest"}.hyperbeam.com/v0`;
-	}
-
-	private async request({ path, method, body }: { path: string, method: string, body?: any; }): Promise<any> {
-		const headers = { "Authorization": `Bearer ${this.apiKey}` };
-		const response = await fetch(`${this.baseUrl}${path}`, {
-			method,
-			headers,
-			body: JSON.stringify(body),
-		});
-		if (!response.ok)
-			throw new Error(`${response.status} ${response.statusText}`);
-		return response.json();
-	}
-
 	async createSession(sessionData: VMRequestBody = {}): Promise<VMResponse> {
 		const body: VMRequestBody = {
 			...sessionData,
+			control_disable_default: true,
 			offline_timeout: 300,
 			start_url: sessionData?.start_url
 				? this.hasProtocol(sessionData.start_url)
@@ -71,7 +55,13 @@ export default class HyperbeamAPI {
 					: this.getSearchUrl(sessionData.start_url)
 				: `https://${this.searchProvider}.com`,
 		};
-		return this.request({ path: "/vm", method: "POST", body }) as Promise<VMResponse>;
+		return hbApiRequest<VMResponse, VMRequestBody>({
+			baseUrl: this.baseUrl,
+			authBearer: this.apiKey,
+			path: "/vm",
+			method: "POST",
+			body,
+		});
 	}
 
 	private hasProtocol(s: string): boolean {

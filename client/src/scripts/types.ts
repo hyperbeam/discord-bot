@@ -17,3 +17,7 @@ export interface Session {
 	embedUrl: string;
 	createdAt: string;
 }
+
+export interface ActiveRoom extends Room {
+	controllerId: string;
+}
