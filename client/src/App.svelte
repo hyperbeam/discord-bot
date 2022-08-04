@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { io } from "socket.io-client";
+  import { Manager } from "socket.io-client";
   import { onMount } from "svelte";
   import { Route, Router } from "svelte-navigator";
 
@@ -10,11 +10,13 @@
   import Roomlist from "./pages/Roomlist.svelte";
   import { login } from "./scripts/api";
 
-  const socket = io(import.meta.env.VITE_API_SERVER_BASE_URL, {
-  	autoConnect: false,
+  const manager = new Manager(import.meta.env.VITE_API_SERVER_BASE_URL, {
   	withCredentials: true,
+  	autoConnect: false,
   	path: import.meta.env.VITE_CLIENT_SOCKET_URL,
   });
+
+  const socket = manager.socket("/");
 
   socket.on("connect", () => {
   	console.log("Connected");

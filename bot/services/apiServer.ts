@@ -8,14 +8,15 @@ import createMemoryStore from "memorystore";
 import morgan from "morgan";
 import { nanoid } from "nanoid";
 import fetch from "node-fetch";
-import { Server as SocketServer } from "socket.io";
+import { Namespace, Server as SocketServer } from "socket.io";
 import { publicObject } from "../utils/helpers";
 import Database from "./db";
 
 interface APIServer {
-	io: SocketServer;
+	io: Namespace;
 	app: Application;
 	httpServer: HttpServer;
+	socketServer: SocketServer;
 }
 
 // most of the api stuff is in here
@@ -38,7 +39,7 @@ export default function apiServer(db: Database): APIServer {
 	app.use(sessionMiddleware);
 
 	// OPTIONS preflight req type is needed to check if cors is viable
-	const io = new SocketServer(httpServer, {
+	const socketServer = new SocketServer(httpServer, {
 		cors: {
 			origin: process.env.VITE_CLIENT_BASE_URL,
 			methods: ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
@@ -46,6 +47,8 @@ export default function apiServer(db: Database): APIServer {
 			credentials: true,
 		},
 	});
+
+	const io = socketServer.of("/");
 
 	// for type hints
 	io.use((socket, next) => {
@@ -255,5 +258,5 @@ export default function apiServer(db: Database): APIServer {
 		});
 	});
 
-	return { app, httpServer, io };
+	return { app, io, httpServer, socketServer };
 }
