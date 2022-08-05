@@ -74,11 +74,10 @@ export default class Database {
 		return this.dbClient.roomMember.count({ where: { roomId: room.id }, distinct: "userId" });
 	}
 
-	// ordering might be off here, but it works for now
 	async getRoomSessions(where: Prisma.RoomWhereInput): Promise<Session[]> {
 		const room = await this.getRoom(where);
 		if (!room) return [];
-		return this.dbClient.session.findMany({ where: { roomId: room.id }, orderBy: { createdAt: "asc" } });
+		return this.dbClient.session.findMany({ where: { roomId: room.id }, orderBy: { createdAt: "desc" } });
 	}
 
 	async getLatestSession(where: Prisma.RoomWhereInput): Promise<Session | null> {
@@ -103,5 +102,14 @@ export default class Database {
 			},
 		});
 		return session;
+	}
+
+	async deleteSessions(where: Prisma.SessionWhereInput): Promise<Session[]> {
+		const sessions = await this.dbClient.session.findMany({ where });
+		for (const s of sessions) {
+			await this.dbClient.session.delete({ where: { id: s.id } });
+			await this.hbAPI.deleteSession(s.sessionId);
+		}
+		return sessions;
 	}
 }

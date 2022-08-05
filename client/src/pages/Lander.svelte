@@ -1,4 +1,15 @@
 <script lang="ts">
+  const inviteUrl = [
+  	`https://discord.com/api/oauth2/authorize?client_id=${
+  		import.meta.env.VITE_CLIENT_ID
+  	}`,
+  	"permissions=277062470720",
+  	`redirect_uri=${encodeURIComponent(
+  		import.meta.env.VITE_CLIENT_BASE_URL + "/authorize",
+  	)}`,
+  	"response_type=code",
+  	"scope=identify%20email%20bot%20applications.commands",
+  ].join("&");
 </script>
 
 <div class="container">
@@ -32,8 +43,7 @@
     <button
       class="add-btn"
       on:click={() => {
-        window.location.href =
-          "https://discord.com/api/oauth2/authorize?client_id=983910226489126932&permissions=277062470720&redirect_uri=https%3A%2F%2Fbot.hyperbeam.com%2Fauthorize&response_type=code&scope=identify%20email%20bot%20applications.commands";
+        window.location.href = inviteUrl;
       }}
     >
       Add on Discord
@@ -41,17 +51,17 @@
     <button
       class="support-btn"
       on:click={() => {
-        window.location.href = "https://discord.gg/UFQRhB6y";
+        window.location.href = import.meta.env.VITE_DISCORD_SUPPORT_SERVER;
       }}
     >
       Support
     </button>
     <ul>
       <li>
-        <a href="https://discord.gg/UFQRhB6y">Discord</a>
+        <a href={import.meta.env.VITE_DISCORD_SUPPORT_SERVER}>Discord</a>
       </li>
       <li>
-        <a href="https://github.com/hyperbeam/discord-bot">GitHub</a>
+        <a href={import.meta.env.VITE_GITHUB_URL}>GitHub</a>
       </li>
       <li>
         <a href="https://www.hyperbeam.dev">Hyperbeam API</a>
@@ -75,11 +85,12 @@
   }
 
   h1 {
-    font-size: 3rem;
+    font-size: 2.5rem;
     margin-bottom: 1rem;
   }
 
   p {
+    opacity: 0.8;
     margin-bottom: 1rem;
   }
 
@@ -93,7 +104,8 @@
 
   .support-btn {
     margin-right: 1rem;
-    background-color: grey;
+    color: white;
+    background-color: #fff2;
   }
 
   ul {
