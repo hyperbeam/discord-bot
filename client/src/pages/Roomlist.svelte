@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { useNavigate } from "svelte-navigator";
-  
+
   import Header from "../components/Header.svelte";
   import { apiRequest } from "../scripts/api";
   import { currentUser, rooms } from "../scripts/state";
@@ -67,13 +67,9 @@
   }
 
   .link {
-    color: #fffb;
-    text-decoration: none;
+    color: #4ab7f5;
     cursor: pointer;
-    &:hover,
-    &:active {
-      color: #fff;
-      text-decoration: underline;
-    }
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
 </style>

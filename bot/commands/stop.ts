@@ -38,7 +38,7 @@ export default class Stop extends SlashCommand<BotClient> {
 		return ctx.send({
 			embeds: [
 				{
-					title: "Stopped browser",
+					title: sessions.length ? "Browser stopped successfully" : "No browser was running",
 					fields: [{
 						name: "Love the Discord bot?",
 						value: `[Invite it](${inviteUrl}) to your server, star us on [GitHub](${process.env.VITE_GITHUB_URL}) and help spread the word!`,
