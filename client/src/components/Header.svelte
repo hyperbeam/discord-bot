@@ -2,7 +2,7 @@
   import { Link,useNavigate } from "svelte-navigator";
 
   import { logoutUser } from "../scripts/api";
-  import { currentRoom, currentUser } from "../scripts/state";
+  import { currentRoom,currentUser } from "../scripts/state";
   import Avatar from "./Avatar.svelte";
   export let title: string = "Hyperbeam bot";
 
@@ -44,7 +44,6 @@
 
 <style lang="scss">
   .page-title {
-    color: black;
     text-decoration: none;
     cursor: pointer;
   }

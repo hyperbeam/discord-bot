@@ -1,9 +1,8 @@
 <script lang="ts">
   import { Manager } from "socket.io-client";
   import { onMount } from "svelte";
-  import { Route, Router } from "svelte-navigator";
+  import { Route,Router } from "svelte-navigator";
 
-  import Header from "./components/Header.svelte";
   import Authorize from "./pages/Authorize.svelte";
   import Lander from "./pages/Lander.svelte";
   import Room from "./pages/Room.svelte";
@@ -44,7 +43,7 @@
 
 <div>
   <Router primary={false}>
-    <Header />
+    <!-- <Header /> -->
     <Route path="/" component={Lander} />
     <Route path="/rooms" component={Roomlist} />
     <Route path="/authorize" component={Authorize} />

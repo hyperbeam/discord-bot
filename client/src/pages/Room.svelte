@@ -1,10 +1,11 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import Header from "../components/Header.svelte";
 
   import VM from "../components/VM.svelte";
   import { apiRequest } from "../scripts/api";
-  import { currentRoom, rooms } from "../scripts/state";
-  import { Room, Session } from "../scripts/types";
+  import { currentRoom,rooms } from "../scripts/state";
+  import { Room,Session } from "../scripts/types";
 
   export let roomUrl: string;
 
@@ -35,5 +36,6 @@
 </script>
 
 <div class="room">
+	<Header />
   <VM {embedUrl} />
 </div>
