@@ -1,9 +1,10 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { useNavigate } from "svelte-navigator";
+  import Header from "../components/Header.svelte";
 
   import { apiRequest } from "../scripts/api";
-  import { currentUser, rooms } from "../scripts/state";
+  import { currentUser,rooms } from "../scripts/state";
   import { Room } from "../scripts/types";
 
   const navigate = useNavigate();
@@ -21,32 +22,35 @@
   $: joinedRooms = $rooms.filter((r) => r.ownerId !== $currentUser.id);
 </script>
 
-<div class="room-list">
-  {#if ownedRooms.length}
-    <h4>Owned Rooms</h4>
-    <ul>
-      {#each ownedRooms as room}
-        <li on:click={() => navigate(`/${room.url}`)}>
-          <span class="link">{room.name}</span>
-        </li>
-      {/each}
-    </ul>
-  {/if}
-  {#if joinedRooms.length}
-    <h4>Joined Rooms</h4>
-    <ul>
-      {#each joinedRooms as room}
-        <li on:click={() => navigate(`/${room.url}`)}>
-          <span class="link">{room.name}</span>
-        </li>
-      {/each}
-    </ul>
-  {/if}
-  {#if !$rooms.length && !$currentUser}
-    <p>You must be logged in to view rooms.</p>
-  {:else if !$rooms.length && $currentUser}
-    <p>No rooms created.</p>
-  {/if}
+<div>
+  <Header />
+  <div class="room-list">
+    {#if ownedRooms.length}
+      <h4>Owned Rooms</h4>
+      <ul>
+        {#each ownedRooms as room}
+          <li on:click={() => navigate(`/${room.url}`)}>
+            <span class="link">{room.name}</span>
+          </li>
+        {/each}
+      </ul>
+    {/if}
+    {#if joinedRooms.length}
+      <h4>Joined Rooms</h4>
+      <ul>
+        {#each joinedRooms as room}
+          <li on:click={() => navigate(`/${room.url}`)}>
+            <span class="link">{room.name}</span>
+          </li>
+        {/each}
+      </ul>
+    {/if}
+    {#if !$rooms.length && !$currentUser}
+      <p>You must be logged in to view rooms.</p>
+    {:else if !$rooms.length && $currentUser}
+      <p>No rooms created.</p>
+    {/if}
+  </div>
 </div>
 
 <style lang="scss">

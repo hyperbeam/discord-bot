@@ -174,10 +174,15 @@ button {
   font-weight: bold;
   padding: 8px 12px;
   border-radius: 4px;
-  background-color: blueviolet;
-  color: white;
+  background-color: #9570fa;
+  color: black;
 }
 
 :where(h1, h2, h3, h4, h5, h6):focus {
   outline: none;
+}
+
+body {
+  background-color: black;
+  color: white;
 }
