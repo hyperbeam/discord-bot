@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  
   import Header from "../components/Header.svelte";
-
   import VM from "../components/VM.svelte";
   import { apiRequest } from "../scripts/api";
   import { currentRoom,rooms } from "../scripts/state";

@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { Link,useNavigate } from "svelte-navigator";
+  import { useNavigate } from "svelte-navigator";
 
   import { logoutUser } from "../scripts/api";
-  import { currentRoom,currentUser } from "../scripts/state";
+  import { currentRoom, currentUser } from "../scripts/state";
   import Avatar from "./Avatar.svelte";
   export let title: string = "Hyperbeam bot";
 
@@ -14,8 +14,8 @@
     <h3 class="header-logo">
       <span class="page-title" on:click={() => navigate("/")}>{title}</span>
     </h3>
-    <div class="nav-link">
-      <Link to="/rooms"><span>Rooms</span></Link>
+    <div class="nav-link" on:click={() => navigate("/rooms")}>
+      <span>Rooms</span>
     </div>
   </div>
   <div class="header-right">
@@ -72,5 +72,16 @@
     align-items: center;
     justify-content: flex-end;
     gap: 12px;
+  }
+
+  .nav-link {
+    color: #fffb;
+    text-decoration: none;
+    cursor: pointer;
+    &:hover,
+    &:active {
+      color: #fff;
+      text-decoration: underline;
+    }
   }
 </style>

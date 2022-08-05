@@ -65,13 +65,18 @@ export default class HyperbeamAPI {
 		const body: VMRequestBody = {
 			...sessionData,
 			offline_timeout: 300,
+			ublock: true,
 			start_url: sessionData?.start_url
 				? this.hasProtocol(sessionData.start_url)
 					? sessionData.start_url
 					: this.getSearchUrl(sessionData.start_url)
 				: `https://${this.searchProvider}.com`,
 		};
-		return this.request({ path: "/vm", method: "POST", body }) as Promise<VMResponse>;
+		return this.request({ path: "/vm", method: "POST", body }).catch(err => console.error(err)) as Promise<VMResponse>;
+	}
+
+	async deleteSession(sessionId: string): Promise<void> {
+		return this.request({ path: `/vm/${sessionId}`, method: "DELETE" }).catch(err => console.error(err));
 	}
 
 	private hasProtocol(s: string): boolean {

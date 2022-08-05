@@ -13,7 +13,7 @@
   		// we already have a token, so we can skip the discord flow
   		try {
   			await login();
-  			navigate("/");
+  			navigate("/rooms");
   		} catch (e) {
   			// token doesn't work, get rid of it
   			console.error(e);
@@ -31,7 +31,7 @@
   					urlParams.get("code"),
   					urlParams.get("state"),
   				);
-  				navigate("/");
+  				navigate("/rooms");
   			} catch (e) {
   				console.error(e);
   			}

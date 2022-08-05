@@ -4,7 +4,9 @@ declare global {
       DISCORD_CLIENT_ID: string;
       DISCORD_CLIENT_SECRET: string;
       DISCORD_BOT_TOKEN: string;
-      DISCORD_DEVELOPMENT_GUILD_ID: string;
+      VITE_DISCORD_INVITE_URL: string;
+      VITE_DISCORD_SUPPORT_SERVER: string;
+      VITE_GITHUB_URL: string;
       HB_API_KEY: string;
       HB_API_ENV: string;
       VITE_CLIENT_ID: string;
@@ -18,4 +20,4 @@ declare global {
   }
 }
 
-export {};
+export { };
