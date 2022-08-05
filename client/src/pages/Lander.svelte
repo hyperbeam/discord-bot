@@ -1,4 +1,6 @@
 <script lang="ts">
+
+
 </script>
 
 <div class="container">
@@ -14,12 +16,21 @@
     website right from Discord. Browse the web and watch together.
   </p>
   <button
+    class="add-btn"
     on:click={() => {
       window.location.href =
         "https://discord.com/api/oauth2/authorize?client_id=983910226489126932&permissions=277062470720&redirect_uri=https%3A%2F%2Fbot.hyperbeam.com%2Fauthorize&response_type=code&scope=identify%20email%20bot%20applications.commands";
     }}
   >
     Add on Discord
+  </button>
+  <button
+    class="support-btn"
+    on:click={() => {
+      window.location.href="https://discord.gg/UFQRhB6y"
+    }}
+  >
+    Support
   </button>
   <ul>
     <li>
@@ -57,6 +68,15 @@
   button {
     margin-bottom: 1rem;
   }
+  
+  .add-btn {
+    margin-right: 1rem;
+  }
+  
+  .support-btn {
+    margin-right: 1rem;
+    background-color: grey;
+  }
 
   ul {
     list-style: none;
@@ -69,4 +89,5 @@
   a {
     color: inherit;
   }
+
 </style>
