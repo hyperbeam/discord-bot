@@ -52,11 +52,11 @@
       Support
     </button>
 
-    <p>
-      Want Hyperbeam's virtual browser in your app? <br />
-      Check out the <a href="https://www.hyperbeam.com">Hyperbeam API</a>.
-    </p>
     <ul>
+      <li>
+        Want Hyperbeam's virtual browser in your app? <br />
+        Check out the <a href="https://www.hyperbeam.com">Hyperbeam API</a>.
+      </li>
       <li>
         <a href={import.meta.env.VITE_DISCORD_SUPPORT_SERVER}>Discord</a>
       </li>
@@ -108,9 +108,6 @@
   ul {
     list-style: none;
     margin-bottom: 1rem;
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
   }
 
   a {
