@@ -53,11 +53,8 @@
     </button>
 
     <p>
-      It's free and <a href={import.meta.env.VITE_GITHUB_URL}>open-source</a>,
-      so you can use it for any purpose.
-      <br />
-      Want Hyperbeam's virtual browser in your app? Check out the
-      <a href="https://www.hyperbeam.com">Hyperbeam API</a>.
+      Want Hyperbeam's virtual browser in your app? <br />
+      Check out the <a href="https://www.hyperbeam.com">Hyperbeam API</a>.
     </p>
     <ul>
       <li>
