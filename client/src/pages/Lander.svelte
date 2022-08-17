@@ -140,7 +140,7 @@
   @media (max-width: 992px) {
     main {
       position: initial;
-      margin: 144px 24px 0 24px;
+      margin: 144px 8.33% 0 8.33%;
       width: auto;
       transform: translate(0%);
     }
