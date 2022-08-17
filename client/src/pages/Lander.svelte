@@ -43,7 +43,7 @@
         window.location.href = inviteUrl;
       }}
     >
-      Add to server
+      Add on Discord
     </button>
     <button
       class="support-btn"
