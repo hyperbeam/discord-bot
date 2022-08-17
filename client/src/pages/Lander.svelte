@@ -1,4 +1,6 @@
 <script lang="ts">
+  import demoUrl from "../demo.mp4";
+
   const inviteUrl = [
   	`https://discord.com/api/oauth2/authorize?client_id=${
   		import.meta.env.VITE_CLIENT_ID
@@ -65,16 +67,24 @@
       </li>
     </ul>
   </main>
+  <video src={demoUrl} type="video/mp4" autoplay loop muted />
 </div>
 
 <style lang="scss">
   .container {
-    display: flex;
-    height: 100vh;
-    max-width: 600px;
+    position: relative;
     margin: 0 auto;
-    padding: 2rem 1rem;
-    align-items: center;
+    max-width: 1512px;
+    height: 100vh;
+  }
+
+  main {
+    position: absolute;
+    top: 50%;
+    width: 33%;
+    margin-left: 8.33%;
+    z-index: 1;
+    transform: translateY(-50%);
   }
 
   svg {
@@ -113,5 +123,13 @@
   a {
     color: #4ab7f5;
     text-underline-offset: 2px;
+  }
+
+  video {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    max-inline-size: 66%;
   }
 </style>
