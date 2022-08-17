@@ -136,4 +136,25 @@
     transform: translateY(-50%);
     max-inline-size: 66%;
   }
+
+  @media (max-width: 992px) {
+    main {
+      position: initial;
+      margin: 144px 24px 0 24px;
+      width: auto;
+      transform: translate(0%);
+    }
+
+    video {
+      max-inline-size: 100%;
+      position: initial;
+      transform: translate(0%);
+    }
+  }
+
+  @media (max-width: 576px) {
+    h1 {
+      font-size: 2rem;
+    }
+  }
 </style>
