@@ -120,6 +120,10 @@
     margin-bottom: 1rem;
   }
 
+  li {
+    margin-bottom: 0.5rem;
+  }
+
   a {
     color: #4ab7f5;
     text-underline-offset: 2px;
