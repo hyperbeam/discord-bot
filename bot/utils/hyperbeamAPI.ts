@@ -58,7 +58,9 @@ export default class HyperbeamAPI {
 		});
 		if (!response.ok)
 			throw new Error(`${response.status} ${response.statusText}`);
-		return response.json();
+		const parsedResponse = await response.json().catch(err => console.error(err));
+		console.log(`${method} ${path}: ${response.status} ${response.statusText} - ${JSON.stringify(parsedResponse)}`);
+		return parsedResponse;
 	}
 
 	async createSession(sessionData: VMRequestBody = {}): Promise<VMResponse> {

@@ -239,7 +239,7 @@ export default function apiServer(db: Database): APIServer {
 		}
 		// if the session is expired, make a new session
 		if (!session)
-			session = await db.createHyperbeamSession(room.url);
+			return res.status(400).send({ error: "Session expired" });
 
 		// TODO: send admin token only to room owner
 		return res.status(200).json({ ...publicObject.room(room), session: publicObject.session(session) });
