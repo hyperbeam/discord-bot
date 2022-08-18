@@ -1,4 +1,6 @@
 <script lang="ts">
+  import demoUrl from "../demo.mp4";
+
   const inviteUrl = [
   	`https://discord.com/api/oauth2/authorize?client_id=${
   		import.meta.env.VITE_CLIENT_ID
@@ -41,7 +43,7 @@
         window.location.href = inviteUrl;
       }}
     >
-      Add to server
+      Add on Discord
     </button>
     <button
       class="support-btn"
@@ -52,14 +54,11 @@
       Support
     </button>
 
-    <p>
-      It's free and <a href={import.meta.env.VITE_GITHUB_URL}>open-source</a>,
-      so you can use it for any purpose.
-      <br />
-      Want Hyperbeam's virtual browser in your app? Check out the
-      <a href="https://www.hyperbeam.com">Hyperbeam API</a>.
-    </p>
     <ul>
+      <li>
+        Want Hyperbeam's virtual browser in your app? <br />
+        Check out the <a href="https://www.hyperbeam.com">Hyperbeam API</a>.
+      </li>
       <li>
         <a href={import.meta.env.VITE_DISCORD_SUPPORT_SERVER}>Discord</a>
       </li>
@@ -68,16 +67,24 @@
       </li>
     </ul>
   </main>
+  <video src={demoUrl} type="video/mp4" autoplay loop muted />
 </div>
 
 <style lang="scss">
   .container {
-    display: flex;
-    height: 100vh;
-    max-width: 600px;
+    position: relative;
     margin: 0 auto;
-    padding: 2rem 1rem;
-    align-items: center;
+    max-width: 1512px;
+    height: 100vh;
+  }
+
+  main {
+    position: absolute;
+    top: 50%;
+    width: 33%;
+    margin-left: 8.33%;
+    z-index: 1;
+    transform: translateY(-50%);
   }
 
   svg {
@@ -111,13 +118,43 @@
   ul {
     list-style: none;
     margin-bottom: 1rem;
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
+  }
+
+  li {
+    margin-bottom: 0.5rem;
   }
 
   a {
     color: #4ab7f5;
     text-underline-offset: 2px;
+  }
+
+  video {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    max-inline-size: 66%;
+  }
+
+  @media (max-width: 992px) {
+    main {
+      position: initial;
+      margin: 144px 8.33% 0 8.33%;
+      width: auto;
+      transform: translate(0%);
+    }
+
+    video {
+      max-inline-size: 100%;
+      position: initial;
+      transform: translate(0%);
+    }
+  }
+
+  @media (max-width: 576px) {
+    h1 {
+      font-size: 2rem;
+    }
   }
 </style>

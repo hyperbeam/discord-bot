@@ -174,7 +174,7 @@ button {
   font-weight: bold;
   padding: 8px 12px;
   border-radius: 4px;
-  background-color: #9570fa;
+  background-color: #a888ff;
   color: black;
 }
 
@@ -183,6 +183,6 @@ button {
 }
 
 body {
-  background-color: black;
+  background-color: #1b1c21;
   color: white;
 }
