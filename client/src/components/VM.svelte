@@ -1,5 +1,6 @@
 <script lang="ts">
   import Hyperbeam from "@hyperbeam/web";
+  import { onMount } from "svelte";
   export let embedUrl: string;
 
   async function startHyperbeamSession(url) {
@@ -9,7 +10,11 @@
   	if (hbiframe) return Hyperbeam(hbiframe, url);
   }
   // TODO: consolidate api interactions in one place?
-  $: hbSession = startHyperbeamSession(embedUrl);
+  $: startHyperbeamSession(embedUrl);
+
+  onMount(async () => {
+  	if (embedUrl) startHyperbeamSession(embedUrl);
+  });
 </script>
 
 <div id="VM">
