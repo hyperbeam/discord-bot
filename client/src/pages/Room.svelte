@@ -41,28 +41,11 @@
 </script>
 
 <div class="room">
-  <Header />
-  {#if $currentRoom}
-    <VM {embedUrl} />
-  {:else}
-    <div class="container">
-      <p>Room not active.</p>
-    </div>
-  {/if}
+  <VM { embedUrl } />
 </div>
 
 <style lang="scss">
   .room {
     height: 100%;
-  }
-
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    max-height: 100%;
-    height: 100%;
-    width: 100%;
   }
 </style>
