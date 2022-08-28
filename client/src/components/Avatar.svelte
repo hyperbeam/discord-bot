@@ -4,15 +4,7 @@
   export let borderStyle: "dashed" | "solid";
 </script>
 
-<div
-  class={`avatar ${
-    borderStyle === "dashed"
-      ? "avatar-dashed"
-      : borderStyle === "solid"
-      ? "avatar-solid"
-      : ""
-  }`}
->
+<div class={`avatar ${borderStyle || ""}`}>
   <img {src} {alt} />
 </div>
 
@@ -20,15 +12,20 @@
   .avatar {
     aspect-ratio: 1 / 1;
     width: 40px;
-    padding: 2px;
+    padding: 4px;
     border-radius: 50%;
   }
 
-  .avatar-dashed {
+  .dashed,
+  .solid {
+    padding: 2px;
+  }
+
+  .dashed {
     border: 2px dashed blueviolet;
   }
 
-  .avatar-solid {
+  .solid {
     border: 2px solid blueviolet;
   }
 
