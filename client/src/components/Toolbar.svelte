@@ -1,4 +1,6 @@
 <script>
+  import Tooltip from "./Tooltip.svelte";
+
   $: isFullscreen = false;
 
   window.addEventListener("fullscreenchange", () => {
