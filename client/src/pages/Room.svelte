@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
 
   import Header from "../components/Header.svelte";
+  import Toolbar from "../components/Toolbar.svelte";
   import VM from "../components/VM.svelte";
   import { apiRequest } from "../scripts/api";
   import { currentRoom, rooms } from "../scripts/state";
@@ -41,7 +42,8 @@
 </script>
 
 <div class="room">
-  <VM { embedUrl } />
+	<VM { embedUrl } />
+	<Toolbar />
 </div>
 
 <style lang="scss">
