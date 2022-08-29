@@ -229,11 +229,17 @@ export default function apiServer(db: Database): APIServer {
 			const sessionResponse = await fetch(session.embedUrl);
 			if (sessionResponse.ok)
 				return res.status(200).json({ ...publicObject.room(room), session: publicObject.session(session) });
-			else session = null;
+			else {
+				session = null;
+				const deletedSessions = await db.deleteSessions({ roomId: room.id });
+				for (const deletedSession of deletedSessions) {
+					console.log(`Deleted session ${deletedSession.id}`);
+				}
+			}
 		}
 		// if the session is expired, make a new session
 		if (!session)
-			session = await db.createHyperbeamSession(room.url);
+			return res.status(400).send({ error: "Session expired" });
 
 		// TODO: send admin token only to room owner
 		return res.status(200).json({ ...publicObject.room(room), session: publicObject.session(session) });

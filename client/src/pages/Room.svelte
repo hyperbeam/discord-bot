@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
+  import Header from "../components/Header.svelte";
   import VM from "../components/VM.svelte";
   import { apiRequest } from "../scripts/api";
   import { currentRoom, rooms } from "../scripts/state";
@@ -12,9 +13,14 @@
 
   onMount(async () => {
   	if (roomUrl) {
-  		const room = await apiRequest<Room & { session: Session }>(
-  			`/room/${roomUrl}`,
-  		);
+  		let room;
+  		try {
+  			room = await apiRequest<Room & { session: Session }>(
+  				`/room/${roomUrl}`,
+  			);
+  		} catch (e) {
+  			console.error(e);
+  		}
   		if (room) {
   			$currentRoom = room;
   			console.log({ currentRoom: $currentRoom });
@@ -35,5 +41,28 @@
 </script>
 
 <div class="room">
-  <VM {embedUrl} />
+  <Header />
+  {#if $currentRoom}
+    <VM {embedUrl} />
+  {:else}
+    <div class="container">
+      <p>Room not active.</p>
+    </div>
+  {/if}
 </div>
+
+<style lang="scss">
+  .room {
+    height: 100%;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-height: 100%;
+    height: 100%;
+    width: 100%;
+  }
+</style>

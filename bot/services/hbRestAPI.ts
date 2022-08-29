@@ -49,6 +49,7 @@ export default class HbRestAPI {
 			...sessionData,
 			control_disable_default: true,
 			offline_timeout: 300,
+			ublock: true,
 			start_url: sessionData?.start_url
 				? this.hasProtocol(sessionData.start_url)
 					? sessionData.start_url
@@ -61,6 +62,15 @@ export default class HbRestAPI {
 			path: "/vm",
 			method: "POST",
 			body,
+		});
+	}
+
+	async deleteSession(sessionId: string): Promise<void> {
+		return hbApiRequest<void>({
+			baseUrl: this.baseUrl,
+			authBearer: this.apiKey,
+			path: `/vm/${sessionId}`,
+			method: "DELETE",
 		});
 	}
 

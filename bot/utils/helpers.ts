@@ -44,14 +44,15 @@ type RequestProps = {
 	authBearer: string;
 };
 
-export async function hbApiRequest<ResponseType, RequestBody = any>(props: RequestProps & { body: RequestBody; }): Promise<ResponseType> {
+export async function hbApiRequest<ResponseType, RequestBody = any>(props: RequestProps & { body?: RequestBody; }): Promise<ResponseType> {
 	const headers = { "Authorization": `Bearer ${props.authBearer}` };
 	const response = await fetch(`${props.baseUrl}${props.path}`, {
 		method: props.method,
 		headers: { ...headers, ...(props.headers || {}) },
-		body: JSON.stringify(props.body),
+		body: props.body ? JSON.stringify(props.body) : undefined,
 	});
+	const result = await response.json();
 	if (!response.ok)
-		throw new Error(`${response.status} ${response.statusText}`);
-	return response.json() as unknown as ResponseType;
+		throw new Error(`${response.status} ${response.statusText}\n${result.code}:${result.message}`);
+	return result as unknown as ResponseType;
 }
