@@ -2,15 +2,15 @@
   import demoUrl from "../demo.mp4";
 
   const inviteUrl = [
-  	`https://discord.com/api/oauth2/authorize?client_id=${
-  		import.meta.env.VITE_CLIENT_ID
-  	}`,
-  	"permissions=277062470720",
-  	`redirect_uri=${encodeURIComponent(
-  		import.meta.env.VITE_CLIENT_BASE_URL + "/authorize",
-  	)}`,
-  	"response_type=code",
-  	"scope=identify%20email%20bot%20applications.commands",
+    `https://discord.com/api/oauth2/authorize?client_id=${
+      import.meta.env.VITE_CLIENT_ID
+    }`,
+    "permissions=277062470720",
+    `redirect_uri=${encodeURIComponent(
+      import.meta.env.VITE_CLIENT_BASE_URL + "/authorize"
+    )}`,
+    "response_type=code",
+    "scope=identify%20email%20bot%20applications.commands",
   ].join("&");
 </script>
 

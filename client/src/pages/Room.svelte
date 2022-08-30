@@ -12,31 +12,31 @@
   let embedUrl: string;
 
   onMount(async () => {
-  	if (roomUrl) {
-  		let room;
-  		try {
-  			room = await apiRequest<Room & { session: Session }>(
-  				`/room/${roomUrl}`,
-  			);
-  		} catch (e) {
-  			console.error(e);
-  		}
-  		if (room) {
-  			$currentRoom = room;
-  			console.log({ currentRoom: $currentRoom });
-  			embedUrl = room.session.embedUrl;
-  		}
-  	}
-  	if ($rooms.some((room) => room.url)) {
-  		$currentRoom = $rooms.find((room) => room.url === roomUrl);
-  	} else if (!$currentRoom) {
-  		const newRoom = await apiRequest<Room>(roomUrl, "GET").catch((err) => {
-  			console.error(err);
-  		});
-  		if (!newRoom) return;
-  		$currentRoom = newRoom;
-  		$rooms = [...$rooms, newRoom];
-  	}
+    if (roomUrl) {
+      let room;
+      try {
+        room = await apiRequest<Room & { session: Session }>(
+          `/room/${roomUrl}`
+        );
+      } catch (e) {
+        console.error(e);
+      }
+      if (room) {
+        $currentRoom = room;
+        console.log({ currentRoom: $currentRoom });
+        embedUrl = room.session.embedUrl;
+      }
+    }
+    if ($rooms.some((room) => room.url)) {
+      $currentRoom = $rooms.find((room) => room.url === roomUrl);
+    } else if (!$currentRoom) {
+      const newRoom = await apiRequest<Room>(roomUrl, "GET").catch((err) => {
+        console.error(err);
+      });
+      if (!newRoom) return;
+      $currentRoom = newRoom;
+      $rooms = [...$rooms, newRoom];
+    }
   });
 </script>
 

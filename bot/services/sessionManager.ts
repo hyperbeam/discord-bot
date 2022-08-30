@@ -1,5 +1,6 @@
+import { ClientToServerEvents, ServerToClientEvents } from "../sharedTypes";
 import { Server } from "socket.io";
-import { publicObject, PublicRoom, PublicUser } from "../utils/helpers";
+import { publicObject, PublicRoom } from "../utils/helpers";
 import hbSessionAPI from "./hbSessionAPI";
 import Database from "./db";
 import { Session } from "@prisma/client";
@@ -15,8 +16,6 @@ type ConnectedMember = {
 	hbUserId: string;
 };
 
-type ExtendedMember = ConnectedMember & PublicUser;
-
 type ExtendedRoom = PublicRoom & {
 	connected: ConnectedMember[];
 	session: Session;
@@ -25,7 +24,7 @@ type ExtendedRoom = PublicRoom & {
 
 export default class SessionManager {
 	private activeRooms: Map<string, ExtendedRoom>;
-	private socketServer: Server;
+	private socketServer: Server<ClientToServerEvents, ServerToClientEvents>;
 	private db: Database;
 
 	constructor(props: SessionManagerProps) {
@@ -50,7 +49,7 @@ export default class SessionManager {
 
 				// check if first person, if so, make them controller
 				this.checkControl(roomUrl, member);
-				this.socketServer.of(roomUrl).to(member.socketId).emit("join-success", { ...roomData, session: publicObject.session(session) });
+				this.socketServer.of(roomUrl).to(member.socketId).emit("joinSuccess", { ...roomData, session: publicObject.session(session) });
 			}
 			else throw new Error("Room not found.");
 		}
@@ -66,7 +65,7 @@ export default class SessionManager {
 				room.connected.push(member);
 			}
 			this.activeRooms.set(roomUrl, room);
-			this.socketServer.of(roomUrl).emit("members-updated", room.connected);
+			this.socketServer.of(roomUrl).emit("roomMembersUpdate", room.connected);
 		}
 	}
 
@@ -80,7 +79,7 @@ export default class SessionManager {
 				await hbSessionAPI(room.session).setPermissions(member.hbUserId, {
 					control_disabled: false,
 				});
-				this.socketServer.of(roomUrl).emit("control-transfer", member);
+				this.socketServer.of(roomUrl).emit("controlTransfer", member);
 			}
 			// someone is logged in, check if they are the owner
 			else if (room.ownerId === member.id) {
@@ -88,7 +87,7 @@ export default class SessionManager {
 				await hbSessionAPI(room.session).setPermissions(member.hbUserId, {
 					control_disabled: false,
 				});
-				this.socketServer.of(roomUrl).emit("control-transfer", member);
+				this.socketServer.of(roomUrl).emit("controlTransfer", member);
 			}
 		}
 	}

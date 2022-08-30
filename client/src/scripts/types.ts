@@ -19,5 +19,5 @@ export interface Session {
 }
 
 export interface ActiveRoom extends Room {
-	controllerId: string;
+	controllerId?: string;
 }

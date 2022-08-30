@@ -11,11 +11,16 @@
 		"forceConsistentCasingInFileNames": true,
 		"composite": true,
 		"outDir": "../dist/client",
-		"rootDir": "./",
+		"rootDirs": [
+			"./",
+			"../shared"
+		]
 	},
 	"include": [
 		"./**/*.ts",
 		"./**/*.d.ts",
 		"./**/*.svelte",
+		"../shared/*.ts",
+		"../shared/*.d.ts",
 	]
 }

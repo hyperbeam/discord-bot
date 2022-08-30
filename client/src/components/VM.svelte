@@ -1,19 +1,22 @@
 <script lang="ts">
-  import Hyperbeam from "@hyperbeam/web";
+  import Hyperbeam, { HyperbeamIFrame } from "@hyperbeam/web";
+  import { hbSession } from "../scripts/state";
   import { onMount } from "svelte";
   export let embedUrl: string;
 
-  async function startHyperbeamSession(url) {
-  	const hbiframe = document.getElementById(
-  		"hyperbeam",
-  	) as HTMLIFrameElement | null;
-  	if (hbiframe) return Hyperbeam(hbiframe, url);
+  async function startHyperbeamSession(url: string): Promise<HyperbeamIFrame> {
+    const hbiframe = document.getElementById(
+      "hyperbeam"
+    ) as HTMLIFrameElement | null;
+    if (hbiframe) {
+      const data = await Hyperbeam(hbiframe, url);
+      $hbSession = data;
+      return data;
+    }
   }
-  // TODO: consolidate api interactions in one place?
-  $: startHyperbeamSession(embedUrl);
 
   onMount(async () => {
-  	if (embedUrl) startHyperbeamSession(embedUrl);
+    if (embedUrl) startHyperbeamSession(embedUrl);
   });
 </script>
 

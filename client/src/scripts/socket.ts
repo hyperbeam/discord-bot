@@ -1,3 +1,4 @@
+import { ServerToClientEvents, ClientToServerEvents } from "../../sharedTypes";
 import { Socket, Manager } from "socket.io-client";
 import { ActiveRoom, User } from "./types";
 
@@ -12,7 +13,7 @@ interface RoomConnectionProps {
 export default class RealtimeRoomConnection {
 	private token: string;
 	private hbUserId: string;
-	public socket: Socket;
+	public socket: Socket<ServerToClientEvents, ClientToServerEvents>;
 	public room: ActiveRoom;
 	private controlRequestTimeout: number;
 	public me: User;
@@ -28,29 +29,19 @@ export default class RealtimeRoomConnection {
 
 	setupLogs() {
 		const path = `/${this.room.url}`;
-		const events = {
-			connect: () => console.log(`Connected to ${path}`),
-			disconnect: () => console.log(`Disconnected from ${path}`),
-			connect_error: (error: Error) => console.error(`Error connecting to ${path}: ${error.message}`),
-			error: (error: Error) => console.error(`Error on ${path}: ${error.message}`),
-			reconnect: () => console.log(`Reconnected to ${path}`),
-			reconnect_attempt: () => console.log(`Reconnecting to ${path}`),
-			reconnect_failed: () => console.log(`Failed to reconnect to ${path}`),
-			reconnect_error: (error: Error) => console.error(`Error reconnecting to ${path}: ${error}`),
-		};
-		for (const event in Object.keys(events)) {
-			this.socket.on(event, events[event]);
-		}
+		this.socket.on("connect", () => console.log(`Connected to ${path}`));
+		this.socket.on("disconnect", () => console.log(`Disconnected from ${path}`));
+		this.socket.on("connect_error", (error: Error) => console.error(`Error connecting to ${path}: ${error.message}`));
 	}
 
-	async join(): Promise<Socket> {
+	async join(): Promise<this> {
 		this.socket.emit("join", {
 			token: this.token,
 			hbUserId: this.hbUserId,
 		});
 		return new Promise((resolve, reject) => {
-			this.socket.once("join-success", () => resolve(this.socket));
-			this.socket.once("join-error", (error: Error) => reject(error));
+			this.socket.once("joinSuccess", () => resolve(this));
+			this.socket.once("joinFailure", (error: string) => reject(new Error(error)));
 		});
 	}
 
@@ -62,20 +53,15 @@ export default class RealtimeRoomConnection {
 		if (!this.controlRequestTimeout) {
 			this.controlRequestTimeout = window.setTimeout(() => {
 				this.controlRequestTimeout = undefined;
-				this.socket.emit("request-control");
+				this.socket.emit("requestControl");
 			}, 10 * 1000);
 		}
 	}
 
 	releaseControl() {
+		if (!this.room.controllerId) return;
 		if (this.room.controllerId === this.me.id) {
-			this.socket.emit("release-control");
+			this.socket.emit("releaseControl");
 		}
-	}
-
-	handleEvents() {
-		this.socket.on("members-updated", (members: User[]) => {
-			this.room.members = members;
-		});
 	}
 }
