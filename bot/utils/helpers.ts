@@ -3,7 +3,7 @@ import fetch, { RequestInit } from "node-fetch";
 
 export function pick<T, K extends keyof T>(obj: T, ...keys: K[]): Pick<T, K> {
 	const ret: any = {};
-	keys.forEach(key => {
+	keys.forEach((key) => {
 		ret[key] = obj[key];
 	});
 	return ret;
@@ -33,7 +33,9 @@ export const publicObject = {
 	session: (s: Session) => pick(s, ...publicProperties.session) as PublicSession,
 };
 
-export type RequiredKeys<T> = { [K in keyof T]-?: {} extends Pick<T, K> ? never : K }[keyof T];
+export type RequiredKeys<T> = {
+	[K in keyof T]-?: {} extends Pick<T, K> ? never : K;
+}[keyof T];
 export type PickRequired<T> = Pick<T, RequiredKeys<T>>;
 
 type RequestProps = {
@@ -44,15 +46,16 @@ type RequestProps = {
 	authBearer: string;
 };
 
-export async function hbApiRequest<ResponseType, RequestBody = any>(props: RequestProps & { body?: RequestBody; }): Promise<ResponseType> {
-	const headers = { "Authorization": `Bearer ${props.authBearer}` };
+export async function hbApiRequest<ResponseType, RequestBody = any>(
+	props: RequestProps & { body?: RequestBody },
+): Promise<ResponseType> {
+	const headers = { Authorization: `Bearer ${props.authBearer}` };
 	const response = await fetch(`${props.baseUrl}${props.path}`, {
 		method: props.method,
 		headers: { ...headers, ...(props.headers || {}) },
 		body: props.body ? JSON.stringify(props.body) : undefined,
 	});
 	const result = await response.json();
-	if (!response.ok)
-		throw new Error(`${response.status} ${response.statusText}\n${result.code}:${result.message}`);
+	if (!response.ok) throw new Error(`${response.status} ${response.statusText}\n${result.code}:${result.message}`);
 	return result as unknown as ResponseType;
 }

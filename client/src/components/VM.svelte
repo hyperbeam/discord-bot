@@ -1,38 +1,37 @@
 <script lang="ts">
-  import Hyperbeam, { HyperbeamIFrame } from "@hyperbeam/web";
-  import { hbSession } from "../scripts/state";
-  import { onMount } from "svelte";
-  export let embedUrl: string;
+	import Hyperbeam, { HyperbeamIFrame } from "@hyperbeam/web";
+	import { onMount } from "svelte";
 
-  async function startHyperbeamSession(url: string): Promise<HyperbeamIFrame> {
-    const hbiframe = document.getElementById(
-      "hyperbeam"
-    ) as HTMLIFrameElement | null;
-    if (hbiframe) {
-      const data = await Hyperbeam(hbiframe, url);
-      $hbSession = data;
-      return data;
-    }
-  }
+	import { hbSession } from "../scripts/state";
+	export let embedUrl: string;
 
-  onMount(async () => {
-    if (embedUrl) startHyperbeamSession(embedUrl);
-  });
+	async function startHyperbeamSession(url: string): Promise<HyperbeamIFrame> {
+		const hbiframe = document.getElementById("hyperbeam") as HTMLIFrameElement | null;
+		if (hbiframe) {
+			const data = await Hyperbeam(hbiframe, url);
+			$hbSession = data;
+			return data;
+		}
+	}
+
+	onMount(async () => {
+		if (embedUrl) startHyperbeamSession(embedUrl);
+	});
 </script>
 
 <div id="VM">
-  <iframe id="hyperbeam" title="Hyperbeam" />
+	<iframe id="hyperbeam" title="Hyperbeam" />
 </div>
 
 <style>
-  #VM {
-    height: calc(100vh - 64px);
-    width: 100vw;
-  }
+	#VM {
+		height: calc(100vh - 64px);
+		width: 100vw;
+	}
 
-  #hyperbeam {
-    width: 100%;
-    height: 100%;
-    aspect-ratio: 16 / 9; /* TODO: check support */
-  }
+	#hyperbeam {
+		width: 100%;
+		height: 100%;
+		aspect-ratio: 16 / 9; /* TODO: check support */
+	}
 </style>

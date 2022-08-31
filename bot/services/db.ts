@@ -19,7 +19,11 @@ export default class Database {
 	}
 
 	async upsertUser(data: Prisma.UserCreateInput): Promise<User> {
-		return this.dbClient.user.upsert({ create: data, update: data, where: { id: data.id } });
+		return this.dbClient.user.upsert({
+			create: data,
+			update: data,
+			where: { id: data.id },
+		});
 	}
 
 	async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<void> {
@@ -49,14 +53,23 @@ export default class Database {
 	// could get out of sync with membercount maybe?
 	async joinRoom(data: Prisma.RoomMemberCreateInput): Promise<RoomMember> {
 		const member = await this.dbClient.roomMember.create({ data });
-		await this.dbClient.room.update({ where: { id: member.roomId }, data: { memberCount: { increment: 1 } } });
+		await this.dbClient.room.update({
+			where: { id: member.roomId },
+			data: { memberCount: { increment: 1 } },
+		});
 		return member;
 	}
 
 	// could get out of sync with membercount maybe?
 	async leaveRoom(where: Prisma.RoomMemberWhereUniqueInput): Promise<User> {
-		const member = await this.dbClient.roomMember.delete({ where, select: { user: true, roomId: true } });
-		await this.dbClient.room.update({ where: { id: member.roomId }, data: { memberCount: { decrement: 1 } } });
+		const member = await this.dbClient.roomMember.delete({
+			where,
+			select: { user: true, roomId: true },
+		});
+		await this.dbClient.room.update({
+			where: { id: member.roomId },
+			data: { memberCount: { decrement: 1 } },
+		});
 		return member.user;
 	}
 
@@ -64,26 +77,39 @@ export default class Database {
 	async getRoomMembers(where: Prisma.RoomWhereInput): Promise<User[]> {
 		const room = await this.getRoom(where);
 		if (!room) return [];
-		const users = await this.dbClient.roomMember.findMany({ select: { user: true }, where: { roomId: room.id }, distinct: "userId" });
+		const users = await this.dbClient.roomMember.findMany({
+			select: { user: true },
+			where: { roomId: room.id },
+			distinct: "userId",
+		});
 		return users.map((u) => u.user);
 	}
 
 	async getMemberCount(where: Prisma.RoomWhereInput): Promise<number> {
 		const room = await this.getRoom(where);
 		if (!room) return 0;
-		return this.dbClient.roomMember.count({ where: { roomId: room.id }, distinct: "userId" });
+		return this.dbClient.roomMember.count({
+			where: { roomId: room.id },
+			distinct: "userId",
+		});
 	}
 
 	async getRoomSessions(where: Prisma.RoomWhereInput): Promise<Session[]> {
 		const room = await this.getRoom(where);
 		if (!room) return [];
-		return this.dbClient.session.findMany({ where: { roomId: room.id }, orderBy: { createdAt: "desc" } });
+		return this.dbClient.session.findMany({
+			where: { roomId: room.id },
+			orderBy: { createdAt: "desc" },
+		});
 	}
 
 	async getLatestSession(where: Prisma.RoomWhereInput): Promise<Session | null> {
 		const room = await this.getRoom(where);
 		if (!room) return null;
-		return this.dbClient.session.findFirst({ where: { roomId: room.id }, orderBy: { createdAt: "desc" } });
+		return this.dbClient.session.findFirst({
+			where: { roomId: room.id },
+			orderBy: { createdAt: "desc" },
+		});
 	}
 
 	// this interacts with the api, keep it here for now

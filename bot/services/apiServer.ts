@@ -74,12 +74,9 @@ export default function apiServer(db: Database): APIServer {
 		if (typeof decoded !== "object") return null;
 		if (!decoded.id) return null;
 		const user = await db.getUser({ id: decoded.id });
-		if (!user)
-			throw new Error("Invalid token: User not found");
-		if (!user.hash)
-			throw new Error("Invalid token: Not logged in");
-		if (!jwt.verify(token, user.hash!))
-			throw new Error("Invalid token: Verification failed");
+		if (!user) throw new Error("Invalid token: User not found");
+		if (!user.hash) throw new Error("Invalid token: Not logged in");
+		if (!jwt.verify(token, user.hash!)) throw new Error("Invalid token: Verification failed");
 		return user;
 	};
 
@@ -87,16 +84,17 @@ export default function apiServer(db: Database): APIServer {
 
 	app.use(morgan("dev"));
 
-	app.use(cors({
-		origin: process.env.VITE_CLIENT_BASE_URL,
-		methods: ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
-		allowedHeaders: ["Content-Type", "Authorization", "Origin"],
-		credentials: true,
-	}));
+	app.use(
+		cors({
+			origin: process.env.VITE_CLIENT_BASE_URL,
+			methods: ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
+			allowedHeaders: ["Content-Type", "Authorization", "Origin"],
+			credentials: true,
+		}),
+	);
 
 	app.get("/authorize/:code", async (req, res) => {
-		if (!req.params.code)
-			return res.status(400).send({ error: "No code provided" });
+		if (!req.params.code) return res.status(400).send({ error: "No code provided" });
 		// the package's request function is a bit weird, so we need to use the raw request
 		const tokenResponse: Discord.TokenRequestResult = await fetch("https://discordapp.com/api/oauth2/token", {
 			method: "POST",
@@ -110,7 +108,7 @@ export default function apiServer(db: Database): APIServer {
 				client_id: process.env.DISCORD_CLIENT_ID!,
 				client_secret: process.env.DISCORD_CLIENT_SECRET!,
 			}).toString(),
-		}).then(response => response.json() as unknown as Discord.TokenRequestResult);
+		}).then((response) => response.json() as unknown as Discord.TokenRequestResult);
 
 		// we should get back an access and refresh token
 		if (!tokenResponse.access_token || !tokenResponse.refresh_token)
@@ -150,22 +148,23 @@ export default function apiServer(db: Database): APIServer {
 			const user = await verifyUser(token);
 			if (user) {
 				req.session.authenticated = true;
-				const rooms = await db.getRooms({
-					ownerId: user.id,
-					OR: {
-						RoomMembers: {
-							some: { userId: user.id },
+				const rooms = await db
+					.getRooms({
+						ownerId: user.id,
+						OR: {
+							RoomMembers: {
+								some: { userId: user.id },
+							},
 						},
-					},
-				}).then(rooms => rooms.map(publicObject.room));
+					})
+					.then((rooms) => rooms.map(publicObject.room));
 				return res.status(200).send({
 					...publicObject.user(user),
 					rooms,
 					token,
 				});
 			}
-		}
-		catch (error) {
+		} catch (error) {
 			console.error(error);
 			res.status(400).send({ error });
 		}
@@ -183,40 +182,53 @@ export default function apiServer(db: Database): APIServer {
 
 	app.get("/rooms", async (req, res) => {
 		// verify user first
-		if (!req.headers.authorization)
-			return res.status(401).send({ error: "Not authorized." });
+		if (!req.headers.authorization) return res.status(401).send({ error: "Not authorized." });
 		const token = req.headers.authorization.split(" ")[1];
-		if (!token)
-			return res.status(400).send({ error: "No token provided" });
-		try { jwt.decode(token); } catch (e) { return res.status(400).send({ error: "Invalid token" }); }
+		if (!token) return res.status(400).send({ error: "No token provided" });
+		try {
+			jwt.decode(token);
+		} catch (e) {
+			return res.status(400).send({ error: "Invalid token" });
+		}
 		const user = await verifyUser(token);
 		if (!user) return res.status(400).send({ error: "Invalid user" });
 		req.session.authenticated = true;
 		// get all rooms for room list
-		const rooms = await db.getRooms({
-			OR: [{
-				ownerId: user.id,
-			}, {
-				RoomMembers: { some: { userId: user.id } },
-			}],
-		}).then(rooms => rooms.map(publicObject.room));
+		const rooms = await db
+			.getRooms({
+				OR: [
+					{
+						ownerId: user.id,
+					},
+					{
+						RoomMembers: { some: { userId: user.id } },
+					},
+				],
+			})
+			.then((rooms) => rooms.map(publicObject.room));
 		return res.status(200).send({ rooms });
 	});
 
 	app.get("/room/:roomurl", async (req, res) => {
 		// TODO: verify only if room requires auth
 		const room = await db.getRoom({ url: req.params.roomurl });
-		if (!room)
-			return res.status(404).send({ error: "Room not found" });
+		if (!room) return res.status(404).send({ error: "Room not found" });
 		if (room.requiresAuth) {
 			// verify user first
 			if (!req.headers.authorization)
 				return res.status(401).send({ error: "Not authorized: Room requires authorization." });
 			const token = req.headers.authorization.split(" ")[1];
-			if (!token)
-				return res.status(400).send({ error: "No token provided: Room requires authorization." });
-			try { jwt.decode(token); } catch (e) { return res.status(400).send({ error: "Invalid token" }); }
-			try { await verifyUser(token); } catch (e) { return res.status(400).send({ error: e }); }
+			if (!token) return res.status(400).send({ error: "No token provided: Room requires authorization." });
+			try {
+				jwt.decode(token);
+			} catch (e) {
+				return res.status(400).send({ error: "Invalid token" });
+			}
+			try {
+				await verifyUser(token);
+			} catch (e) {
+				return res.status(400).send({ error: e });
+			}
 		}
 
 		// TODO: optimize this flow
@@ -228,7 +240,10 @@ export default function apiServer(db: Database): APIServer {
 		if (session) {
 			const sessionResponse = await fetch(session.embedUrl);
 			if (sessionResponse.ok)
-				return res.status(200).json({ ...publicObject.room(room), session: publicObject.session(session) });
+				return res.status(200).json({
+					...publicObject.room(room),
+					session: publicObject.session(session),
+				});
 			else {
 				session = null;
 				const deletedSessions = await db.deleteSessions({ roomId: room.id });
@@ -238,11 +253,13 @@ export default function apiServer(db: Database): APIServer {
 			}
 		}
 		// if the session is expired, make a new session
-		if (!session)
-			return res.status(400).send({ error: "Session expired" });
+		if (!session) return res.status(400).send({ error: "Session expired" });
 
 		// TODO: send admin token only to room owner
-		return res.status(200).json({ ...publicObject.room(room), session: publicObject.session(session) });
+		return res.status(200).json({
+			...publicObject.room(room),
+			session: publicObject.session(session),
+		});
 	});
 
 	io.use((socket, next) => {
@@ -256,7 +273,7 @@ export default function apiServer(db: Database): APIServer {
 	});
 
 	// TODO: implement this clientside
-	io.on("connection", socket => {
+	io.on("connection", (socket) => {
 		console.log(`Websocket connection: ${socket.id}`);
 		socket.on("disconnect", () => {
 			console.log(`Websocket disconnection: ${socket.id}`);

@@ -15,18 +15,21 @@ export const manager = writable<SocketIOManager | null>(null);
 export const roomConnection = writable<RealtimeRoomConnection | null>(null);
 export const hbSession = writable<HyperbeamIFrame | null>(null);
 
-hbSession.subscribe(session => {
+hbSession.subscribe((session) => {
 	const token = localStorage.getItem("token");
 	const room = get(currentRoom);
 	const socketManager = get(manager);
 	const me = get(currentUser);
 	if (token && session?.userId && room && socketManager && me) {
-		roomConnection.set(new RealtimeRoomConnection({
-			room,
-			hbUserId: session?.userId,
-			token, me,
-			manager: socketManager,
-		}));
+		roomConnection.set(
+			new RealtimeRoomConnection({
+				room,
+				hbUserId: session?.userId,
+				token,
+				me,
+				manager: socketManager,
+			}),
+		);
 		get(roomConnection).join();
 	}
 });

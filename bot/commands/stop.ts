@@ -20,8 +20,7 @@ export default class Stop extends SlashCommand<BotClient> {
 		});
 		// Delete the session from the db
 		const room = await this.client.db.getRoom({ ownerId: ctx.user.id });
-		if (!room)
-			return ctx.send("Room not found!");
+		if (!room) return ctx.send("Room not found!");
 		const sessions = await this.client.db.deleteSessions({ roomId: room.id });
 		for (const session of sessions) {
 			console.log(`Deleted session ${session.id}`);
@@ -39,13 +38,16 @@ export default class Stop extends SlashCommand<BotClient> {
 			embeds: [
 				{
 					title: sessions.length ? "Browser stopped successfully" : "No browser was running",
-					fields: [{
-						name: "Love the Discord bot?",
-						value: `[Invite it](${inviteUrl}) to your server, star us on [GitHub](${process.env.VITE_GITHUB_URL}) and help spread the word!`,
-					}, {
-						name: "Need help?",
-						value: `Join the [support server](${process.env.VITE_DISCORD_SUPPORT_SERVER}).`,
-					}],
+					fields: [
+						{
+							name: "Love the Discord bot?",
+							value: `[Invite it](${inviteUrl}) to your server, star us on [GitHub](${process.env.VITE_GITHUB_URL}) and help spread the word!`,
+						},
+						{
+							name: "Need help?",
+							value: `Join the [support server](${process.env.VITE_DISCORD_SUPPORT_SERVER}).`,
+						},
+					],
 				},
 			],
 		});

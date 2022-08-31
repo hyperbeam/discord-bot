@@ -14,15 +14,20 @@ const port = parseInt(process.env.VITE_API_SERVER_PORT || "3000", 10);
 const { httpServer } = apiServer(db);
 httpServer.listen(port, () => console.log(`API server listening on port ${port}`));
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] }) as BotClient;
+const client = new Client({
+	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
+}) as BotClient;
 client.db = db;
 
-const setActivity = (user: typeof client.user) => user?.setActivity({ name: "/start to start browsing!", type: ActivityType.Playing });
+const setActivity = (user: typeof client.user) =>
+	user?.setActivity({
+		name: "/start to start browsing!",
+		type: ActivityType.Playing,
+	});
 
 client.on("ready", () => {
 	console.log("Ready!");
-	if (client.user)
-		setActivity(client.user);
+	if (client.user) setActivity(client.user);
 });
 
 const creator = new SlashCreator({
@@ -40,7 +45,8 @@ creator.on("commandRun", (command, _, ctx) =>
 creator.on("commandRegister", (command) => console.info(`Registered command ${command.commandName}`));
 creator.on("commandError", (command, error) => console.error(`Command ${command.commandName}:`, error));
 
-creator.withServer(new GatewayServer((handler) => client.ws.on(GatewayDispatchEvents.InteractionCreate, handler)))
+creator
+	.withServer(new GatewayServer((handler) => client.ws.on(GatewayDispatchEvents.InteractionCreate, handler)))
 	.registerCommandsIn(path.join(__dirname, "commands"))
 	.syncCommands();
 

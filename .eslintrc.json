@@ -4,12 +4,8 @@
 		"es6": true,
 		"node": true
 	},
-	"extends": [
-		"eslint:recommended"
-	],
-	"ignorePatterns": [
-		"dist/**/*"
-	],
+	"extends": ["eslint:recommended", "plugin:svelte/recommended"],
+	"ignorePatterns": ["dist/**/*"],
 	"globals": {
 		"NodeJS": true,
 		"BigInt": true
@@ -19,14 +15,9 @@
 		"ecmaVersion": 11,
 		"sourceType": "module"
 	},
-	"plugins": [
-		"@typescript-eslint"
-	],
+	"plugins": ["@typescript-eslint"],
 	"rules": {
-		"no-cond-assign": [
-			2,
-			"except-parens"
-		],
+		"no-cond-assign": [2, "except-parens"],
 		"no-unused-vars": "off",
 		"@typescript-eslint/no-unused-vars": 1,
 		"no-empty": [
@@ -43,82 +34,47 @@
 		],
 		"no-console": "off",
 		"no-constant-condition": "off",
-		"indent": [
-			"error",
-			"tab",
-			{
-				"SwitchCase": 1
-			}
-		],
 		"no-empty-pattern": "off",
-		"quotes": [
-			"error",
-			"double"
-		],
-		"linebreak-style": "off",
-		"semi": [
-			"error",
-			"always"
-		],
-		"comma-dangle": [
-			"error",
-			"always-multiline"
-		],
 		"no-return-await": "warn",
 		"no-unneeded-ternary": "warn",
-		"object-shorthand": [
-			"warn",
-			"always"
-		]
+		"object-shorthand": ["warn", "always"]
 	},
 	"overrides": [
 		{
-			"files": [
-				"slash-up.config.js"
-			],
+			"files": ["slash-up.config.js"],
 			"env": {
 				"node": true
 			}
 		},
 		{
-			"files": [
-				"./client/**/*.ts",
-				"./client/**/*.d.ts"
-			],
+			"files": ["./client/**/*.ts", "./client/**/*.d.ts"],
 			"parser": "@typescript-eslint/parser",
 			"parserOptions": {
 				"ecmaVersion": 11,
 				"sourceType": "module"
 			},
-			"plugins": [
-				"@typescript-eslint"
-			],
+			"plugins": ["@typescript-eslint"],
 			"env": {
 				"browser": true
 			}
 		},
 		{
-			"files": [
-				"**/*.svelte"
-			],
-			"processor": "svelte3/svelte3",
+			"files": ["**/*.svelte", "*.svelte"],
+			"parser": "svelte-eslint-parser",
+			"parserOptions": {
+				"parser": "@typescript-eslint/parser",
+				"parserOptions": {
+					"project": "./bot/tsconfig.json",
+					"extraFileExtensions": [".svelte"]
+				}
+			},
 			"env": {
 				"es6": true,
 				"browser": true
 			},
-			"extends": [
-				"eslint:recommended"
-			],
-			"plugins": [
-				"simple-import-sort",
-				"import",
-				"svelte3"
-			],
-			"settings": {
-				"svelte3/typescript": true
-			},
+			"extends": ["plugin:svelte/recommended"],
+			"plugins": ["simple-import-sort", "import"],
 			"rules": {
-				"jsx-a11y/accessible-emoji": "off",
 				"simple-import-sort/imports": "warn",
 				"simple-import-sort/exports": "warn"
 			}

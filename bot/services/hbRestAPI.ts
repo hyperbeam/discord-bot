@@ -13,9 +13,9 @@ export interface VMRequestBody {
 	offline_timeout?: number | null;
 	control_disable_default?: boolean;
 	region?: "NA" | "EU" | "AS";
-	profile?: { load?: string; save?: boolean; };
+	profile?: { load?: string; save?: boolean };
 	ublock?: boolean;
-	extension?: { field: string; };
+	extension?: { field: string };
 	webgl?: boolean;
 	width?: number;
 	height?: number;

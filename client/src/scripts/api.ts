@@ -16,7 +16,7 @@ export async function apiRequest<T>(route: string, method = "GET", body?: any): 
 		body: JSON.stringify(body),
 		headers: {
 			"Content-Type": "application/json",
-			...(shouldSpecifyToken ? { "Authorization": `Bearer ${token}` } : {}),
+			...(shouldSpecifyToken ? { Authorization: `Bearer ${token}` } : {}),
 		},
 	});
 	const data = await response.json();
@@ -30,7 +30,7 @@ export async function login(): Promise<User> {
 		localStorage.removeItem("token");
 		throw new Error("Not authorized.");
 	}
-	const user = await apiRequest<User>("/login").catch(err => {
+	const user = await apiRequest<User>("/login").catch((err) => {
 		localStorage.removeItem("token");
 		throw err;
 	});
@@ -43,19 +43,16 @@ interface AuthorizedUser extends User {
 }
 
 export async function parseDiscordResponse(code: string, state: string): Promise<User> {
-	if (state !== localStorage.getItem("state"))
-		throw new Error("Invalid OAuth2 state");
+	if (state !== localStorage.getItem("state")) throw new Error("Invalid OAuth2 state");
 	localStorage.removeItem("state");
 	const response = await fetch(`${import.meta.env.VITE_API_SERVER_BASE_URL}/authorize/${code}`, {
 		headers: {
 			"Content-Type": "application/json",
 		},
 	});
-	if (!response.ok)
-		throw new Error(`${response.status} ${response.statusText}`);
-	const data: AuthorizedUser = await response.json() as AuthorizedUser;
-	if (!data.id || !data.token)
-		throw new Error("Unable to determine user");
+	if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+	const data: AuthorizedUser = (await response.json()) as AuthorizedUser;
+	if (!data.id || !data.token) throw new Error("Unable to determine user");
 	currentUser.set(data);
 	localStorage.setItem("token", data.token);
 	return data;
@@ -67,7 +64,10 @@ export function logoutUser() {
 	currentUser.set(null);
 }
 
-export const oauthUrl = (state: string) => `https://discord.com/oauth2/authorize?client_id=${import.meta.env.VITE_CLIENT_ID!}&redirect_uri=${encodeURIComponent(import.meta.env.VITE_CLIENT_BASE_URL!)}%2Fauthorize&response_type=code&scope=identify%20email&state=${state}`;
+export const oauthUrl = (state: string) =>
+	`https://discord.com/oauth2/authorize?client_id=${import.meta.env.VITE_CLIENT_ID!}&redirect_uri=${encodeURIComponent(
+		import.meta.env.VITE_CLIENT_BASE_URL!,
+	)}%2Fauthorize&response_type=code&scope=identify%20email&state=${state}`;
 
 export function redirectToDiscord() {
 	const state = nanoid();

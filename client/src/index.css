@@ -11,178 +11,178 @@
 */
 
 * {
-  /* Remove default margin on everything */
-  margin: 0;
-  /* Remove default padding on everything */
-  padding: 0;
-  /* Calc `em` based line height, bigger line height for smaller font size and smaller line height for bigger font size: https://kittygiraudel.com/2020/05/18/using-calc-to-figure-out-optimal-line-height/ */
-  line-height: calc(0.25rem + 1em + 0.25rem);
-  font-family: Lato, Inter, Avenir, Helvetica, Arial, sans-serif;
+	/* Remove default margin on everything */
+	margin: 0;
+	/* Remove default padding on everything */
+	padding: 0;
+	/* Calc `em` based line height, bigger line height for smaller font size and smaller line height for bigger font size: https://kittygiraudel.com/2020/05/18/using-calc-to-figure-out-optimal-line-height/ */
+	line-height: calc(0.25rem + 1em + 0.25rem);
+	font-family: Lato, Inter, Avenir, Helvetica, Arial, sans-serif;
 }
 
 /* Use a more-intuitive box-sizing model on everything */
 *,
 ::before,
 ::after {
-  box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 /* Remove border and set sensible defaults for backgrounds, on all elements except fieldset progress and meter */
 *:where(:not(fieldset, progress, meter)) {
-  border-width: 0;
-  border-style: solid;
-  background-origin: border-box;
-  background-repeat: no-repeat;
+	border-width: 0;
+	border-style: solid;
+	background-origin: border-box;
+	background-repeat: no-repeat;
 }
 
 html {
-  /* Allow percentage-based heights in the application */
-  block-size: 100%;
-  /* Making sure text size is only controlled by font-size */
-  -webkit-text-size-adjust: none;
+	/* Allow percentage-based heights in the application */
+	block-size: 100%;
+	/* Making sure text size is only controlled by font-size */
+	-webkit-text-size-adjust: none;
 }
 
 /* Smooth scrolling for users that don't prefer reduced motion */
 @media (prefers-reduced-motion: no-preference) {
-  html:focus-within {
-    scroll-behavior: smooth;
-  }
+	html:focus-within {
+		scroll-behavior: smooth;
+	}
 }
 
 body {
-  /* Improve text rendering */
-  -webkit-font-smoothing: antialiased;
-  /* https://marco.org/2012/11/15/text-rendering-optimize-legibility */
-  text-rendering: optimizeSpeed;
-  /* Allow percentage-based heights in the application */
-  min-block-size: 100%;
-  /* https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-gutter#example_2 */
-  /* scrollbar-gutter: stable both-edges; Removed until this bug is fixed: https://bugs.chromium.org/p/chromium/issues/detail?id=1318404#c2 */
+	/* Improve text rendering */
+	-webkit-font-smoothing: antialiased;
+	/* https://marco.org/2012/11/15/text-rendering-optimize-legibility */
+	text-rendering: optimizeSpeed;
+	/* Allow percentage-based heights in the application */
+	min-block-size: 100%;
+	/* https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-gutter#example_2 */
+	/* scrollbar-gutter: stable both-edges; Removed until this bug is fixed: https://bugs.chromium.org/p/chromium/issues/detail?id=1318404#c2 */
 }
 
 /* Improve media defaults */
 :where(img, svg, video, canvas, audio, iframe, embed, object) {
-  display: block;
+	display: block;
 }
 :where(img, svg, video) {
-  block-size: auto;
-  max-inline-size: 100%;
+	block-size: auto;
+	max-inline-size: 100%;
 }
 
 /* Remove stroke and set fill colour to the inherited font colour */
 :where(svg) {
-  stroke: none;
-  fill: currentColor;
+	stroke: none;
+	fill: currentColor;
 }
 
 /* SVG's without a fill attribute */
 :where(svg):where(:not([fill])) {
-  /* Remove fill and set stroke colour to the inherited font colour */
-  stroke: currentColor;
-  fill: none;
-  /* Rounded stroke */
-  stroke-linecap: round;
-  stroke-linejoin: round;
+	/* Remove fill and set stroke colour to the inherited font colour */
+	stroke: currentColor;
+	fill: none;
+	/* Rounded stroke */
+	stroke-linecap: round;
+	stroke-linejoin: round;
 }
 
 /* Set a size for SVG's without a width attribute */
 :where(svg):where(:not([width])) {
-  inline-size: 5rem;
+	inline-size: 5rem;
 }
 
 /* Remove built-in form typography styles */
 :where(input, button, textarea, select),
 :where(input[type="file"])::-webkit-file-upload-button {
-  color: inherit;
-  font: inherit;
-  font-size: inherit;
-  letter-spacing: inherit;
+	color: inherit;
+	font: inherit;
+	font-size: inherit;
+	letter-spacing: inherit;
 }
 
 /* Change textarea resize to vertical only and block only if the browser supports that */
 :where(textarea) {
-  resize: vertical;
+	resize: vertical;
 }
 @supports (resize: block) {
-  :where(textarea) {
-    resize: block;
-  }
+	:where(textarea) {
+		resize: block;
+	}
 }
 
 /* Avoid text overflows */
 :where(p, h1, h2, h3, h4, h5, h6) {
-  overflow-wrap: break-word;
+	overflow-wrap: break-word;
 }
 
 /* Fix h1 font size inside article, aside, nav, and section */
 h1 {
-  font-size: 2em;
+	font-size: 2em;
 }
 
 /* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
 :where(ul, ol)[role="list"] {
-  list-style: none;
+	list-style: none;
 }
 
 /* More readable underline style for anchor tags without a class. This could be set on anchor tags globally, but it can cause conflicts. */
 a:not([class]) {
-  text-decoration-skip-ink: auto;
+	text-decoration-skip-ink: auto;
 }
 
 /* Make it clear that interactive elements are interactive */
 :where(a[href], area, button, input, label[for], select, summary, textarea, [tabindex]:not([tabindex*="-"])) {
-  cursor: pointer;
-  touch-action: manipulation;
+	cursor: pointer;
+	touch-action: manipulation;
 }
 :where(input[type="file"]) {
-  cursor: auto;
+	cursor: auto;
 }
 :where(input[type="file"])::-webkit-file-upload-button,
 :where(input[type="file"])::file-selector-button {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 /* Animate focus outline */
 @media (prefers-reduced-motion: no-preference) {
-  :focus-visible {
-    transition: outline-offset 150ms ease-out;
-  }
-  :where(:not(:active)):focus-visible {
-    transition-duration: 150ms;
-  }
+	:focus-visible {
+		transition: outline-offset 150ms ease-out;
+	}
+	:where(:not(:active)):focus-visible {
+		transition-duration: 150ms;
+	}
 }
 :where(:not(:active)):focus-visible {
-  outline-offset: 1px;
+	outline-offset: 1px;
 }
 
 /* Make sure users can't select button text */
 :where(button, button[type], input[type="button"], input[type="submit"], input[type="reset"]),
 :where(input[type="file"])::-webkit-file-upload-button,
 :where(input[type="file"])::file-selector-button {
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-  user-select: none;
-  text-align: center;
+	-webkit-tap-highlight-color: transparent;
+	-webkit-touch-callout: none;
+	user-select: none;
+	text-align: center;
 }
 
 /* Disabled cursor for disabled buttons */
 :where(button, button[type], input[type="button"], input[type="submit"], input[type="reset"])[disabled] {
-  cursor: not-allowed;
+	cursor: not-allowed;
 }
 
 button {
-  font-weight: bold;
-  padding: 8px 12px;
-  border-radius: 4px;
-  background-color: #a888ff;
-  color: black;
+	font-weight: bold;
+	padding: 8px 12px;
+	border-radius: 4px;
+	background-color: #a888ff;
+	color: black;
 }
 
 :where(h1, h2, h3, h4, h5, h6):focus {
-  outline: none;
+	outline: none;
 }
 
 body {
-  background-color: #1b1c21;
-  color: white;
+	background-color: #1b1c21;
+	color: white;
 }

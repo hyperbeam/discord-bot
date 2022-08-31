@@ -19,14 +19,18 @@ type ConnectedMember = {
 };
 
 export interface ServerToClientEvents {
-	joinSuccess: (data: PublicRoom & { connected: ConnectedMember[]; } & { session: PublicSession; }) => void;
+	joinSuccess: (
+		data: PublicRoom & { connected: ConnectedMember[] } & {
+			session: PublicSession;
+		},
+	) => void;
 	joinFailure: (error: string) => void;
 	roomMembersUpdate: (data: ConnectedMember[]) => void;
 	controlTransfer: (data: ConnectedMember) => void;
 }
 
 export interface ClientToServerEvents {
-	join: (data: { token: string; hbUserId: string; }) => void;
+	join: (data: { token: string; hbUserId: string }) => void;
 	requestControl: () => void;
 	releaseControl: () => void;
 }

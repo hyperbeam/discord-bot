@@ -44,23 +44,30 @@ export default class SessionManager {
 				if (!session) throw new Error("No active session.");
 
 				// session exists, join it
-				const roomData = { ...publicObject.room(dbRoom), connected: [member], session };
+				const roomData = {
+					...publicObject.room(dbRoom),
+					connected: [member],
+					session,
+				};
 				this.activeRooms.set(roomUrl, roomData);
 
 				// check if first person, if so, make them controller
 				this.checkControl(roomUrl, member);
-				this.socketServer.of(roomUrl).to(member.socketId).emit("joinSuccess", { ...roomData, session: publicObject.session(session) });
-			}
-			else throw new Error("Room not found.");
-		}
-		else {
+				this.socketServer
+					.of(roomUrl)
+					.to(member.socketId)
+					.emit("joinSuccess", {
+						...roomData,
+						session: publicObject.session(session),
+					});
+			} else throw new Error("Room not found.");
+		} else {
 			// room already registered, check if member is already in it in case of reconnect
-			const existingMember = room.connected.findIndex(m => m.hbUserId === member.hbUserId);
+			const existingMember = room.connected.findIndex((m) => m.hbUserId === member.hbUserId);
 			if (existingMember !== -1) {
 				// member is in it, update socket id
 				room.connected[existingMember] = member;
-			}
-			else {
+			} else {
 				// member is not in it, add them
 				room.connected.push(member);
 			}
