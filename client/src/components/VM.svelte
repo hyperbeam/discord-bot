@@ -22,11 +22,6 @@
 </div>
 
 <style>
-  #VM {
-    height: 100vh;
-    width: 100vw;
-  }
-
   #hyperbeam {
     width: 100%;
     height: 100%;
