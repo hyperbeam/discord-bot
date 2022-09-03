@@ -7,19 +7,20 @@ type sessionAPIProps = {
 };
 
 export default function hbSessionAPI(props: sessionAPIProps) {
+	const parsedEmbedUrl = new URL(props.embedUrl);
 	return {
 		async setPermissions(userId: string, permissions: Partial<PermissionData>): Promise<void> {
 			return hbApiRequest<void, [string, Partial<PermissionData>]>({
-				baseUrl: new URL(props.embedUrl).href,
+				baseUrl: parsedEmbedUrl.origin + parsedEmbedUrl.pathname,
 				authBearer: props.adminToken,
-				path: `/setPermissions/${userId}`,
+				path: `/setPermissions`,
 				method: "POST",
 				body: [userId, permissions],
 			});
 		},
 		async kickUser(userId: string): Promise<void> {
 			return hbApiRequest<void, undefined>({
-				baseUrl: new URL(props.embedUrl).href,
+				baseUrl: parsedEmbedUrl.origin + parsedEmbedUrl.pathname,
 				authBearer: props.adminToken,
 				path: `/users/${userId}`,
 				method: "DELETE",

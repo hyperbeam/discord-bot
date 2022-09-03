@@ -9,8 +9,10 @@ import morgan from "morgan";
 import { nanoid } from "nanoid";
 import fetch from "node-fetch";
 import { Namespace, Server as SocketServer } from "socket.io";
+import { ClientToServerEvents, ServerToClientEvents } from "../sharedTypes";
 import { publicObject } from "../utils/helpers";
 import Database from "./db";
+import SessionManager from "./sessionManager";
 
 interface APIServer {
 	io: Namespace;
@@ -39,13 +41,18 @@ export default function apiServer(db: Database): APIServer {
 	app.use(sessionMiddleware);
 
 	// OPTIONS preflight req type is needed to check if cors is viable
-	const socketServer = new SocketServer(httpServer, {
+	const socketServer = new SocketServer<ClientToServerEvents, ServerToClientEvents>(httpServer, {
 		cors: {
 			origin: process.env.VITE_CLIENT_BASE_URL,
 			methods: ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
 			allowedHeaders: ["Content-Type", "Authorization"],
 			credentials: true,
 		},
+	});
+
+	const sessionManager = new SessionManager({
+		socketServer,
+		db,
 	});
 
 	const io = socketServer.of("/");
@@ -231,9 +238,7 @@ export default function apiServer(db: Database): APIServer {
 			}
 		}
 
-		// TODO: optimize this flow
-		// currently there's like 3 queries per request, all async
-		// takes like 3 seconds to load the page
+		sessionManager.setup(req.params.roomurl);
 
 		// get session if it already exists
 		let session = await db.getLatestSession({ id: room.id });
@@ -249,14 +254,14 @@ export default function apiServer(db: Database): APIServer {
 				});
 			else {
 				session = null;
-				const deletedSessions = await db.deleteSessions({ roomId: room.id }).catch((e) => {
-					console.error(e);
-					res.status(500).send({ error: "Failed to delete session" });
-				});
-				if (deletedSessions)
-					for (const deletedSession of deletedSessions) {
-						console.log(`Deleted session ${deletedSession.id}`);
-					}
+				db.deleteSessions({ roomId: room.id })
+					.then((deletedSessions) => {
+						if (deletedSessions)
+							for (const deletedSession of deletedSessions) {
+								console.log(`Deleted session ${deletedSession.id}`);
+							}
+					})
+					.catch((e) => console.error(e));
 			}
 		}
 		// if the session is expired, make a new session

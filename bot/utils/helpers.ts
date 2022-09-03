@@ -44,6 +44,7 @@ type RequestProps = {
 	baseUrl: string;
 	headers?: RequestInit["headers"];
 	authBearer: string;
+	returnRawResponse?: boolean;
 };
 
 export async function hbApiRequest<ResponseType, RequestBody = any>(
@@ -55,7 +56,16 @@ export async function hbApiRequest<ResponseType, RequestBody = any>(
 		headers: { ...headers, ...(props.headers || {}) },
 		body: props.body ? JSON.stringify(props.body) : undefined,
 	});
-	const result = await response.json();
-	if (!response.ok) throw new Error(`${response.status} ${response.statusText}\n${result.code}:${result.message}`);
-	return result as unknown as ResponseType;
+	if (props.returnRawResponse) return response as unknown as ResponseType;
+	else {
+		let result;
+		try {
+			result = await response.json();
+		} catch (e) {
+			result = await response.text();
+			throw new Error(`Failed to parse response as JSON:\n${result}`);
+		}
+		if (response.ok) return result as unknown as ResponseType;
+		else throw new Error(`${response.status} ${response.statusText}\n${result.code}:${result.message}`);
+	}
 }

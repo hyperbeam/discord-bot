@@ -46,8 +46,8 @@ export default class Database {
 		return this.dbClient.room.findFirst({ where });
 	}
 
-	async getRooms(where: Prisma.RoomWhereInput): Promise<Room[]> {
-		return this.dbClient.room.findMany({ where });
+	async getRooms(where?: Prisma.RoomWhereInput): Promise<Room[]> {
+		return where ? this.dbClient.room.findMany({ where }) : this.dbClient.room.findMany();
 	}
 
 	// could get out of sync with membercount maybe?

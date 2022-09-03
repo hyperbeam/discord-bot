@@ -14,7 +14,7 @@
 		"bot:launch": "cd dist/bot && node index.js",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
-		"format": "prettier --plugin-search-dir=. --write **/*.{ts,js,json,svelte,css,scss,html}",
+		"format": "prettier --plugin-search-dir=. --write **/*.{ts,js,json,svelte,css,scss,html} --ignore-path .gitignore",
 		"client:dev": "vite",
 		"client:build": "vite build",
 		"client:preview": "vite preview",

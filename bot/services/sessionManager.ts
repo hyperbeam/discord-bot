@@ -6,7 +6,7 @@ import Database from "./db";
 import { Session } from "@prisma/client";
 
 interface SessionManagerProps {
-	socketServer: Server;
+	socketServer: Server<ClientToServerEvents, ServerToClientEvents>;
 	db: Database;
 }
 
@@ -33,10 +33,10 @@ export default class SessionManager {
 		this.db = props.db;
 	}
 
-	public async join(roomUrl: string, member: ConnectedMember) {
+	async getRoom(roomUrl: string): Promise<ExtendedRoom> {
 		const room = this.activeRooms.get(roomUrl);
-		if (!room) {
-			// check if room exists
+		if (room) return room;
+		else {
 			const dbRoom = await this.db.getRoom({ url: roomUrl });
 			if (dbRoom) {
 				// room exists, check session
@@ -46,40 +46,35 @@ export default class SessionManager {
 				// session exists, join it
 				const roomData = {
 					...publicObject.room(dbRoom),
-					connected: [member],
+					connected: [],
 					session,
 				};
 				this.activeRooms.set(roomUrl, roomData);
-
-				// check if first person, if so, make them controller
-				this.checkControl(roomUrl, member);
-				this.socketServer
-					.of(roomUrl)
-					.to(member.socketId)
-					.emit("joinSuccess", {
-						...roomData,
-						session: publicObject.session(session),
-					});
+				return roomData;
 			} else throw new Error("Room not found.");
-		} else {
-			// room already registered, check if member is already in it in case of reconnect
-			const existingMember = room.connected.findIndex((m) => m.hbUserId === member.hbUserId);
-			if (existingMember !== -1) {
-				// member is in it, update socket id
-				room.connected[existingMember] = member;
-			} else {
-				// member is not in it, add them
-				room.connected.push(member);
-			}
-			this.activeRooms.set(roomUrl, room);
-			this.socketServer.of(roomUrl).emit("roomMembersUpdate", room.connected);
 		}
+	}
+
+	public async join(roomUrl: string, member: ConnectedMember): Promise<ExtendedRoom> {
+		const room = await this.getRoom(roomUrl);
+		const existingMember = room.connected.findIndex((m) => m.hbUserId === member.hbUserId);
+		if (existingMember !== -1) {
+			// member is in it, update socket id
+			room.connected[existingMember] = member;
+		} else {
+			// member is not in it, add them
+			room.connected.push(member);
+		}
+		this.activeRooms.set(roomUrl, room);
+		this.socketServer.of(roomUrl).emit("roomMembersUpdate", room.connected);
+		return room;
 	}
 
 	public async checkControl(roomUrl: string, member: ConnectedMember) {
 		const room = this.activeRooms.get(roomUrl);
+		if (!room) throw new Error("Room not found.");
 		// ignore if room doesn't exist or controller exists already or more than one member
-		if (room && !room.controller && room.connected.length === 1) {
+		if (!room.controller && room.connected.length === 1) {
 			if (!member.id) {
 				// nobody is logged in, first one gets it
 				room.controller = member;
@@ -96,6 +91,32 @@ export default class SessionManager {
 				});
 				this.socketServer.of(roomUrl).emit("controlTransfer", member);
 			}
+		} else if (room.controller && room.controller.id === member.id) {
+			// member is the controller already, just needs to be updated
+			room.controller = member;
+			await hbSessionAPI(room.session).setPermissions(member.hbUserId, {
+				control_disabled: false,
+			});
 		}
+	}
+
+	public async setup(roomUrl: string) {
+		this.socketServer.of(roomUrl).on("connection", (socket) => {
+			socket.on("join", async (member) => {
+				console.log("client connected");
+				const memberData = {
+					...member,
+					socketId: socket.id,
+				};
+				await this.join(roomUrl, memberData)
+					.then((room) => {
+						socket.emit("joinSuccess", room);
+					})
+					.catch((err) => {
+						socket.emit("joinFailure", err.message);
+					});
+				await this.checkControl(roomUrl, memberData);
+			});
+		});
 	}
 }

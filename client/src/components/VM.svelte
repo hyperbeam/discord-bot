@@ -15,7 +15,10 @@
 	}
 
 	onMount(async () => {
-		if (embedUrl) startHyperbeamSession(embedUrl);
+		if (embedUrl) {
+			console.log("Starting hyperbeam session");
+			startHyperbeamSession(embedUrl);
+		}
 	});
 </script>
 

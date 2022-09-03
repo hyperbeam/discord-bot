@@ -30,6 +30,8 @@ hbSession.subscribe((session) => {
 				manager: socketManager,
 			}),
 		);
+		console.log("roomConnection set");
 		get(roomConnection).join();
+		console.log("roomConnection joined");
 	}
 });
