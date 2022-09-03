@@ -238,18 +238,25 @@ export default function apiServer(db: Database): APIServer {
 		// get session if it already exists
 		let session = await db.getLatestSession({ id: room.id });
 		if (session) {
-			const sessionResponse = await fetch(session.embedUrl);
-			if (sessionResponse.ok)
+			const sessionResponse = await fetch(session.embedUrl).catch((e) => {
+				console.error(e);
+				res.status(500).send({ error: "Failed to fetch session" });
+			});
+			if (sessionResponse?.ok)
 				return res.status(200).json({
 					...publicObject.room(room),
 					session: publicObject.session(session),
 				});
 			else {
 				session = null;
-				const deletedSessions = await db.deleteSessions({ roomId: room.id });
-				for (const deletedSession of deletedSessions) {
-					console.log(`Deleted session ${deletedSession.id}`);
-				}
+				const deletedSessions = await db.deleteSessions({ roomId: room.id }).catch((e) => {
+					console.error(e);
+					res.status(500).send({ error: "Failed to delete session" });
+				});
+				if (deletedSessions)
+					for (const deletedSession of deletedSessions) {
+						console.log(`Deleted session ${deletedSession.id}`);
+					}
 			}
 		}
 		// if the session is expired, make a new session
