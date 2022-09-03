@@ -150,8 +150,8 @@ export default function apiServer(db: Database): APIServer {
 				req.session.authenticated = true;
 				const rooms = await db
 					.getRooms({
-						ownerId: user.id,
 						OR: {
+							ownerId: user.id,
 							RoomMembers: {
 								some: { userId: user.id },
 							},
