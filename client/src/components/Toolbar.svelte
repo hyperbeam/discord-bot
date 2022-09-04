@@ -1,5 +1,6 @@
 <script>
   import Tooltip from "./Tooltip.svelte";
+import Volume from "./Volume.svelte";
 
   $: isFullscreen = false;
 
@@ -23,6 +24,7 @@
 
 {#if !isFullscreen}
   <div class="toolbar">
+    <Volume />
     <div class="icon" on:click={requestFullscreen}>
       <svg style="width:24px;height:24px" viewBox="0 0 24 24">
         <path
