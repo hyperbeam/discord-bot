@@ -1,10 +1,10 @@
 <script lang="ts">
   export let src: string;
   export let alt: string;
-  export let borderStyle: "dashed" | "solid";
+  export let borderStyle: "" | "dashed" | "solid" = "";
 </script>
 
-<div class={`avatar ${borderStyle || ""}`}>
+<div class={`avatar ${borderStyle}`} on:click>
   <img {src} {alt} />
 </div>
 
