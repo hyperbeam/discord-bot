@@ -62,5 +62,6 @@
     position: fixed;
     bottom: 0;
     height: 48px; /* Toolbar height */
+    width: 100%;
   }
 </style>

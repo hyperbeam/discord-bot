@@ -1,6 +1,6 @@
 <script>
-  import Tooltip from "./Tooltip.svelte";
-import Volume from "./Volume.svelte";
+  import Members from "./Members.svelte";
+  import Volume from "./Volume.svelte";
 
   $: isFullscreen = false;
 
@@ -24,14 +24,19 @@ import Volume from "./Volume.svelte";
 
 {#if !isFullscreen}
   <div class="toolbar">
-    <Volume />
-    <div class="icon" on:click={requestFullscreen}>
-      <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-        <path
-          fill="currentColor"
-          d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z"
-        />
-      </svg>
+    <div class="toolbar__left">
+      <Volume />
+    </div>
+    <Members />
+    <div class="toolbar__right">
+      <div class="icon" on:click={requestFullscreen}>
+        <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+          <path
+            fill="currentColor"
+            d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z"
+          />
+        </svg>
+      </div>
     </div>
   </div>
 {/if}
@@ -57,5 +62,24 @@ import Volume from "./Volume.svelte";
 
   .icon:active {
     background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  :global(.members) {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+  }
+
+  .toolbar__left {
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+  }
+  
+  .toolbar__right {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
   }
 </style>
