@@ -1,24 +1,21 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
-  import Header from "../components/Header.svelte";
   import Toolbar from "../components/Toolbar.svelte";
   import VM from "../components/VM.svelte";
   import { apiRequest } from "../scripts/api";
   import { currentRoom, rooms } from "../scripts/state";
   import { Room, Session } from "../scripts/types";
-
+  import { hb } from "../scripts/state";
   export let roomUrl: string;
 
   let embedUrl: string;
 
   onMount(async () => {
     if (roomUrl) {
-      let room;
+      let room: Room & { session: Session };
       try {
-        room = await apiRequest<Room & { session: Session }>(
-          `/room/${roomUrl}`,
-        );
+        room = await apiRequest(`/room/${roomUrl}`);
       } catch (e) {
         console.error(e);
       }
@@ -42,15 +39,19 @@
 </script>
 
 <div class="room">
-  <VM { embedUrl } />
-  <Toolbar />
+  {#if embedUrl}
+    <VM {embedUrl} />
+    {#if $hb}
+      <Toolbar />
+    {/if}
+  {/if}
 </div>
 
 <style lang="scss">
   .room {
     height: 100%;
   }
-  
+
   :global(#VM) {
     position: absolute;
     inset: 0;
