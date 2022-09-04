@@ -11,7 +11,7 @@ export function pick<T, K extends keyof T>(obj: T, ...keys: K[]): Pick<T, K> {
 
 const publicProperties = {
 	room: ["name", "url", "ownerId", "createdAt", "memberCount"] as Array<keyof Room>,
-	user: ["id", "username", "discriminator", "avatar", "email"] as Array<keyof User>,
+	user: ["id", "username", "discriminator", "avatar"] as Array<keyof User>,
 	session: ["sessionId", "embedUrl", "createdAt"] as Array<keyof Session>,
 };
 
@@ -20,7 +20,7 @@ export type PublicRoom = {
 };
 
 export type PublicUser = {
-	[K in keyof Pick<User, "id" | "username" | "discriminator" | "avatar" | "email">]: User[K];
+	[K in keyof Pick<User, "id" | "username" | "discriminator" | "avatar">]: User[K];
 };
 
 export type PublicSession = {

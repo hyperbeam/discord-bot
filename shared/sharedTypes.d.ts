@@ -5,7 +5,7 @@ export type PublicRoom = {
 };
 
 export type PublicUser = {
-	[K in keyof Pick<User, "id" | "username" | "discriminator" | "avatar" | "email">]: User[K];
+	[K in keyof Pick<User, "id" | "username" | "discriminator" | "avatar">]: User[K];
 };
 
 export type PublicSession = {
