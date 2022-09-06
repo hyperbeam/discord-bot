@@ -75,10 +75,34 @@
     display: flex;
     justify-content: flex-start;
   }
-  
+
   .toolbar__right {
     flex: 1;
     display: flex;
     justify-content: flex-end;
+  }
+
+  @media screen and (max-width: 767px) {
+    .toolbar {
+      display: grid;
+      grid-template-areas:
+        "members members"
+        "left right";
+    }
+
+    .toolbar__left {
+      grid-area: left;
+    }
+
+    .toolbar__right {
+      grid-area: right;
+    }
+
+    :global(.members) {
+      grid-area: members;
+      position: static;
+      transform: none;
+      flex-wrap: wrap;
+    }
   }
 </style>

@@ -181,4 +181,10 @@
     gap: 0.5rem;
     padding: 0.5rem;
   }
+
+  @media screen and (max-width: 767px) {
+    .members {
+      flex-wrap: wrap;
+    }
+  }
 </style>
