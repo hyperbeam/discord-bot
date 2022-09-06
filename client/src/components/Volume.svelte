@@ -83,4 +83,8 @@
   .icon:active {
     background-color: rgba(255, 255, 255, 0.2);
   }
+
+  input[type="range"] {
+    width: 100px;
+  }
 </style>
