@@ -45,6 +45,7 @@
   .toolbar {
     display: flex;
     align-items: center;
+    padding: 4px;
   }
 
   .icon {

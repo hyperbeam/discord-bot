@@ -55,7 +55,7 @@
   :global(#VM) {
     position: absolute;
     inset: 0;
-    margin: 0 0 48px 0; /* Toolbar height */
+    margin: 0 0 56px 0; /* Toolbar height */
   }
 
   /* TODO: align toolbar to bottom of VM */
@@ -69,7 +69,7 @@
     :global(#VM) {
       position: absolute;
       inset: 0;
-      margin: 0 0 96px 0; /* Toolbar height */
+      margin: 0 0 112px 0; /* Toolbar height */
     }
   }
 </style>

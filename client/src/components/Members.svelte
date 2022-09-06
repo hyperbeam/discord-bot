@@ -180,7 +180,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0.5rem;
   }
 
   @media screen and (max-width: 767px) {
