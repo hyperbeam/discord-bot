@@ -1,12 +1,22 @@
 <script lang="ts">
+  import { fade } from "svelte/transition";
   export let text: string;
   // TODO: Account for the tooltip being positioned outside of the viewport
+  let isVisible = false;
 </script>
 
-<div class="tooltip">
-  <div class="tooltip__text">
-    {text}
-  </div>
+<div
+  class="tooltip"
+  on:focus={() => (isVisible = true)}
+  on:mouseover={() => (isVisible = true)}
+  on:blur={() => (isVisible = false)}
+  on:mouseout={() => (isVisible = false)}
+>
+  {#if isVisible}
+    <div class="tooltip__text" transition:fade={{ duration: 150 }} >
+      {text}
+    </div>
+  {/if}
   <slot />
 </div>
 
@@ -17,15 +27,13 @@
   }
 
   .tooltip__text {
-    visibility: hidden;
     position: absolute;
     top: -4px;
     left: 50%;
     transform: translate(-50%, -100%);
     background-color: grey;
-  }
-
-  .tooltip:hover .tooltip__text {
-    visibility: visible;
-  }
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+    padding: 4px 8px;
+    border-radius: 4px;
+}
 </style>
