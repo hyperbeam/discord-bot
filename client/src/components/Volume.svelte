@@ -1,9 +1,15 @@
 <script lang="ts">
+  import { onMount } from "svelte";
+
   import { hb } from "../scripts/state";
 
   let isMuted = false;
   let volume = 1.0;
   $: $hb.volume = isMuted ? 0 : volume;
+  
+  onMount(() => {
+    volume = parseFloat(localStorage.getItem("volume") || "1.0");
+  });
 </script>
 
 <div class="volume">
@@ -57,6 +63,9 @@
     bind:value={volume}
     on:mousedown={() => {
       isMuted = false;
+    }}
+    on:change={() => {
+      localStorage.setItem("volume", volume.toString());
     }}
   />
 </div>
