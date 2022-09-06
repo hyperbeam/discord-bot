@@ -35,5 +35,6 @@
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
     padding: 4px 8px;
     border-radius: 4px;
+    white-space: nowrap;
 }
 </style>

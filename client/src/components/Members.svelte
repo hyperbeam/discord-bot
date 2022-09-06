@@ -2,6 +2,7 @@
   import { currentRoom, currentUser } from "../scripts/state";
   import { User } from "../scripts/types";
   import Avatar from "./Avatar.svelte";
+  import Invite from "./Invite.svelte";
   import Tooltip from "./Tooltip.svelte";
 
   enum Control {
@@ -171,6 +172,7 @@
       />
     </Tooltip>
   {/each}
+  <Invite />
 </div>
 
 <style>
@@ -178,7 +180,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 0.5rem;
     padding: 0.5rem;
   }
 

@@ -13,6 +13,7 @@
     aspect-ratio: 1 / 1;
     width: 40px;
     padding: 4px;
+    margin: 4px;
     border-radius: 50%;
   }
 
