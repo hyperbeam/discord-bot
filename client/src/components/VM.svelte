@@ -6,7 +6,7 @@
 	export let embedUrl: string;
 
 	async function startHyperbeamSession(url: string): Promise<HyperbeamIFrame> {
-		const hbiframe = document.getElementById("hyperbeam") as HTMLIFrameElement | null;
+		const hbiframe = document.getElementById("hyperbeam") as HTMLIFrameElement | undefined;
 		if (hbiframe) {
 			const data = await Hyperbeam(hbiframe, url);
 			$hbSession = data;

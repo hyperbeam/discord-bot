@@ -2,22 +2,20 @@ import dotenv from "dotenv";
 import { SlashCreator, GatewayServer } from "slash-create";
 import { ActivityType, Client, GatewayDispatchEvents, GatewayIntentBits } from "discord.js";
 import path from "path";
-import { PrismaClient } from "@prisma/client";
-import apiServer from "./services/apiServer";
-import Database from "./services/db";
+import database from "./classes/database";
+import apiServer from "./classes/apiServer";
 import { BotClient } from "./types";
 
 dotenv.config({ path: path.join(__dirname, "../../.env") });
-const db = new Database(new PrismaClient());
 
 const port = parseInt(process.env.VITE_API_SERVER_PORT || "3000", 10);
-const { httpServer } = apiServer(db);
+const { httpServer } = apiServer(database);
 httpServer.listen(port, () => console.log(`API server listening on port ${port}`));
 
 const client = new Client({
 	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
 }) as BotClient;
-client.db = db;
+client.db = database;
 
 const setActivity = (user: typeof client.user) =>
 	user?.setActivity({

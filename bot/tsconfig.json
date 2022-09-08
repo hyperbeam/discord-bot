@@ -1,6 +1,9 @@
 {
 	"compilerOptions": {
-		"rootDirs": [".", "../shared/"],
+		"rootDirs": [
+			".",
+			"../shared/"
+		],
 		"composite": true,
 		"target": "es2020",
 		"module": "commonjs",
@@ -10,8 +13,15 @@
 		"esModuleInterop": true,
 		"checkJs": false,
 		"allowSyntheticDefaultImports": true,
+		"experimentalDecorators": true,
 		"resolveJsonModule": true,
 		"moduleResolution": "node"
 	},
-	"include": ["./**/*.ts", "./**/*.d.ts", "../env.d.ts", "../shared/*.ts", "../shared/*.d.ts"]
+	"include": [
+		"./**/*.ts",
+		"./**/*.d.ts",
+		"../env.d.ts",
+		"../shared/*.ts",
+		"../shared/*.d.ts"
+	]
 }

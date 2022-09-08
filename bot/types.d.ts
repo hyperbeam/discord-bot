@@ -1,10 +1,10 @@
 import { Client } from "discord.js";
-import Database from "./services/db";
+import Database from "./classes/database";
 import { Session, SessionData } from "express-session";
 
 // slash-create
 export interface BotClient extends Client {
-	db: Database;
+	db: typeof Database;
 }
 
 // express-session

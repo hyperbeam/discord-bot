@@ -61,7 +61,7 @@ export async function parseDiscordResponse(code: string, state: string): Promise
 // TODO: call /logout to remove tokens from server
 export function logoutUser() {
 	localStorage.removeItem("token");
-	currentUser.set(null);
+	currentUser.set(undefined);
 }
 
 export const oauthUrl = (state: string) =>
