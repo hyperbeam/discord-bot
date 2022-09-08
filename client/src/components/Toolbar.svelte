@@ -31,7 +31,7 @@
     <div class="toolbar__left">
       <Volume />
     </div>
-    <Members />
+    <!-- <Members /> -->
     <div class="toolbar__right">
       <Tooltip text="Fullscreen">
         <div class="icon" on:click={requestFullscreen}>
