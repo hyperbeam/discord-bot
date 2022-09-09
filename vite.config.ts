@@ -22,6 +22,7 @@ export default defineConfig({
 	preview: {
 		port,
 	},
+	publicDir: "./public",
 	build: {
 		outDir: "../dist/client",
 		emptyOutDir: true,

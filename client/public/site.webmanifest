@@ -1,0 +1,19 @@
+{
+	"name": "Hyperbeam Bot",
+	"short_name": "Hyperbeam Bot",
+	"icons": [
+		{
+			"src": "/android-chrome-192x192.png",
+			"sizes": "192x192",
+			"type": "image/png"
+		},
+		{
+			"src": "/android-chrome-512x512.png",
+			"sizes": "512x512",
+			"type": "image/png"
+		}
+	],
+	"theme_color": "#1d1e24",
+	"background_color": "#1d1e24",
+	"display": "standalone"
+}

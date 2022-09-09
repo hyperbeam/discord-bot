@@ -64,6 +64,7 @@ body {
 :where(img, svg, video, canvas, audio, iframe, embed, object) {
 	display: block;
 }
+
 :where(img, svg, video) {
 	block-size: auto;
 	max-inline-size: 100%;
@@ -76,13 +77,13 @@ body {
 }
 
 /* SVG's without a fill attribute */
-:where(svg):where(:not([fill])) {
-	/* Remove fill and set stroke colour to the inherited font colour */
-	stroke: currentColor;
-	fill: none;
-	/* Rounded stroke */
-	stroke-linecap: round;
-	stroke-linejoin: round;
+:where(svg) :where(path:not([fill])) {
+  /* Remove fill and set stroke colour to the inherited font colour */
+  stroke: currentColor;
+  fill: none;
+  /* Rounded stroke */
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /* Set a size for SVG's without a width attribute */
@@ -103,6 +104,7 @@ body {
 :where(textarea) {
 	resize: vertical;
 }
+
 @supports (resize: block) {
 	:where(textarea) {
 		resize: block;
@@ -134,9 +136,11 @@ a:not([class]) {
 	cursor: pointer;
 	touch-action: manipulation;
 }
+
 :where(input[type="file"]) {
 	cursor: auto;
 }
+
 :where(input[type="file"])::-webkit-file-upload-button,
 :where(input[type="file"])::file-selector-button {
 	cursor: pointer;
@@ -151,6 +155,7 @@ a:not([class]) {
 		transition-duration: 150ms;
 	}
 }
+
 :where(:not(:active)):focus-visible {
 	outline-offset: 1px;
 }
@@ -183,6 +188,6 @@ button {
 }
 
 body {
-	background-color: #1b1c21;
-	color: white;
+  background-color: #1b1c21;
+  color: white;
 }
