@@ -1,12 +1,15 @@
 <script lang="ts">
   import Hyperbeam from "@hyperbeam/web";
+  import { onMount } from "svelte";
   import { hb } from "../scripts/state";
 
   export let embedUrl: string;
   let iframe: HTMLIFrameElement;
 
-  $: Hyperbeam(iframe, embedUrl).then((hyperbeamIFrame) => {
-    $hb = hyperbeamIFrame;
+  onMount(() => {
+    Hyperbeam(iframe, embedUrl).then((hyperbeamIFrame) => {
+      $hb = hyperbeamIFrame;
+    });
   });
 </script>
 
