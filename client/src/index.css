@@ -78,12 +78,12 @@ body {
 
 /* SVG's without a fill attribute */
 :where(svg) :where(path:not([fill])) {
-  /* Remove fill and set stroke colour to the inherited font colour */
-  stroke: currentColor;
-  fill: none;
-  /* Rounded stroke */
-  stroke-linecap: round;
-  stroke-linejoin: round;
+	/* Remove fill and set stroke colour to the inherited font colour */
+	stroke: currentColor;
+	fill: none;
+	/* Rounded stroke */
+	stroke-linecap: round;
+	stroke-linejoin: round;
 }
 
 /* Set a size for SVG's without a width attribute */
@@ -188,6 +188,6 @@ button {
 }
 
 body {
-  background-color: #1b1c21;
-  color: white;
+	background-color: #1b1c21;
+	color: white;
 }

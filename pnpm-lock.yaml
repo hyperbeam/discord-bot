@@ -50,7 +50,7 @@ specifiers:
   slash-up: ^1.2.0
   svelte: ^3.50.0
   svelte-check: ^2.9.0
-  svelte-eslint-parser: ^0.18.1
+  svelte-eslint-parser: ^0.18.2
   svelte-navigator: ^3.2.2
   svelte-preprocess: ^4.10.7
   tslib: ^2.4.0
@@ -112,7 +112,7 @@ devDependencies:
   prisma: 4.3.1
   rimraf: 3.0.2
   slash-up: 1.2.0_dnbzppayoco4je6i5b6pn323em
-  svelte-eslint-parser: 0.18.1_svelte@3.50.0
+  svelte-eslint-parser: 0.18.2_svelte@3.50.0
   tslib: 2.4.0
   typescript: 4.7.4
 
@@ -2502,7 +2502,7 @@ packages:
       postcss-safe-parser: 6.0.0_postcss@8.4.16
       sourcemap-codec: 1.4.8
       svelte: 3.50.0
-      svelte-eslint-parser: 0.18.1_svelte@3.50.0
+      svelte-eslint-parser: 0.18.2_svelte@3.50.0
     transitivePeerDependencies:
       - supports-color
       - ts-node
@@ -4588,8 +4588,8 @@ packages:
       - sugarss
     dev: false
 
-  /svelte-eslint-parser/0.18.1_svelte@3.50.0:
-    resolution: {integrity: sha512-f7R9dT6l32O5DC2D9bFLfJjhwfTYZCLBPdR/5e5VOWDNhjTAudB3TL+apaJf+pKDUOfTdqjTqz/KrBjhny7TIQ==}
+  /svelte-eslint-parser/0.18.2_svelte@3.50.0:
+    resolution: {integrity: sha512-8zLD1u176i001zCQ3lBaK1G8s8/2LTiUZBPEzKjDsf0pXlHKThWrfahLh6EF7lQ3MxcV4IJRESC1qjkHRMe+KQ==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
       svelte: ^3.37.0

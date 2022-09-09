@@ -48,23 +48,24 @@
 		},
 		{
 			"files": ["./client/**/*.ts", "./client/**/*.d.ts"],
-			"parser": "@typescript-eslint/parser",
-			"parserOptions": {
-				"ecmaVersion": 11,
-				"sourceType": "module"
-			},
-			"plugins": ["@typescript-eslint"],
 			"env": {
 				"browser": true
 			}
 		},
 		{
-			"files": ["**/*.svelte", "*.svelte"],
+			"files": ["./bot/**/*.ts", "./bot/**/*.d.ts"],
+			"env": {
+				"browser": false,
+				"node": true
+			}
+		},
+		{
+			"files": ["./client/*.svelte", "./client/**/*.svelte"],
 			"parser": "svelte-eslint-parser",
 			"parserOptions": {
 				"parser": "@typescript-eslint/parser",
 				"parserOptions": {
-					"project": "./bot/tsconfig.json",
+					"project": "./client/tsconfig.json",
 					"extraFileExtensions": [".svelte"]
 				}
 			},
