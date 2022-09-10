@@ -6,3 +6,5 @@ export class RoomState extends Schema {
 	@type("string") embedUrl?: string;
 	@type("string") sessionId?: string;
 }
+
+export default RoomState;

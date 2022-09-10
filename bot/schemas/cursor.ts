@@ -5,3 +5,5 @@ export class Cursor extends Schema {
 	@type("number") y: number = 0;
 	@type("string") message?: string;
 }
+
+export default Cursor;

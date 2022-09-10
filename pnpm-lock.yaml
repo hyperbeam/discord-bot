@@ -53,6 +53,7 @@ specifiers:
   svelte-eslint-parser: ^0.18.2
   svelte-navigator: ^3.2.2
   svelte-preprocess: ^4.10.7
+  ts-node: ^10.9.1
   tslib: ^2.4.0
   typescript: 4.7.4
   vite: ^3.0.9
@@ -106,13 +107,14 @@ devDependencies:
   eslint-plugin-jsx-a11y: 6.6.1_eslint@8.23.0
   eslint-plugin-prettier: 4.2.1_tgumt6uwl2md3n6uqnggd6wvce
   eslint-plugin-simple-import-sort: 7.0.0_eslint@8.23.0
-  eslint-plugin-svelte: 2.7.0_sc4laremvjv7grvyfrqmp3xv5q
+  eslint-plugin-svelte: 2.7.0_iha72bzfkdjclcw4lhfdsotyyi
   prettier: 2.7.1
   prettier-plugin-svelte: 2.7.0_jkiirj7yro4cfik5roozpcraa4
   prisma: 4.3.1
   rimraf: 3.0.2
   slash-up: 1.2.0_dnbzppayoco4je6i5b6pn323em
   svelte-eslint-parser: 0.18.2_svelte@3.50.0
+  ts-node: 10.9.1_x2utdhayajzrh747hktprshhby
   tslib: 2.4.0
   typescript: 4.7.4
 
@@ -2483,7 +2485,7 @@ packages:
       eslint: 8.23.0
     dev: true
 
-  /eslint-plugin-svelte/2.7.0_sc4laremvjv7grvyfrqmp3xv5q:
+  /eslint-plugin-svelte/2.7.0_iha72bzfkdjclcw4lhfdsotyyi:
     resolution: {integrity: sha512-K43Eehm5Gal1GxeBjcUMuJRGLHtIwXmLiItNBApV4N1RQYknRh2gVPc6CsJsVlncCvyw6qvNsGX/db1v1PRdMw==}
     engines: {node: ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -2498,7 +2500,7 @@ packages:
       eslint-utils: 3.0.0_eslint@8.23.0
       known-css-properties: 0.25.0
       postcss: 8.4.16
-      postcss-load-config: 3.1.4_postcss@8.4.16
+      postcss-load-config: 3.1.4_57znarxsqwmnneadci5z5fd5gu
       postcss-safe-parser: 6.0.0_postcss@8.4.16
       sourcemap-codec: 1.4.8
       svelte: 3.50.0
@@ -3866,7 +3868,7 @@ packages:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
 
-  /postcss-load-config/3.1.4_postcss@8.4.16:
+  /postcss-load-config/3.1.4_57znarxsqwmnneadci5z5fd5gu:
     resolution: {integrity: sha512-6DiM4E7v4coTE4uzA8U//WhtPwyhiim3eyjEMFCnUpzbrkK9wJHgKDT2mR+HbtSrd/NubVaYTOpSpjUl8NQeRg==}
     engines: {node: '>= 10'}
     peerDependencies:
@@ -3880,6 +3882,7 @@ packages:
     dependencies:
       lilconfig: 2.0.6
       postcss: 8.4.16
+      ts-node: 10.9.1_x2utdhayajzrh747hktprshhby
       yaml: 1.10.2
     dev: true
 

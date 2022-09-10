@@ -1,6 +1,7 @@
-import { nanoid } from "nanoid";
 import { CommandContext, CommandOptionType, SlashCommand, SlashCreator } from "slash-create";
 import { BotClient } from "../types";
+import { matchMaker } from "colyseus";
+import { StartSessionOptions } from "../classes/sessions";
 
 export default class Start extends SlashCommand<BotClient> {
 	constructor(creator: SlashCreator) {
@@ -38,28 +39,10 @@ export default class Start extends SlashCommand<BotClient> {
 	}
 
 	async run(ctx: CommandContext) {
-		// Update user details in the db to recent data
-		await this.client.db.upsertUser({
-			id: ctx.user.id,
-			username: ctx.user.username,
-			discriminator: ctx.user.discriminator,
-			avatar: ctx.user.avatar,
-		});
-		// We only keep one room per user for now
-		let room = await this.client.db.getRoom({ ownerId: ctx.user.id });
-		if (!room)
-			room = await this.client.db.createRoom({
-				owner: { connect: { id: ctx.user.id } },
-				url: nanoid(7),
-				name: `${ctx.user.username}'s room`,
-			});
-
-		await this.client.db.deleteSessions({ roomId: room.id });
-		// Create a new session and set it as latest, overriding current sessions
-		await this.client.db.createHyperbeamSession(room.url, {
-			start_url: ctx.options.start_url,
+		const room = await matchMaker.createRoom("room", {
 			region: ctx.options.region,
-		});
+			ownerId: ctx.user.id,
+		} as StartSessionOptions);
 
 		const inviteUrl = [
 			`https://discord.com/api/oauth2/authorize?client_id=${process.env.VITE_CLIENT_ID}`,
@@ -72,12 +55,12 @@ export default class Start extends SlashCommand<BotClient> {
 		return ctx.send({
 			embeds: [
 				{
-					title: "Started a multiplayer browser!",
+					title: "Started a multiplayer browser session!",
 					description: "Share the link below with your friends to browse together!",
 					fields: [
 						{
 							name: "Start browsing at",
-							value: `${process.env.VITE_CLIENT_BASE_URL}/${room.url}`,
+							value: `${process.env.VITE_CLIENT_BASE_URL}/${room.roomId}`,
 						},
 						{
 							name: "Love the Discord bot?",

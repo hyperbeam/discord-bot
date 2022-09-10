@@ -15,13 +15,14 @@
 		"lint": "eslint . --ignore-path .gitignore",
 		"lint:fix": "eslint . --ignore-path .gitignore --fix",
 		"format": "prettier --plugin-search-dir=. --write **/*.{ts,js,json,svelte,css,scss,html} --ignore-path .gitignore",
-		"client:dev": "vite",
-		"client:build": "vite build",
+		"client:dev": "pnpm exec syncschemas && vite",
+		"client:build": "pnpm exec syncschemas && vite build",
 		"client:preview": "vite preview",
 		"client:serve": "dotenv -e .env -- cross-var sirv -s -p %VITE_CLIENT_PORT% dist/client",
 		"envtypes": "pnpm exec dotenv-types-generator --file ./.env",
 		"db:migrate": "pnpm exec prisma migrate dev && pnpm exec prisma generate",
-		"db:update": "pnpm exec prisma migrate deploy && pnpm exec prisma generate"
+		"db:update": "pnpm exec prisma migrate deploy && pnpm exec prisma generate",
+		"syncschemas": "ts-node ./scripts/syncSchemas.ts"
 	},
 	"dependencies": {
 		"@colyseus/schema": "^1.0.38",
@@ -79,6 +80,7 @@
 		"rimraf": "^3.0.2",
 		"slash-up": "^1.2.0",
 		"svelte-eslint-parser": "^0.18.2",
+		"ts-node": "^10.9.1",
 		"tslib": "^2.4.0",
 		"typescript": "4.7.4"
 	},

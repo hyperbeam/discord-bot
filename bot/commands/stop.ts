@@ -1,4 +1,6 @@
+import { matchMaker } from "colyseus";
 import { CommandContext, SlashCommand, SlashCreator } from "slash-create";
+import { getActiveSessions } from "../classes/sessions";
 import { BotClient } from "../types";
 
 export default class Stop extends SlashCommand<BotClient> {
@@ -11,19 +13,12 @@ export default class Stop extends SlashCommand<BotClient> {
 	}
 
 	async run(ctx: CommandContext) {
-		// Update user details in the db to recent data
-		await this.client.db.upsertUser({
-			id: ctx.user.id,
-			username: ctx.user.username,
-			discriminator: ctx.user.discriminator,
-			avatar: ctx.user.avatar,
-		});
-		// Delete the session from the db
-		const room = await this.client.db.getRoom({ ownerId: ctx.user.id });
-		if (!room) return ctx.send("Room not found!");
-		const sessions = await this.client.db.deleteSessions({ roomId: room.id });
+		const sessions = await getActiveSessions(ctx.user.id);
+		if (sessions.length === 0) return ctx.send("You don't have an active session!");
+
 		for (const session of sessions) {
-			console.log(`Deleted session ${session.id}`);
+			await matchMaker.remoteRoomCall(session.url, "disconnect");
+			console.log(`Stopped session ${session.url}`);
 		}
 
 		const inviteUrl = [
@@ -37,7 +32,7 @@ export default class Stop extends SlashCommand<BotClient> {
 		return ctx.send({
 			embeds: [
 				{
-					title: sessions.length ? "Browser stopped successfully" : "No browser was running",
+					title: sessions.length ? "Session stopped successfully" : "No session was active",
 					fields: [
 						{
 							name: "Love the Discord bot?",

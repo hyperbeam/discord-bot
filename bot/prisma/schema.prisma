@@ -16,7 +16,9 @@ model User {
   discriminator String
   accessToken   String? // keep serverside only
   refreshToken  String? // keep serverside only
-  Session       Session[]
+  ownedSessions Session[] @relation("owner")
+  memberOf      Session[] @relation("members")
+  bannedFrom    Session[] @relation("banned")
 }
 
 model Session {
@@ -26,6 +28,8 @@ model Session {
   adminToken String // admin token for this session
   createdAt  DateTime  @default(now())
   endedAt    DateTime? // when the session ended
-  owner      User?     @relation(fields: [ownerId], references: [id])
-  ownerId    String? // user id of the owner
+  owner      User      @relation("owner", fields: [ownerId], references: [id])
+  ownerId    String
+  members    User[]    @relation("members")
+  bans       User[]    @relation("banned")
 }

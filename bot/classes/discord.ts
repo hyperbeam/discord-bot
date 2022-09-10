@@ -100,4 +100,8 @@ export async function updateUser(user: BotUser): Promise<BasicUser> {
 	});
 }
 
-export default discord;
+export default {
+	discord,
+	authorize,
+	updateUser,
+};

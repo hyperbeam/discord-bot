@@ -3,23 +3,29 @@ import { Client, Room } from "colyseus";
 import { IncomingMessage } from "http";
 import { RoomState } from "../schemas/room";
 import { HyperbeamSession } from "./hyperbeam";
-import { authenticateUser, createRoom, disposeRoom, joinRoom, leaveRoom } from "./sessions";
+import {
+	authenticateUser,
+	startSession,
+	disposeSession,
+	joinSession,
+	leaveSession,
+	StartSessionOptions,
+} from "./sessions";
 import db from "./database";
+import Member from "../schemas/member";
 
-export type AuthenticatedClient = Omit<Client, "auth"> & { auth: Awaited<ReturnType<BotRoom["onAuth"]>> };
-
-export type RoomCreateOptions = {
-	ownerId: string;
-	region: "NA" | "EU" | "AS";
+export type AuthenticatedClient = Omit<Client, "auth" | "userData"> & {
+	auth: Awaited<ReturnType<BotRoom["onAuth"]>>;
+	userData: Member;
 };
 
 export class BotRoom extends Room<RoomState> {
 	session?: Session & { instance: HyperbeamSession };
 	guestCount: number = 0;
 
-	async onCreate(options: RoomCreateOptions) {
+	async onCreate(options: StartSessionOptions) {
 		this.setState(new RoomState());
-		createRoom({ room: this, options, db });
+		startSession({ room: this, options, db });
 	}
 
 	async onAuth(client: Client, _options: any, req?: IncomingMessage | undefined) {
@@ -32,11 +38,11 @@ export class BotRoom extends Room<RoomState> {
 	}
 
 	onJoin(client: AuthenticatedClient) {
-		joinRoom({ room: this, client, db });
+		joinSession({ room: this, client, db });
 	}
 
 	onLeave(client: AuthenticatedClient) {
-		leaveRoom({
+		leaveSession({
 			room: this,
 			client,
 			db,
@@ -44,6 +50,6 @@ export class BotRoom extends Room<RoomState> {
 	}
 
 	onDispose() {
-		disposeRoom({ room: this, db });
+		disposeSession({ room: this, db });
 	}
 }
