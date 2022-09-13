@@ -1,7 +1,6 @@
 import Discord from "discord-oauth2";
 import db from "./database";
 import { User as BotUser } from "slash-create";
-import fetch from "node-fetch";
 import TokenHandler from "../utils/tokenHandler";
 import { nanoid } from "nanoid";
 

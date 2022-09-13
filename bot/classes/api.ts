@@ -5,6 +5,7 @@ import { createServer } from "http";
 import morgan from "morgan";
 import { authorize } from "./discord";
 import { BotRoom } from "./room";
+import { WebSocketTransport } from "@colyseus/ws-transport";
 
 const app: Express = express();
 
@@ -29,7 +30,9 @@ app.get("/authorize/:code", async (req, res) => {
 });
 
 const server = new Server({
-	server: createServer(app),
+	transport: new WebSocketTransport({
+		server: createServer(app),
+	}),
 });
 
 server
