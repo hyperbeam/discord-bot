@@ -23,6 +23,8 @@ export type VMRequestBody = {
 	hide_cursor?: boolean;
 };
 
+type RequestInit = Exclude<Parameters<typeof fetch>[1], undefined>;
+
 type RequestProps = {
 	path: string;
 	method: Required<RequestInit["method"]>;

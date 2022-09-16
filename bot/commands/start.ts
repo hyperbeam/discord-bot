@@ -35,12 +35,11 @@ export default class Start extends SlashCommand<BotClient> {
 				},
 			],
 		});
-		this.filePath = __filename;
 	}
 
 	async run(ctx: CommandContext) {
 		const room = await matchMaker.createRoom("room", {
-			region: ctx.options.region,
+			region: ctx.options.region || "NA",
 			ownerId: ctx.user.id,
 		} as StartSessionOptions);
 

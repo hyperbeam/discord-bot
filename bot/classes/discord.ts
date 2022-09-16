@@ -77,11 +77,17 @@ export async function authorize(code: string): Promise<AuthorizedUserData> {
 }
 
 export async function updateUser(user: BotUser): Promise<BasicUser> {
-	return db.user.update({
+	return db.user.upsert({
 		where: {
 			id: user.id,
 		},
-		data: {
+		create: {
+			id: user.id,
+			username: user.username,
+			discriminator: user.discriminator,
+			avatar: user.avatar,
+		},
+		update: {
 			username: user.username,
 			discriminator: user.discriminator,
 			avatar: user.avatar,

@@ -9,7 +9,6 @@ export default class Stop extends SlashCommand<BotClient> {
 			name: "stop",
 			description: "Stop a multiplayer browser session",
 		});
-		this.filePath = __filename;
 	}
 
 	async run(ctx: CommandContext) {

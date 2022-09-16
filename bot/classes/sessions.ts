@@ -52,7 +52,7 @@ export async function authenticateUser(
 export async function startSession(ctx: RoomEvents["startSession"]) {
 	ctx.room.guestCount = 0;
 	const hbSession = await Hyperbeam.createSession({
-		region: ctx.options.region,
+		region: ctx.options.region || "NA",
 	});
 	const session = await ctx.db.session.create({
 		data: {
