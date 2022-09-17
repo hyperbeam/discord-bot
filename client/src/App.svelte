@@ -5,7 +5,6 @@
 	import Authorize from "./pages/Authorize.svelte";
 	import Lander from "./pages/Lander.svelte";
 	import Room from "./pages/Room.svelte";
-	import Roomlist from "./pages/Roomlist.svelte";
 	import { login } from "./scripts/api";
 
 	onMount(async () => {
@@ -27,7 +26,6 @@
 	<Router primary={false}>
 		<!-- <Header /> -->
 		<Route path="/" component={Lander} />
-		<Route path="/rooms" component={Roomlist} />
 		<Route path="/authorize" component={Authorize} />
 		<Route path="/:roomUrl" component={Room} />
 	</Router>
