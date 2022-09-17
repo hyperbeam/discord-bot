@@ -6,6 +6,28 @@ import morgan from "morgan";
 import { authorize } from "./discord";
 import { BotRoom } from "./room";
 import { WebSocketTransport } from "@colyseus/ws-transport";
+import { networkInterfaces } from "os";
+
+const defaultAddresses = Object.values(networkInterfaces())
+	.flatMap((nInterface) => nInterface ?? [])
+	.filter(
+		(detail) =>
+			detail &&
+			detail.address &&
+			// Node < v18
+			((typeof detail.family === "string" && detail.family === "IPv4") ||
+				// Node >= v18
+				(typeof detail.family === "number" && detail.family === 4)),
+	)
+	.map((detail) => detail.address);
+
+if (!defaultAddresses.includes("localhost")) defaultAddresses.push("localhost");
+
+const protocols = ["http", "https", "ws", "wss"];
+const addresses: string[] = [];
+defaultAddresses.forEach((address) => {
+	protocols.forEach((protocol) => addresses.push(`${protocol}://${address}:${process.env.VITE_CLIENT_PORT}`));
+});
 
 const app: Express = express();
 
@@ -13,7 +35,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(
 	cors({
-		origin: process.env.VITE_CLIENT_BASE_URL,
+		origin: addresses,
 		methods: ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
 		allowedHeaders: ["Content-Type", "Authorization", "Origin"],
 		credentials: true,
