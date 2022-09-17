@@ -21,6 +21,11 @@ export type AuthenticatedClient = Omit<Client, "auth" | "userData"> & {
 	userData: Member;
 };
 
+export type AuthOptions = {
+	token?: string;
+	deviceId?: string;
+};
+
 export class BotRoom extends Room<RoomState> {
 	session?: Session & { instance: HyperbeamSession };
 	guests: number[] = [];
@@ -32,12 +37,13 @@ export class BotRoom extends Room<RoomState> {
 		await startSession({ room: this, options, db });
 	}
 
-	async onAuth(client: Client, options?: { token?: string }) {
+	async onAuth(client: Client, options?: AuthOptions) {
 		return authenticateUser({
 			room: this,
 			client,
 			db,
 			token: options?.token,
+			deviceId: options?.deviceId,
 		});
 	}
 

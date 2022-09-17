@@ -1,6 +1,6 @@
 import { Client, ServerError } from "colyseus";
 import Member from "../schemas/member";
-import { AuthenticatedClient, BotRoom } from "./room";
+import { AuthenticatedClient, AuthOptions, BotRoom } from "./room";
 import TokenHandler from "../utils/tokenHandler";
 import database from "./database";
 import Hyperbeam from "./hyperbeam";
@@ -17,22 +17,28 @@ interface RoomEvents {
 	joinSession: BaseContext & { client: AuthenticatedClient };
 	leaveSession: BaseContext & { client: AuthenticatedClient };
 	disposeSession: BaseContext;
-	authenticateUser: BaseContext & { client: Client; token?: string };
+	authenticateUser: BaseContext & { client: Client } & AuthOptions;
 }
 
 export async function authenticateUser(
 	ctx: RoomEvents["authenticateUser"],
-): Promise<{ token: string | undefined; guest: boolean }> {
+): Promise<{ token: string | undefined; guest: boolean; deviceId: string }> {
 	let member: Member | undefined = undefined;
 	if (!ctx.token) {
-		member = new Member();
-		member.id = ctx.client.sessionId;
-		member.name = "Guest ";
-		let guestNumber = 1;
-		while (ctx.room.guests.includes(guestNumber)) guestNumber++;
-		ctx.room.guests.push(guestNumber);
-		member.name += guestNumber;
-		member.avatarUrl = `https://cdn.discordapp.com/embed/avatars/${guestNumber % 5}.png`;
+		const id = ctx.deviceId || ctx.client.sessionId;
+		const existingGuestClient = ctx.room.clients.find((c) => c.auth?.deviceId === id);
+		if (existingGuestClient) {
+			member = existingGuestClient.userData;
+		} else {
+			member = new Member();
+			member.id = id;
+			member.name = "Guest ";
+			let guestNumber = 1;
+			while (ctx.room.guests.includes(guestNumber)) guestNumber++;
+			ctx.room.guests.push(guestNumber);
+			member.name += guestNumber;
+			member.avatarUrl = `https://cdn.discordapp.com/embed/avatars/${guestNumber % 5}.png`;
+		}
 	} else if (ctx.token) {
 		const result = TokenHandler.verify(ctx.token);
 		if (!result) throw new ServerError(401, "Invalid token");
@@ -49,7 +55,7 @@ export async function authenticateUser(
 	}
 	if (!member) throw new ServerError(401, "Could not authenticate user");
 	ctx.client.userData = member;
-	return { token: ctx.token, guest: !ctx.token };
+	return { token: ctx.token, guest: !ctx.token, deviceId: ctx.deviceId || ctx.client.sessionId };
 }
 
 export async function startSession(ctx: RoomEvents["startSession"]) {

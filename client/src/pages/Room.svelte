@@ -6,6 +6,7 @@
 	import RoomState from "../schemas/room";
 	import { members, room } from "../store";
 	import { client } from "../scripts/api";
+	import { nanoid } from "nanoid";
 
 	export let roomUrl: string;
 	const getToken = () => {
@@ -16,9 +17,21 @@
 		return null;
 	};
 
+	const getDeviceId = () => {
+		const deviceId = localStorage.getItem("deviceId");
+		if (typeof deviceId === "string" && deviceId !== "undefined") {
+			return deviceId;
+		} else {
+			const newDeviceId = nanoid();
+			localStorage.setItem("deviceId", newDeviceId);
+			return newDeviceId;
+		}
+	};
+
 	const attemptJoin = async () =>
-		client.joinById(roomUrl, { token: getToken() }).then((roomData: Room<RoomState>) => {
+		client.joinById(roomUrl, { token: getToken(), deviceId: getDeviceId() }).then((roomData: Room<RoomState>) => {
 			$room = roomData;
+			$members = [...$room.state.members.values()];
 			$room.onStateChange((state) => {
 				$members = [...state.members.values()];
 			});
