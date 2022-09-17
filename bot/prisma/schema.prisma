@@ -19,6 +19,7 @@ model User {
   ownedSessions Session[] @relation("owner")
   memberOf      Session[] @relation("members")
   bannedFrom    Session[] @relation("banned")
+  updatedAt     DateTime  @default(now()) @updatedAt
 }
 
 model Session {
@@ -27,6 +28,7 @@ model Session {
   embedUrl   String // iframe embed url
   adminToken String // admin token for this session
   createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now()) @updatedAt
   endedAt    DateTime? // when the session ended
   owner      User      @relation("owner", fields: [ownerId], references: [id])
   ownerId    String

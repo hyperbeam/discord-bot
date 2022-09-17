@@ -13,6 +13,9 @@ import {
 } from "./sessions";
 import db from "./database";
 import Member from "../schemas/member";
+import { customAlphabet } from "nanoid";
+
+const nanoid = customAlphabet("6789BCDFGHJKLMNPQRTWbcdfghjkmnpqrtwz", 8);
 
 export type AuthenticatedClient = Omit<Client, "auth" | "userData"> & {
 	auth: Awaited<ReturnType<BotRoom["onAuth"]>>;
@@ -25,6 +28,7 @@ export class BotRoom extends Room<RoomState> {
 	autoDispose = false;
 
 	async onCreate(options: StartSessionOptions) {
+		this.roomId = nanoid();
 		this.setState(new RoomState());
 		startSession({ room: this, options, db });
 	}

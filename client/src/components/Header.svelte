@@ -14,9 +14,6 @@
 		<h3 class="header-logo">
 			<span class="page-title" on:click={() => navigate("/")}>{title}</span>
 		</h3>
-		<div class="nav-link" on:click={() => navigate("/rooms")}>
-			<span>Rooms</span>
-		</div>
 	</div>
 	<div class="header-right">
 		<!-- TODO: Replace with share button after implementing modal -->
@@ -82,17 +79,6 @@
 		align-items: center;
 		justify-content: flex-end;
 		gap: 12px;
-	}
-
-	.nav-link {
-		color: #fffb;
-		text-decoration: none;
-		cursor: pointer;
-		&:hover,
-		&:active {
-			color: #fff;
-			text-decoration: underline;
-		}
 	}
 
 	.share-icon {
