@@ -2,6 +2,7 @@ import { CommandContext, CommandOptionType, SlashCommand, SlashCreator } from "s
 import { BotClient } from "../types";
 import { matchMaker } from "colyseus";
 import { StartSessionOptions } from "../classes/sessions";
+import inviteUrl from "../utils/inviteUrl";
 
 export default class Start extends SlashCommand<BotClient> {
 	constructor(creator: SlashCreator) {
@@ -42,14 +43,6 @@ export default class Start extends SlashCommand<BotClient> {
 			region: ctx.options.region || "NA",
 			ownerId: ctx.user.id,
 		} as StartSessionOptions);
-
-		const inviteUrl = [
-			`https://discord.com/api/oauth2/authorize?client_id=${process.env.VITE_CLIENT_ID}`,
-			"permissions=277062470720",
-			`redirect_uri=${encodeURIComponent(process.env.VITE_CLIENT_BASE_URL + "/authorize")}`,
-			"response_type=code",
-			"scope=identify%20email%20bot%20applications.commands",
-		].join("&");
 
 		return ctx.send({
 			embeds: [

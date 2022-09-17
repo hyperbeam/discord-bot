@@ -2,6 +2,7 @@ import { matchMaker } from "colyseus";
 import { CommandContext, SlashCommand, SlashCreator } from "slash-create";
 import { getActiveSessions } from "../classes/sessions";
 import { BotClient } from "../types";
+import inviteUrl from "../utils/inviteUrl";
 
 export default class Stop extends SlashCommand<BotClient> {
 	constructor(creator: SlashCreator) {
@@ -19,14 +20,6 @@ export default class Stop extends SlashCommand<BotClient> {
 			await matchMaker.remoteRoomCall(session.url, "disconnect");
 			console.log(`Stopped session ${session.url}`);
 		}
-
-		const inviteUrl = [
-			`https://discord.com/api/oauth2/authorize?client_id=${process.env.VITE_CLIENT_ID}`,
-			"permissions=277062470720",
-			`redirect_uri=${encodeURIComponent(process.env.VITE_CLIENT_BASE_URL + "/authorize")}`,
-			"response_type=code",
-			"scope=identify%20email%20bot%20applications.commands",
-		].join("&");
 
 		return ctx.send({
 			embeds: [
