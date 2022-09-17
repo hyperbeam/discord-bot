@@ -44,11 +44,12 @@ app.use(
 
 app.get("/authorize/:code", async (req, res) => {
 	if (!req.params.code) return res.status(400).send({ error: "No code provided" });
-	const data = await authorize(req.params.code).catch((e) => {
-		console.error(e);
+	try {
+		const data = await authorize(req.params.code);
+		if (data) return res.status(200).send(data);
+	} catch (err) {
 		return res.status(500).send({ error: "Could not authorize user." });
-	});
-	if (data) return res.status(200).send(data);
+	}
 });
 
 const server = new Server({

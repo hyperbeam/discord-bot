@@ -1,25 +1,18 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	export let navigate;
-	import { login, parseDiscordResponse, redirectToDiscord } from "../scripts/api";
+	import { parseDiscordResponse, redirectToDiscord } from "../scripts/api";
 	onMount(async () => {
 		console.log("Mounted auth component");
 		const token = localStorage.getItem("token");
 		if (token && token !== "undefined") {
-			// we already have a token, so we can skip the discord flow
-			try {
-				await login();
-				const redirectRoute = localStorage.getItem("redirectAfterAuth");
-				localStorage.removeItem("redirectAfterAuth");
-				if (redirectRoute && redirectRoute !== "undefined") {
-					navigate(redirectRoute);
-				} else {
-					navigate("/");
-				}
-			} catch (e) {
-				// token doesn't work, get rid of it
-				console.error(e);
-				localStorage.removeItem("token");
+			// we already have a token, so we can skip the auth flow
+			const redirectRoute = localStorage.getItem("redirectAfterAuth");
+			localStorage.removeItem("redirectAfterAuth");
+			if (redirectRoute && redirectRoute !== "undefined") {
+				navigate(redirectRoute);
+			} else {
+				navigate("/");
 			}
 		}
 		if (!token || token === "undefined") {

@@ -1,6 +1,5 @@
 import { Session } from "@prisma/client";
 import { Client, Room } from "colyseus";
-import { IncomingMessage } from "http";
 import { RoomState } from "../schemas/room";
 import { HyperbeamSession } from "./hyperbeam";
 import {
@@ -30,31 +29,31 @@ export class BotRoom extends Room<RoomState> {
 	async onCreate(options: StartSessionOptions) {
 		this.roomId = nanoid();
 		this.setState(new RoomState());
-		startSession({ room: this, options, db });
+		await startSession({ room: this, options, db });
 	}
 
-	async onAuth(client: Client, _options: any, req?: IncomingMessage | undefined) {
+	async onAuth(client: Client, options?: { token?: string }) {
 		return authenticateUser({
 			room: this,
 			client,
 			db,
-			token: req?.headers?.authorization?.toString().split(" ")[1],
+			token: options?.token,
 		});
 	}
 
-	onJoin(client: AuthenticatedClient) {
-		joinSession({ room: this, client, db });
+	async onJoin(client: AuthenticatedClient) {
+		await joinSession({ room: this, client, db });
 	}
 
-	onLeave(client: AuthenticatedClient) {
-		leaveSession({
+	async onLeave(client: AuthenticatedClient) {
+		await leaveSession({
 			room: this,
 			client,
 			db,
 		});
 	}
 
-	onDispose() {
-		disposeSession({ room: this, db });
+	async onDispose() {
+		await disposeSession({ room: this, db });
 	}
 }

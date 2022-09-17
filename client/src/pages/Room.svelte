@@ -1,24 +1,44 @@
 <script lang="ts">
-	import { Client } from "colyseus.js";
+	import { Room } from "colyseus.js";
 	import { onMount } from "svelte";
 	import Toolbar from "../components/Toolbar.svelte";
 	import Vm from "../components/VM.svelte";
-	import { room, roomState } from "../store";
+	import RoomState from "../schemas/room";
+	import { members, room } from "../store";
+	import { client } from "../scripts/api";
 
 	export let roomUrl: string;
+	const getToken = () => {
+		const token = localStorage.getItem("token");
+		if (typeof token === "string" && token !== "undefined") {
+			return token;
+		}
+		return null;
+	};
+
+	const attemptJoin = async () =>
+		client.joinById(roomUrl, { token: getToken() }).then((roomData: Room<RoomState>) => {
+			$room = roomData;
+			$room.onStateChange((state) => {
+				console.log("State changed", state);
+				$members = [...state.members.values()];
+			});
+		});
 
 	onMount(async () => {
-		const client = new Client(`ws://${import.meta.env.VITE_API_SERVER_BASE_URL.split("://")[1]}`);
-		$room = await client.joinById(roomUrl);
-		$room.onStateChange((state) => {
-			$roomState = state;
-		});
+		try {
+			await attemptJoin();
+		} catch (e) {
+			console.log("Failed to join room", e);
+			localStorage.removeItem("token");
+			await attemptJoin();
+		}
 	});
 </script>
 
-{#if $roomState}
+{#if $room && $room.state.embedUrl}
 	<div class="room">
-		<Vm embedUrl={$roomState.embedUrl} />
+		<Vm embedUrl={$room.state.embedUrl} />
 		<Toolbar />
 	</div>
 {/if}

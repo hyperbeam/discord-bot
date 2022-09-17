@@ -39,32 +39,44 @@ export default class Start extends SlashCommand<BotClient> {
 	}
 
 	async run(ctx: CommandContext) {
-		const room = await matchMaker.createRoom("room", {
-			region: ctx.options.region || "NA",
-			ownerId: ctx.user.id,
-		} as StartSessionOptions);
+		try {
+			const room = await matchMaker.createRoom("room", {
+				region: ctx.options.region || "NA",
+				ownerId: ctx.user.id,
+			} as StartSessionOptions);
 
-		return ctx.send({
-			embeds: [
-				{
-					title: "Started a multiplayer browser session!",
-					description: "Share the link below with your friends to browse together!",
-					fields: [
-						{
-							name: "Start browsing at",
-							value: `${process.env.VITE_CLIENT_BASE_URL}/${room.roomId}`,
-						},
-						{
-							name: "Love the Discord bot?",
-							value: `[Invite it](${inviteUrl}) to your server, star us on [GitHub](${process.env.VITE_GITHUB_URL}) and help spread the word!`,
-						},
-						{
-							name: "Need help?",
-							value: `Join the [support server](${process.env.VITE_DISCORD_SUPPORT_SERVER}).`,
-						},
-					],
-				},
-			],
-		});
+			return ctx.send({
+				embeds: [
+					{
+						title: "Started a multiplayer browser session!",
+						description: "Share the link below with your friends to browse together!",
+						fields: [
+							{
+								name: "Start browsing at",
+								value: `${process.env.VITE_CLIENT_BASE_URL}/${room.roomId}`,
+							},
+							{
+								name: "Love the Discord bot?",
+								value: `[Invite it](${inviteUrl}) to your server, star us on [GitHub](${process.env.VITE_GITHUB_URL}) and help spread the word!`,
+							},
+							{
+								name: "Need help?",
+								value: `Join the [support server](${process.env.VITE_DISCORD_SUPPORT_SERVER}).`,
+							},
+						],
+					},
+				],
+			});
+		} catch (e) {
+			console.error(e);
+			return ctx.send({
+				embeds: [
+					{
+						title: "Failed to start a multiplayer browser session",
+						description: "Please try again later.",
+					},
+				],
+			});
+		}
 	}
 }

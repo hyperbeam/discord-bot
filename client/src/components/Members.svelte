@@ -1,15 +1,14 @@
 <script lang="ts">
-	import { roomState } from "../store";
+	import { members } from "../store";
 	import Avatar from "./Avatar.svelte";
 	import Invite from "./Invite.svelte";
 	import Tooltip from "./Tooltip.svelte";
 </script>
 
 <div class="members">
-	{#each Array.from($roomState.members) as [_, member]}
-		{@const { name } = member}
-		<Tooltip text={name}>
-			<Avatar src={member.avatarUrl} alt={name} borderStyle={member.hasControl ? "solid" : "dashed"} />
+	{#each $members as member}
+		<Tooltip text={member.name}>
+			<Avatar src={member.avatarUrl} alt={member.name} borderStyle={member.hasControl ? "solid" : "dashed"} />
 		</Tooltip>
 	{/each}
 	<Invite />

@@ -1,7 +1,6 @@
 <script>
 	import { navigate } from "svelte-navigator";
-	import { logoutUser } from "../scripts/api";
-	import { currentUser } from "../scripts/state";
+	import { currentUser, room } from "../store";
 	import Members from "./Members.svelte";
 	import Tooltip from "./Tooltip.svelte";
 	import Volume from "./Volume.svelte";
@@ -24,6 +23,18 @@
 			element.msRequestFullscreen();
 		}
 	}
+
+	const handleSignIn = async () => {
+		localStorage.setItem("redirectAfterAuth", window.location.pathname);
+		if ($room) await $room.leave(true);
+		navigate("/authorize");
+	};
+
+	const handleSignOut = async () => {
+		localStorage.removeItem("token");
+		if ($room) await $room.leave(true);
+		location.reload();
+	};
 </script>
 
 {#if !isFullscreen}
@@ -44,7 +55,7 @@
 			</Tooltip>
 			{#if $currentUser}
 				<Tooltip text="Sign out">
-					<div class="icon" on:click={logoutUser}>
+					<div class="icon" on:click={handleSignOut}>
 						<svg style="width:24px;height:24px" viewBox="0 0 24 24">
 							<path
 								fill="currentColor"
@@ -54,12 +65,7 @@
 				</Tooltip>
 			{:else}
 				<Tooltip text="Sign in">
-					<div
-						class="icon"
-						on:click={() => {
-							localStorage.setItem("redirectAfterAuth", window.location.pathname);
-							navigate("/authorize");
-						}}>
+					<div class="icon" on:click={handleSignIn}>
 						<svg style="width:24px;height:24px" viewBox="0 0 24 24">
 							<path
 								fill="currentColor"

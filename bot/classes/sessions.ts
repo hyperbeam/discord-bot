@@ -51,9 +51,14 @@ export async function authenticateUser(
 
 export async function startSession(ctx: RoomEvents["startSession"]) {
 	ctx.room.guestCount = 0;
-	const hbSession = await Hyperbeam.createSession({
-		region: ctx.options.region || "NA",
-	});
+	let hbSession: Awaited<ReturnType<typeof Hyperbeam.createSession>>;
+	try {
+		hbSession = await Hyperbeam.createSession({
+			region: ctx.options.region || "NA",
+		});
+	} catch (e) {
+		throw new ServerError(500, "Could not create session");
+	}
 	const session = await ctx.db.session.create({
 		data: {
 			embedUrl: hbSession.embedUrl,
@@ -80,7 +85,7 @@ export async function joinSession(ctx: RoomEvents["joinSession"]) {
 		where: { url: ctx.room.roomId },
 		data: {
 			members: {
-				upsert: { where: { id: member.id }, create: user, update: user },
+				connect: { id: user.id },
 			},
 		},
 	});
@@ -97,7 +102,7 @@ export async function leaveSession(ctx: RoomEvents["leaveSession"]) {
 		where: { url: ctx.room.roomId },
 		data: {
 			members: {
-				upsert: { where: { id: member.id }, create: user, update: user },
+				connect: { id: user.id },
 			},
 		},
 	});
@@ -105,6 +110,7 @@ export async function leaveSession(ctx: RoomEvents["leaveSession"]) {
 
 export async function disposeSession(ctx: RoomEvents["disposeSession"]) {
 	if (!ctx.room.session) return;
+	await Hyperbeam.deleteSession(ctx.room.session.sessionId);
 	await ctx.db.session.update({
 		where: { sessionId: ctx.room.session.sessionId },
 		data: {
@@ -115,4 +121,11 @@ export async function disposeSession(ctx: RoomEvents["disposeSession"]) {
 
 export async function getActiveSessions(ownerId: string) {
 	return database.session.findMany({ where: { ownerId, endedAt: { not: null } } });
+}
+
+export async function endAllSessions() {
+	const sessions = await database.session.findMany();
+	for (const session of sessions) {
+		await Hyperbeam.deleteSession(session.sessionId).catch();
+	}
 }

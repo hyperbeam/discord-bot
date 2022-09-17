@@ -42,6 +42,9 @@ export async function authorize(code: string): Promise<AuthorizedUserData> {
 	const user = await discord.getUser(authorizationData.access_token);
 	if (!user) throw new Error("Invalid user");
 
+	const existingUser = await db.user.findFirst({ select: { hash: true }, where: { id: user.id } });
+	const hash = existingUser?.hash || nanoid();
+
 	const userData = {
 		id: user.id,
 		username: user.username,
@@ -50,15 +53,14 @@ export async function authorize(code: string): Promise<AuthorizedUserData> {
 		email: user.email,
 		refreshToken: authorizationData.refresh_token,
 		accessToken: authorizationData.access_token,
+		hash,
 	};
-
-	const hash = nanoid();
 
 	const dbUser = await db.user.upsert({
 		where: {
 			id: user.id,
 		},
-		create: { ...userData, hash },
+		create: userData,
 		update: userData,
 		select: {
 			id: true,
@@ -72,7 +74,7 @@ export async function authorize(code: string): Promise<AuthorizedUserData> {
 		},
 	});
 
-	const token = TokenHandler.generate(dbUser.id, hash);
+	const token = TokenHandler.generate(dbUser.id, userData.hash);
 	return { ...dbUser, token };
 }
 
