@@ -25,11 +25,14 @@ export async function authenticateUser(
 ): Promise<{ token: string | undefined; guest: boolean }> {
 	let member: Member | undefined = undefined;
 	if (!ctx.token) {
-		ctx.room.guestCount++;
 		member = new Member();
 		member.id = ctx.client.sessionId;
-		member.name = `Guest ${ctx.room.guestCount}`;
-		member.avatarUrl = `https://cdn.discordapp.com/embed/avatars/${ctx.client.sessionId.charCodeAt(0) % 5}.png`;
+		member.name = "Guest ";
+		let guestNumber = 1;
+		while (ctx.room.guests.includes(guestNumber)) guestNumber++;
+		ctx.room.guests.push(guestNumber);
+		member.name += guestNumber;
+		member.avatarUrl = `https://cdn.discordapp.com/embed/avatars/${guestNumber % 5}.png`;
 	} else if (ctx.token) {
 		const result = TokenHandler.verify(ctx.token);
 		if (!result) throw new ServerError(401, "Invalid token");
@@ -50,7 +53,6 @@ export async function authenticateUser(
 }
 
 export async function startSession(ctx: RoomEvents["startSession"]) {
-	ctx.room.guestCount = 0;
 	let hbSession: Awaited<ReturnType<typeof Hyperbeam.createSession>>;
 	try {
 		hbSession = await Hyperbeam.createSession({
@@ -96,7 +98,8 @@ export async function leaveSession(ctx: RoomEvents["leaveSession"]) {
 	if (!member) return;
 	ctx.room.state.members.delete(member.id);
 	if (ctx.client.auth.guest) {
-		ctx.room.guestCount--;
+		const guestNumber = +member.name.split(" ")[1];
+		ctx.room.guests.splice(ctx.room.guests.indexOf(guestNumber), 1);
 		return;
 	}
 	const user = await ctx.db.user.findFirst({ where: { id: member.id } });

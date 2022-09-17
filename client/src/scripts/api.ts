@@ -1,6 +1,5 @@
 import { Client } from "colyseus.js";
 import { nanoid } from "nanoid";
-import { currentUser } from "../store";
 
 export const client = new Client(`ws://${import.meta.env.VITE_API_SERVER_BASE_URL.split("://")[1]}`);
 
