@@ -36,7 +36,6 @@ specifiers:
   eslint-plugin-svelte: ^2.8.0
   express: ^4.18.1
   jsonwebtoken: ^8.5.1
-  memorystore: ^1.6.7
   morgan: ^1.10.0
   nanoid: 3.3.4
   prettier: ^2.7.1
@@ -74,7 +73,6 @@ dependencies:
   dotenv-cli: 6.0.0
   express: 4.18.1
   jsonwebtoken: 8.5.1
-  memorystore: 1.6.7
   morgan: 1.10.0
   nanoid: 3.3.4
   sass: 1.54.9
@@ -3493,16 +3491,6 @@ packages:
     resolution: {integrity: sha512-ZS4Bp4r/Zoeq6+NLJpP+0Zzm0pR8whtGPf1XExKLJBAczGMnSi3It14OiNCStjQjM6NU1okjQGSxgEZN8eBYKg==}
     dev: false
     optional: true
-
-  /memorystore/1.6.7:
-    resolution: {integrity: sha512-OZnmNY/NDrKohPQ+hxp0muBcBKrzKNtHr55DbqSx9hLsYVNnomSAMRAtI7R64t3gf3ID7tHQA7mG4oL3Hu9hdw==}
-    engines: {node: '>=0.10'}
-    dependencies:
-      debug: 4.3.4
-      lru-cache: 4.1.5
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
 
   /merge-descriptors/1.0.1:
     resolution: {integrity: sha512-cCi6g3/Zr1iqQi6ySbseM1Xvooa98N0w31jzUYrXPX2xqObmFGHJ0tQ5u74H3mVh7wLouTseZyYIq39g8cNp1w==}
