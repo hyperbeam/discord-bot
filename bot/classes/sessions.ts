@@ -29,7 +29,7 @@ export async function authenticateUser(
 		member = new Member();
 		member.id = ctx.client.sessionId;
 		member.name = `Guest ${ctx.room.guestCount}`;
-		member.avatarUrl = `https://cdn.discordapp.com/embed/avatars/${ctx.room.guestCount % 5}.png`;
+		member.avatarUrl = `https://cdn.discordapp.com/embed/avatars/${ctx.client.sessionId.charCodeAt(0) % 5}.png`;
 	} else if (ctx.token) {
 		const result = TokenHandler.verify(ctx.token);
 		if (!result) throw new ServerError(401, "Invalid token");
