@@ -1,28 +1,24 @@
 <script lang="ts">
-	import { Client, Room } from "colyseus.js";
+	import { Client } from "colyseus.js";
 	import { onMount } from "svelte";
 	import Toolbar from "../components/Toolbar.svelte";
 	import Vm from "../components/VM.svelte";
-	import RoomState from "../schemas/room";
-	import { hb } from "../scripts/state";
+	import { room, roomState } from "../store";
 
 	export let roomUrl: string;
-	let client: Client;
-	let room: Room<RoomState>;
-	let roomState: RoomState;
 
 	onMount(async () => {
-		client = new Client(`ws://${import.meta.env.VITE_API_SERVER_BASE_URL.split("://")[1]}`);
-		room = await client.joinById(roomUrl);
-		room.onStateChange((state) => {
-			roomState = state;
+		const client = new Client(`ws://${import.meta.env.VITE_API_SERVER_BASE_URL.split("://")[1]}`);
+		$room = await client.joinById(roomUrl);
+		$room.onStateChange((state) => {
+			$roomState = state;
 		});
 	});
 </script>
 
-{#if roomState}
+{#if $roomState}
 	<div class="room">
-		<Vm embedUrl={roomState.embedUrl} />
+		<Vm embedUrl={$roomState.embedUrl} />
 		<Toolbar />
 	</div>
 {/if}

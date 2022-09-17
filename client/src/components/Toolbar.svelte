@@ -2,7 +2,7 @@
 	import { navigate } from "svelte-navigator";
 	import { logoutUser } from "../scripts/api";
 	import { currentUser } from "../scripts/state";
-	import Invite from "./Invite.svelte";
+	import Members from "./Members.svelte";
 	import Tooltip from "./Tooltip.svelte";
 	import Volume from "./Volume.svelte";
 
@@ -31,9 +31,8 @@
 		<div class="toolbar__left">
 			<Volume />
 		</div>
-		<!-- <Members /> -->
+		<Members />
 		<div class="toolbar__right">
-			<Invite />
 			<Tooltip text="Fullscreen">
 				<div class="icon" on:click={requestFullscreen}>
 					<svg style="width:24px;height:24px" viewBox="0 0 24 24">
