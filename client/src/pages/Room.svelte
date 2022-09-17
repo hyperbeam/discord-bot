@@ -20,7 +20,6 @@
 		client.joinById(roomUrl, { token: getToken() }).then((roomData: Room<RoomState>) => {
 			$room = roomData;
 			$room.onStateChange((state) => {
-				console.log("State changed", state);
 				$members = [...state.members.values()];
 			});
 		});

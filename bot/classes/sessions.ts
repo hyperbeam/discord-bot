@@ -28,7 +28,7 @@ export async function authenticateUser(
 		ctx.room.guestCount++;
 		member = new Member();
 		member.id = ctx.client.sessionId;
-		member.name = `Guest ${ctx.room.guestCount}#0000`;
+		member.name = `Guest ${ctx.room.guestCount}`;
 		member.avatarUrl = `https://cdn.discordapp.com/embed/avatars/${ctx.room.guestCount % 5}.png`;
 	} else if (ctx.token) {
 		const result = TokenHandler.verify(ctx.token);
@@ -95,7 +95,10 @@ export async function leaveSession(ctx: RoomEvents["leaveSession"]) {
 	const member = ctx.client.userData;
 	if (!member) return;
 	ctx.room.state.members.delete(member.id);
-	if (ctx.client.auth.guest) return;
+	if (ctx.client.auth.guest) {
+		ctx.room.guestCount--;
+		return;
+	}
 	const user = await ctx.db.user.findFirst({ where: { id: member.id } });
 	if (!user) return;
 	await ctx.db.session.update({

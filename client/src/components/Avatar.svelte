@@ -1,7 +1,7 @@
 <script lang="ts">
 	export let src: string;
 	export let alt: string;
-	export let borderStyle: "" | "dashed" | "solid" = "";
+	export let borderStyle: "none" | "dashed" | "solid" = "none";
 </script>
 
 <div class={`avatar ${borderStyle}`} on:click>
