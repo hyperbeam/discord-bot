@@ -9,7 +9,13 @@
 			// we already have a token, so we can skip the discord flow
 			try {
 				await login();
-				navigate("/");
+				const redirectRoute = localStorage.getItem("redirectAfterAuth");
+				localStorage.removeItem("redirectAfterAuth");
+				if (redirectRoute && redirectRoute !== "undefined") {
+					navigate(redirectRoute);
+				} else {
+					navigate("/");
+				}
 			} catch (e) {
 				// token doesn't work, get rid of it
 				console.error(e);
@@ -22,7 +28,13 @@
 				// discord redirected back to this page with a code and state
 				try {
 					await parseDiscordResponse(urlParams.get("code"), urlParams.get("state"));
-					navigate("/");
+					const redirectRoute = localStorage.getItem("redirectAfterAuth");
+					localStorage.removeItem("redirectAfterAuth");
+					if (redirectRoute && redirectRoute !== "undefined") {
+						navigate(redirectRoute);
+					} else {
+						navigate("/");
+					}
 				} catch (e) {
 					console.error(e);
 				}

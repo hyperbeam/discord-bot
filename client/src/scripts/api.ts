@@ -69,7 +69,9 @@ export const oauthUrl = (state: string) =>
 		import.meta.env.VITE_CLIENT_BASE_URL!,
 	)}%2Fauthorize&response_type=code&scope=identify%20email&state=${state}`;
 
-export function redirectToDiscord() {
+export function redirectToDiscord(redirectAfterAuth?: string) {
+	const redirectRoute = redirectAfterAuth || localStorage.getItem("redirectAfterAuth");
+	if (redirectRoute) localStorage.setItem("redirectAfterAuth", redirectRoute);
 	const state = nanoid();
 	localStorage.setItem("state", state);
 	window.location.href = oauthUrl(state);
