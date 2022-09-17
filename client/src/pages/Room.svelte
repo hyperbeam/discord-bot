@@ -1,45 +1,29 @@
 <script lang="ts">
+	import { Client, Room } from "colyseus.js";
 	import { onMount } from "svelte";
 	import Toolbar from "../components/Toolbar.svelte";
-	import VM from "../components/VM.svelte";
-	import { apiRequest } from "../scripts/api";
-	import { currentRoom, rooms } from "../scripts/state";
-	import { Room, Session } from "../scripts/types";
+	import Vm from "../components/VM.svelte";
+	import RoomState from "../schemas/room";
 	import { hb } from "../scripts/state";
-	export let roomUrl: string;
 
-	let embedUrl: string;
+	export let roomUrl: string;
+	let client: Client;
+	let room: Room<RoomState>;
+	let roomState: RoomState;
 
 	onMount(async () => {
-		if (roomUrl) {
-			let room: Room & { session: Session };
-			try {
-				room = await apiRequest(`/room/${roomUrl}`);
-			} catch (e) {
-				console.error(e);
-			}
-			if (room) {
-				$currentRoom = room;
-				console.log({ currentRoom: $currentRoom });
-				embedUrl = room.session.embedUrl;
-			}
-		}
-		if ($rooms.some((room) => room.url)) {
-			$currentRoom = $rooms.find((room) => room.url === roomUrl);
-		} else if (!$currentRoom) {
-			const newRoom = await apiRequest<Room>(roomUrl, "GET").catch((err) => {
-				console.error(err);
-			});
-			if (!newRoom) return;
-			$currentRoom = newRoom;
-			$rooms = [...$rooms, newRoom];
-		}
+		client = new Client(`ws://${import.meta.env.VITE_API_SERVER_BASE_URL.split("://")[1]}`);
+		room = await client.joinById(roomUrl);
+		room.onStateChange((state) => {
+			roomState = state;
+			console.log("Room state changed", state);
+		});
 	});
 </script>
 
 <div class="room">
-	{#if embedUrl}
-		<VM {embedUrl} />
+	{#if roomState}
+		<Vm embedUrl={roomState.embedUrl} />
 		{#if $hb}
 			<Toolbar />
 		{/if}

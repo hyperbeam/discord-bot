@@ -22,6 +22,7 @@ export type AuthenticatedClient = Omit<Client, "auth" | "userData"> & {
 export class BotRoom extends Room<RoomState> {
 	session?: Session & { instance: HyperbeamSession };
 	guestCount: number = 0;
+	autoDispose = false;
 
 	async onCreate(options: StartSessionOptions) {
 		this.setState(new RoomState());
