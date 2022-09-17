@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import { hb } from "../scripts/state";
+	import { hyperbeamEmbed } from "../store";
 	import Tooltip from "./Tooltip.svelte";
 
 	let isMuted = false;
 	let volume = 1.0;
-	$: $hb.volume = isMuted ? 0 : volume;
+	$: if ($hyperbeamEmbed) {
+		$hyperbeamEmbed.volume = isMuted ? 0 : volume;
+	}
 
 	onMount(() => {
 		volume = parseFloat(localStorage.getItem("volume") || "1.0");

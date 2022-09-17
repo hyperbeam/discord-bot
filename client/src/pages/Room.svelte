@@ -16,19 +16,16 @@
 		room = await client.joinById(roomUrl);
 		room.onStateChange((state) => {
 			roomState = state;
-			console.log("Room state changed", state);
 		});
 	});
 </script>
 
-<div class="room">
-	{#if roomState}
+{#if roomState}
+	<div class="room">
 		<Vm embedUrl={roomState.embedUrl} />
-		{#if $hb}
-			<Toolbar />
-		{/if}
-	{/if}
-</div>
+		<Toolbar />
+	</div>
+{/if}
 
 <style lang="scss">
 	.room {
