@@ -1,5 +1,5 @@
 <script lang="ts">
-	import demoUrl from "../demo.mp4";
+	import demoUrl from "../assets/demo.mp4";
 
 	const inviteUrl = [
 		`https://discord.com/api/oauth2/authorize?client_id=${import.meta.env.VITE_CLIENT_ID}`,
