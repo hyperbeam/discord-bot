@@ -13,17 +13,8 @@ export type StartSessionOptions = {
 type BaseContext = { room: BotRoom; db: typeof database };
 type AuthContext = BaseContext & { client: AuthenticatedClient };
 
-interface RoomEvents {
-	default: AuthContext;
-	startSession: BaseContext & { options: StartSessionOptions };
-	disposeSession: BaseContext;
-	authenticateUser: BaseContext & { client: Client } & AuthOptions;
-	setControl: AuthContext & { targetId: string; control: Member["control"] };
-	setMultiplayer: AuthContext & { multiplayer: boolean };
-}
-
 export async function authenticateUser(
-	ctx: RoomEvents["authenticateUser"],
+	ctx: BaseContext & { client: Client } & AuthOptions,
 ): Promise<{ token: string | undefined; guest: boolean; deviceId: string }> {
 	let member: Member | undefined = undefined;
 	if (!ctx.token) {
@@ -60,7 +51,7 @@ export async function authenticateUser(
 	return { token: ctx.token, guest: !ctx.token, deviceId: ctx.deviceId || ctx.client.sessionId };
 }
 
-export async function startSession(ctx: RoomEvents["startSession"]) {
+export async function startSession(ctx: BaseContext & { options: StartSessionOptions }) {
 	let hbSession: Awaited<ReturnType<typeof Hyperbeam.createSession>>;
 	try {
 		hbSession = await Hyperbeam.createSession({
@@ -85,7 +76,7 @@ export async function startSession(ctx: RoomEvents["startSession"]) {
 	ctx.room.state.sessionId = hbSession.sessionId;
 }
 
-export async function joinSession(ctx: RoomEvents["default"]) {
+export async function joinSession(ctx: AuthContext) {
 	const member = ctx.client.userData;
 	if (!member) return;
 	ctx.room.state.members.set(member.id, member);
@@ -102,7 +93,7 @@ export async function joinSession(ctx: RoomEvents["default"]) {
 	});
 }
 
-export async function leaveSession(ctx: RoomEvents["default"]) {
+export async function leaveSession(ctx: AuthContext) {
 	const member = ctx.client.userData;
 	if (!member) return;
 	ctx.room.state.members.delete(member.id);
@@ -123,7 +114,7 @@ export async function leaveSession(ctx: RoomEvents["default"]) {
 	});
 }
 
-export async function disposeSession(ctx: RoomEvents["disposeSession"]) {
+export async function disposeSession(ctx: BaseContext) {
 	if (!ctx.room.session) return;
 	await Hyperbeam.deleteSession(ctx.room.session.sessionId);
 	await ctx.db.session.update({
@@ -145,7 +136,7 @@ export async function endAllSessions() {
 	}
 }
 
-export async function setControl(ctx: RoomEvents["setControl"]) {
+export async function setControl(ctx: AuthContext & { targetId: string; control: Member["control"] }) {
 	const target = ctx.room.state.members.get(ctx.targetId);
 	if (!target || target.control === ctx.control) return;
 	// making conditions simpler to read
@@ -168,7 +159,7 @@ export async function setControl(ctx: RoomEvents["setControl"]) {
 	}
 }
 
-export async function setMultiplayer(ctx: RoomEvents["setMultiplayer"]) {
+export async function setMultiplayer(ctx: AuthContext & { multiplayer: boolean }) {
 	if (ctx.room.ownerId !== ctx.client.userData.id) return;
 	const actions: Promise<void>[] = [];
 	if (!ctx.multiplayer) {
