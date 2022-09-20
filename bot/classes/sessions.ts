@@ -70,7 +70,7 @@ export async function startSession(ctx: BaseContext & { options: StartSessionOpt
 			url: ctx.room.roomId,
 		},
 	});
-	if (!ctx.room.ownerId) ctx.room.ownerId = ctx.options.ownerId;
+	if (!ctx.room.state.ownerId) ctx.room.state.ownerId = ctx.options.ownerId;
 	ctx.room.session = { ...session, instance: hbSession };
 	ctx.room.state.embedUrl = hbSession.embedUrl;
 	ctx.room.state.sessionId = hbSession.sessionId;
@@ -141,7 +141,7 @@ export async function setControl(ctx: AuthContext & { targetId: string; control:
 	if (!target || target.control === ctx.control) return;
 	// making conditions simpler to read
 	const isSelf = target.id === ctx.client.userData.id;
-	const isOwner = ctx.room.ownerId === ctx.client.userData.id;
+	const isOwner = ctx.room.state.ownerId === ctx.client.userData.id;
 	const hasControl = ctx.client.userData.control === "enabled";
 	const isRequesting = ctx.control === "requesting" || ctx.control === "disabled";
 	const isMultiplayer = ctx.room.multiplayer;
@@ -160,12 +160,12 @@ export async function setControl(ctx: AuthContext & { targetId: string; control:
 }
 
 export async function setMultiplayer(ctx: AuthContext & { multiplayer: boolean }) {
-	if (ctx.room.ownerId !== ctx.client.userData.id) return;
+	if (ctx.room.state.ownerId !== ctx.client.userData.id) return;
 	const actions: Promise<void>[] = [];
 	if (!ctx.multiplayer) {
 		for (const member of ctx.room.state.members.values()) {
 			// dont disable control for the owner
-			if (member.id === ctx.room.ownerId) continue;
+			if (member.id === ctx.room.state.ownerId) continue;
 			// preserve requesting control state
 			if (member.control === "enabled") member.control = "disabled";
 			if (member.hbId && ctx.room.session?.instance) {

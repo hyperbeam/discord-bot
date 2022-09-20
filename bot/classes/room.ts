@@ -29,13 +29,12 @@ export class BotRoom extends Room<RoomState> {
 	session?: Session & { instance: HyperbeamSession };
 	guests: number[] = [];
 	autoDispose = false;
-	ownerId: string;
 	multiplayer = true;
 
 	async onCreate(options: StartSessionOptions) {
 		this.roomId = nanoid();
-		this.ownerId = options.ownerId;
 		this.setState(new RoomState());
+		this.state.ownerId = options.ownerId;
 		await startSession({ room: this, options });
 	}
 
@@ -53,10 +52,7 @@ export class BotRoom extends Room<RoomState> {
 	}
 
 	async onLeave(client: AuthenticatedClient) {
-		await leaveSession({
-			room: this,
-			client,
-		});
+		await leaveSession({ room: this, client });
 	}
 
 	async onDispose() {
