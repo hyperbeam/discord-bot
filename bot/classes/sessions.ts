@@ -142,20 +142,17 @@ export async function setControl(ctx: AuthContext & { targetId: string; control:
 	// making conditions simpler to read
 	const isSelf = target.id === ctx.client.userData.id;
 	const isOwner = ctx.room.state.ownerId === ctx.client.userData.id;
-	const hasControl = ctx.client.userData.control === "enabled";
-	const isRequesting = ctx.control === "requesting" || ctx.control === "disabled";
-	const isMultiplayer = ctx.room.multiplayer;
-	const isPassingControl = ctx.control === "enabled" && hasControl;
+	const isNotEnabling = ctx.control === "requesting" || ctx.control === "disabled";
 	// check conditions for setting control
-	if (isOwner || isPassingControl || (isSelf && (isRequesting || isMultiplayer))) {
+	if (!target.hbId || !ctx.room.session?.instance) return;
+	if (isOwner) {
+		await ctx.room.session.instance.setPermissions(target.hbId, { control_disabled: ctx.control === "disabled" });
+		target.control = ctx.control === "disabled" ? "disabled" : "enabled";
+	} else if (isSelf && isNotEnabling) {
+		// requesting is just a visual change, no need to update perms
+		if (ctx.control === "disabled")
+			await ctx.room.session.instance.setPermissions(target.hbId, { control_disabled: true });
 		target.control = ctx.control;
-		if (target.hbId && ctx.room.session?.instance && ctx.control !== "requesting") {
-			// requesting is just a visual change, no need to update perms
-			await ctx.room.session.instance.setPermissions(target.hbId, {
-				control_disabled: ctx.control !== "enabled",
-				control_exclusive: !isMultiplayer,
-			});
-		}
 	}
 }
 
