@@ -2,7 +2,7 @@ import { Client, ServerError } from "colyseus";
 import Member from "../schemas/member";
 import { AuthenticatedClient, AuthOptions, BotRoom } from "./room";
 import TokenHandler from "../utils/tokenHandler";
-import database from "./database";
+import db from "./database";
 import Hyperbeam from "./hyperbeam";
 
 export type StartSessionOptions = {
@@ -10,7 +10,7 @@ export type StartSessionOptions = {
 	region: "NA" | "EU" | "AS";
 };
 
-type BaseContext = { room: BotRoom; db: typeof database };
+type BaseContext = { room: BotRoom };
 type AuthContext = BaseContext & { client: AuthenticatedClient };
 
 export async function authenticateUser(
@@ -36,7 +36,7 @@ export async function authenticateUser(
 		const result = TokenHandler.verify(ctx.token);
 		if (!result) throw new ServerError(401, "Invalid token");
 		const { id, verify } = result;
-		const user = await ctx.db.user.findFirst({ where: { id } });
+		const user = await db.user.findFirst({ where: { id } });
 		if (!user) throw new ServerError(401, "Invalid token");
 		if (!verify(user)) throw new ServerError(401, "Invalid token");
 		member = new Member();
@@ -60,7 +60,7 @@ export async function startSession(ctx: BaseContext & { options: StartSessionOpt
 	} catch (e) {
 		throw new ServerError(500, "Could not create session");
 	}
-	const session = await ctx.db.session.create({
+	const session = await db.session.create({
 		data: {
 			embedUrl: hbSession.embedUrl,
 			sessionId: hbSession.sessionId,
@@ -81,9 +81,9 @@ export async function joinSession(ctx: AuthContext) {
 	if (!member) return;
 	ctx.room.state.members.set(member.id, member);
 	if (ctx.client.auth.guest) return;
-	const user = await ctx.db.user.findFirst({ where: { id: member.id } });
+	const user = await db.user.findFirst({ where: { id: member.id } });
 	if (!user) return;
-	await ctx.db.session.update({
+	await db.session.update({
 		where: { url: ctx.room.roomId },
 		data: {
 			members: {
@@ -102,9 +102,9 @@ export async function leaveSession(ctx: AuthContext) {
 		ctx.room.guests.splice(ctx.room.guests.indexOf(guestNumber), 1);
 		return;
 	}
-	const user = await ctx.db.user.findFirst({ where: { id: member.id } });
+	const user = await db.user.findFirst({ where: { id: member.id } });
 	if (!user) return;
-	await ctx.db.session.update({
+	await db.session.update({
 		where: { url: ctx.room.roomId },
 		data: {
 			members: {
@@ -117,7 +117,7 @@ export async function leaveSession(ctx: AuthContext) {
 export async function disposeSession(ctx: BaseContext) {
 	if (!ctx.room.session) return;
 	await Hyperbeam.deleteSession(ctx.room.session.sessionId);
-	await ctx.db.session.update({
+	await db.session.update({
 		where: { sessionId: ctx.room.session.sessionId },
 		data: {
 			endedAt: new Date(),
@@ -126,11 +126,11 @@ export async function disposeSession(ctx: BaseContext) {
 }
 
 export async function getActiveSessions(ownerId: string) {
-	return database.session.findMany({ where: { ownerId, endedAt: { not: null } } });
+	return db.session.findMany({ where: { ownerId, endedAt: { not: null } } });
 }
 
 export async function endAllSessions() {
-	const sessions = await database.session.findMany();
+	const sessions = await db.session.findMany();
 	for (const session of sessions) {
 		await Hyperbeam.deleteSession(session.sessionId).catch();
 	}

@@ -10,7 +10,6 @@ import {
 	leaveSession,
 	StartSessionOptions,
 } from "./sessions";
-import db from "./database";
 import Member from "../schemas/member";
 import { customAlphabet } from "nanoid";
 
@@ -37,32 +36,30 @@ export class BotRoom extends Room<RoomState> {
 		this.roomId = nanoid();
 		this.ownerId = options.ownerId;
 		this.setState(new RoomState());
-		await startSession({ room: this, options, db });
+		await startSession({ room: this, options });
 	}
 
 	async onAuth(client: Client, options?: AuthOptions) {
 		return authenticateUser({
 			room: this,
 			client,
-			db,
 			token: options?.token,
 			deviceId: options?.deviceId,
 		});
 	}
 
 	async onJoin(client: AuthenticatedClient) {
-		await joinSession({ room: this, client, db });
+		await joinSession({ room: this, client });
 	}
 
 	async onLeave(client: AuthenticatedClient) {
 		await leaveSession({
 			room: this,
 			client,
-			db,
 		});
 	}
 
 	async onDispose() {
-		await disposeSession({ room: this, db });
+		await disposeSession({ room: this });
 	}
 }
