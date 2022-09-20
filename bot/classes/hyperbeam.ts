@@ -141,7 +141,10 @@ export class HyperbeamSession {
 		return parsedEmbedUrl.origin + parsedEmbedUrl.pathname;
 	}
 
-	async setPermissions(userId: string, permissions: Partial<PermissionData>): Promise<void> {
+	async setPermissions(
+		userId: string,
+		permissions: Partial<PermissionData & { control_exclusive: boolean }>,
+	): Promise<void> {
 		return HbFetch<void, [string, Partial<PermissionData>]>({
 			baseUrl: this.baseUrl,
 			authorization: this.adminToken,

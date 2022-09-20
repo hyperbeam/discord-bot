@@ -30,9 +30,12 @@ export class BotRoom extends Room<RoomState> {
 	session?: Session & { instance: HyperbeamSession };
 	guests: number[] = [];
 	autoDispose = false;
+	ownerId: string;
+	multiplayer = true;
 
 	async onCreate(options: StartSessionOptions) {
 		this.roomId = nanoid();
+		this.ownerId = options.ownerId;
 		this.setState(new RoomState());
 		await startSession({ room: this, options, db });
 	}

@@ -11,13 +11,15 @@ export type StartSessionOptions = {
 };
 
 type BaseContext = { room: BotRoom; db: typeof database };
+type AuthContext = BaseContext & { client: AuthenticatedClient };
 
 interface RoomEvents {
+	default: AuthContext;
 	startSession: BaseContext & { options: StartSessionOptions };
-	joinSession: BaseContext & { client: AuthenticatedClient };
-	leaveSession: BaseContext & { client: AuthenticatedClient };
 	disposeSession: BaseContext;
 	authenticateUser: BaseContext & { client: Client } & AuthOptions;
+	setControl: AuthContext & { targetId: string; control: Member["control"] };
+	setMultiplayer: AuthContext & { multiplayer: boolean };
 }
 
 export async function authenticateUser(
@@ -77,12 +79,13 @@ export async function startSession(ctx: RoomEvents["startSession"]) {
 			url: ctx.room.roomId,
 		},
 	});
+	if (!ctx.room.ownerId) ctx.room.ownerId = ctx.options.ownerId;
 	ctx.room.session = { ...session, instance: hbSession };
 	ctx.room.state.embedUrl = hbSession.embedUrl;
 	ctx.room.state.sessionId = hbSession.sessionId;
 }
 
-export async function joinSession(ctx: RoomEvents["joinSession"]) {
+export async function joinSession(ctx: RoomEvents["default"]) {
 	const member = ctx.client.userData;
 	if (!member) return;
 	ctx.room.state.members.set(member.id, member);
@@ -99,7 +102,7 @@ export async function joinSession(ctx: RoomEvents["joinSession"]) {
 	});
 }
 
-export async function leaveSession(ctx: RoomEvents["leaveSession"]) {
+export async function leaveSession(ctx: RoomEvents["default"]) {
 	const member = ctx.client.userData;
 	if (!member) return;
 	ctx.room.state.members.delete(member.id);
@@ -140,4 +143,51 @@ export async function endAllSessions() {
 	for (const session of sessions) {
 		await Hyperbeam.deleteSession(session.sessionId).catch();
 	}
+}
+
+export async function setControl(ctx: RoomEvents["setControl"]) {
+	const target = ctx.room.state.members.get(ctx.targetId);
+	if (!target || target.control === ctx.control) return;
+	// making conditions simpler to read
+	const isSelf = target.id === ctx.client.userData.id;
+	const isOwner = ctx.room.ownerId === ctx.client.userData.id;
+	const hasControl = ctx.client.userData.control === "enabled";
+	const isRequesting = ctx.control === "requesting" || ctx.control === "disabled";
+	const isMultiplayer = ctx.room.multiplayer;
+	const isPassingControl = ctx.control === "enabled" && hasControl;
+	// check conditions for setting control
+	if (isOwner || isPassingControl || (isSelf && (isRequesting || isMultiplayer))) {
+		target.control = ctx.control;
+		if (target.hbId && ctx.room.session?.instance && ctx.control !== "requesting") {
+			// requesting is just a visual change, no need to update perms
+			await ctx.room.session.instance.setPermissions(target.hbId, { control_disabled: ctx.control !== "enabled" });
+		}
+	}
+}
+
+export async function setMultiplayer(ctx: RoomEvents["setMultiplayer"]) {
+	if (ctx.room.ownerId !== ctx.client.userData.id) return;
+	const actions: Promise<void>[] = [];
+	if (!ctx.multiplayer) {
+		for (const member of ctx.room.state.members.values()) {
+			// dont disable control for the owner
+			if (member.id === ctx.room.ownerId) continue;
+			// preserve requesting control state
+			if (member.control === "enabled") member.control = "disabled";
+			if (member.hbId && ctx.room.session?.instance) {
+				// push to array without awaiting so that we can await all at once
+				actions.push(ctx.room.session.instance.setPermissions(member.hbId, { control_disabled: true }));
+			}
+		}
+	} else {
+		for (const member of ctx.room.state.members.values()) {
+			if (member.hbId && ctx.room.session?.instance) {
+				// push to array without awaiting so that we can await all at once
+				actions.push(ctx.room.session.instance.setPermissions(member.hbId, { control_disabled: false }));
+			}
+		}
+	}
+	await Promise.all(actions);
+	// set multiplayer after all permissions have been updated
+	ctx.room.multiplayer = ctx.multiplayer;
 }
