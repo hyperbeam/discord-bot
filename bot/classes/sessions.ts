@@ -148,10 +148,8 @@ export async function setControl(ctx: AuthContext & { targetId: string; control:
 	if (isOwner) {
 		await ctx.room.session.instance.setPermissions(target.hbId, { control_disabled: ctx.control === "disabled" });
 		target.control = ctx.control === "disabled" ? "disabled" : "enabled";
-	} else if (isSelf && isNotEnabling) {
-		// requesting is just a visual change, no need to update perms
-		if (ctx.control === "disabled")
-			await ctx.room.session.instance.setPermissions(target.hbId, { control_disabled: true });
+	} else if ((isSelf && isNotEnabling) || ctx.client.userData.id === ctx.room.state.ownerId) {
+		await ctx.room.session.instance.setPermissions(target.hbId, { control_disabled: ctx.control === "disabled" });
 		target.control = ctx.control;
 	}
 }
