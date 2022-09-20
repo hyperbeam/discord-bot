@@ -160,7 +160,10 @@ export async function setControl(ctx: RoomEvents["setControl"]) {
 		target.control = ctx.control;
 		if (target.hbId && ctx.room.session?.instance && ctx.control !== "requesting") {
 			// requesting is just a visual change, no need to update perms
-			await ctx.room.session.instance.setPermissions(target.hbId, { control_disabled: ctx.control !== "enabled" });
+			await ctx.room.session.instance.setPermissions(target.hbId, {
+				control_disabled: ctx.control !== "enabled",
+				control_exclusive: !isMultiplayer,
+			});
 		}
 	}
 }
