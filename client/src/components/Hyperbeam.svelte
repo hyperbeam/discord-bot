@@ -6,7 +6,7 @@
 	export let embedUrl: string;
 	export const iframeAspect = 16 / 9;
 	let node: HTMLElement;
-	let iframeNode: HTMLIFrameElement;
+	export let iframeNode: HTMLIFrameElement;
 	let iframeWidth: number = 0;
 	let iframeHeight: number = 0;
 
