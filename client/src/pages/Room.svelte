@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { Room } from "colyseus.js";
-	import { onMount } from "svelte";
-	import Toolbar from "../components/Toolbar.svelte";
-	import Vm from "../components/VM.svelte";
-	import RoomState from "../schemas/room";
-	import { members, room } from "../store";
-	import { client } from "../scripts/api";
 	import { nanoid } from "nanoid";
+	import { onMount } from "svelte";
+	import Hyperbeam from "../components/Hyperbeam.svelte";
+	import Toolbar from "../components/Toolbar.svelte";
+	import RoomState from "../schemas/room";
+	import { client } from "../scripts/api";
+	import { members, room } from "../store";
 
 	export let roomUrl: string;
 	const getToken = () => {
@@ -50,7 +50,7 @@
 
 {#if $room && $room.state.embedUrl}
 	<div class="room">
-		<Vm embedUrl={$room.state.embedUrl} />
+		<Hyperbeam embedUrl={$room.state.embedUrl} />
 		<Toolbar />
 	</div>
 {/if}
@@ -60,7 +60,7 @@
 		height: 100%;
 	}
 
-	:global(#VM) {
+	:global(.hyperbeam) {
 		position: absolute;
 		inset: 0;
 		margin: 0 0 56px 0; /* Toolbar height */
@@ -74,7 +74,7 @@
 	}
 
 	@media (max-width: 767px) {
-		:global(#VM) {
+		:global(.hyperbeam) {
 			position: absolute;
 			inset: 0;
 			margin: 0 0 112px 0; /* Toolbar height */
