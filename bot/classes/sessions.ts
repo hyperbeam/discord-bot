@@ -4,6 +4,7 @@ import { AuthenticatedClient, AuthOptions, BotRoom } from "./room";
 import TokenHandler from "../utils/tokenHandler";
 import db from "./database";
 import Hyperbeam from "./hyperbeam";
+import Cursor from "../schemas/cursor";
 
 export type StartSessionOptions = {
 	ownerId: string;
@@ -179,4 +180,12 @@ export async function setMultiplayer(ctx: AuthContext & { multiplayer: boolean }
 	await Promise.all(actions);
 	// set multiplayer after all permissions have been updated
 	ctx.room.multiplayer = ctx.multiplayer;
+}
+
+export async function setCursor(ctx: AuthContext & { x: number; y: number }) {
+	if (!ctx.client.userData.cursor) ctx.client.userData.cursor = new Cursor();
+	if (ctx.client.userData.cursor.x === ctx.x && ctx.client.userData.cursor.y === ctx.y) return;
+	if (ctx.x < 0 || ctx.y < 0 || ctx.x > 1 || ctx.y > 1) return;
+	ctx.client.userData.cursor.x = ctx.x;
+	ctx.client.userData.cursor.y = ctx.y;
 }

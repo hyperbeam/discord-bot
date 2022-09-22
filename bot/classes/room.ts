@@ -9,6 +9,7 @@ import {
 	joinSession,
 	leaveSession,
 	StartSessionOptions,
+	setCursor,
 } from "./sessions";
 import Member from "../schemas/member";
 import { customAlphabet } from "nanoid";
@@ -35,6 +36,7 @@ export class BotRoom extends Room<RoomState> {
 		this.roomId = nanoid();
 		this.setState(new RoomState());
 		this.state.ownerId = options.ownerId;
+		await this.registerMessageHandlers();
 		await startSession({ room: this, options });
 	}
 
@@ -57,5 +59,14 @@ export class BotRoom extends Room<RoomState> {
 
 	async onDispose() {
 		await disposeSession({ room: this });
+	}
+
+	async registerMessageHandlers() {
+		this.onMessage<{ type: "setCursor"; x: number; y: number }>(
+			"setCursor",
+			async (client: AuthenticatedClient, message) => {
+				setCursor({ room: this, client, x: message.x, y: message.y });
+			},
+		);
 	}
 }
