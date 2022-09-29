@@ -47,12 +47,12 @@
 		}
 	});
 
-	let iframeNode: HTMLIFrameElement;
+	let vmNode: HTMLDivElement;
 </script>
 
 {#if $room && $room.state.embedUrl}
 	<div class="room">
-		<Hyperbeam embedUrl={$room.state.embedUrl} bind:iframeNode />
+		<Hyperbeam embedUrl={$room.state.embedUrl} bind:vmNode />
 		<!-- {#if iframeNode}
 			{#each $members as member}
 				<Cursor left={member.cursor.x} top={member.cursor.y} {iframeNode} text={member.name}/>
