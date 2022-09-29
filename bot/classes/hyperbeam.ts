@@ -1,4 +1,5 @@
 import { PermissionData } from "@hyperbeam/web";
+import fetch from "node-fetch"
 
 export type VMResponse = {
 	session_id: string;
