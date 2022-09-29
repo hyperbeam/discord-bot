@@ -3,6 +3,7 @@ import db from "./database";
 import { User as BotUser } from "slash-create";
 import TokenHandler from "../utils/tokenHandler";
 import { nanoid } from "nanoid";
+import fetch from "node-fetch"
 
 // make sure you set the redirect uri to the same url as the one in the discord app
 const discord = new Discord({
