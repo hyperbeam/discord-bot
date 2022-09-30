@@ -2,7 +2,7 @@
 	import { onMount } from "svelte";
 
 	/** Reference to the Hyperbeam iframe */
-	export let iframeNode: HTMLIFrameElement;
+	export let vmNode: HTMLDivElement;
 	/** X coordinate of the cursor relative to the iframe */
 	export let left = 0;
 	/** Y coordinate of the cursor relative to the iframe */
@@ -11,7 +11,7 @@
 	let adjustedLeft = 0;
 	let adjustedTop = 0;
 	function adjustPosition() {
-		const iframeRect = iframeNode.getBoundingClientRect();
+		const iframeRect = vmNode.getBoundingClientRect();
 		const scaleX = iframeRect.width / 1280;
 		const scaleY = iframeRect.height / 720;
 		adjustedLeft = iframeRect.left + left * scaleX;
@@ -20,7 +20,7 @@
 	const resizeObserver = new ResizeObserver(adjustPosition);
 	onMount(async () => {
 		adjustPosition();
-		resizeObserver.observe(iframeNode);
+		resizeObserver.observe(vmNode);
 	});
 </script>
 
