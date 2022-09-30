@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Hyperbeam from "@hyperbeam/web";
 	import { onMount } from "svelte";
-	import { hyperbeamEmbed } from "../store";
+	import { hyperbeamEmbed, room } from "../store";
 
 	export let embedUrl: string;
 	export const iframeAspect = 16 / 9;
@@ -26,11 +26,26 @@
 		$hyperbeamEmbed = await Hyperbeam(vmNode, embedUrl);
 		maintainAspectRatio();
 	});
+
+	/** Send the cursor position to the server
+	 * @param {number} x - The x position of the cursor relative to the VM as a value between 0 and 1
+	 * @param {number} y - The y position of the cursor relative to the VM as a value between 0 and 1
+	 */
+	function setCursor(x: number, y: number) {
+		$room.send("setCursor", { x, y });
+	}
+
+	function onMousemove(event: MouseEvent) {
+		const vmNodeRect = vmNode.getBoundingClientRect();
+		const x = (event.clientX - vmNodeRect.left) / vmWidth;
+		const y = (event.clientY - vmNodeRect.top) / vmHeight;
+		setCursor(x, y);
+	}
 </script>
 
 <svelte:window on:resize={maintainAspectRatio} />
 <div class="hyperbeam" style:--vmWidth={vmWidth} style:--vmHeight={vmHeight} bind:this={node}>
-	<div class="hyperbeam__vm" title="Hyperbeam" bind:this={vmNode} />
+	<div class="hyperbeam__vm" title="Hyperbeam" bind:this={vmNode} on:mousemove={onMousemove} />
 </div>
 
 <style>

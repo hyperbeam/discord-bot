@@ -2,6 +2,7 @@
 	import { Room } from "colyseus.js";
 	import { nanoid } from "nanoid";
 	import { onMount } from "svelte";
+	import Cursor from "../components/Cursor.svelte";
 	import Hyperbeam from "../components/Hyperbeam.svelte";
 	import Toolbar from "../components/Toolbar.svelte";
 	import RoomState from "../schemas/room";
@@ -53,11 +54,13 @@
 {#if $room && $room.state.embedUrl}
 	<div class="room">
 		<Hyperbeam embedUrl={$room.state.embedUrl} bind:vmNode />
-		<!-- {#if iframeNode}
+		{#if vmNode}
 			{#each $members as member}
-				<Cursor left={member.cursor.x} top={member.cursor.y} {iframeNode} text={member.name}/>
+				{#if member.cursor}
+					<Cursor left={member.cursor.x} top={member.cursor.y} {vmNode} text={member.name} />
+				{/if}
 			{/each}
-		{/if} -->
+		{/if}
 		<Toolbar />
 	</div>
 {/if}

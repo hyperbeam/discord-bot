@@ -3,25 +3,29 @@
 
 	/** Reference to the Hyperbeam iframe */
 	export let vmNode: HTMLDivElement;
-	/** X coordinate of the cursor relative to the iframe */
+	/** X coordinate of the cursor relative to the vm as a value from 0 to 1 */
 	export let left = 0;
-	/** Y coordinate of the cursor relative to the iframe */
+	/** Y coordinate of the cursor relative to the vm as a value from 0 to 1 */
 	export let top = 0;
+	/** Text to display in the cursor */
 	export let text = "";
+
 	let adjustedLeft = 0;
 	let adjustedTop = 0;
+
 	function adjustPosition() {
-		const iframeRect = vmNode.getBoundingClientRect();
-		const scaleX = iframeRect.width / 1280;
-		const scaleY = iframeRect.height / 720;
-		adjustedLeft = iframeRect.left + left * scaleX;
-		adjustedTop = iframeRect.top + top * scaleY;
+		const vmNodeRect = vmNode.getBoundingClientRect();
+		adjustedLeft = vmNodeRect.left + left * vmNodeRect.width;
+		adjustedTop = vmNodeRect.top + top * vmNodeRect.height;
 	}
+
 	const resizeObserver = new ResizeObserver(adjustPosition);
 	onMount(async () => {
 		adjustPosition();
 		resizeObserver.observe(vmNode);
 	});
+
+	$: if (left && top) adjustPosition();
 </script>
 
 <div class="cursor" style:--adjustedLeft={adjustedLeft} style:--adjustedTop={adjustedTop}>
