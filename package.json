@@ -13,7 +13,7 @@
 		"bot:listcommands": "slash-up local",
 		"bot:dev": "pnpm run db:update && nodemon --watch ./bot --exec \"pnpm run bot:nodb\" --ext ts,js,json",
 		"client": "pnpm run client:build && pnpm run client:serve",
-		"client:dev": "pnpm run client:syncschemas && vite",
+		"client:dev": "pnpm run client:syncschemas && vite --host",
 		"client:build": "pnpm run client:syncschemas && vite build",
 		"client:preview": "vite preview",
 		"client:serve": "dotenv -e .env -- cross-var sirv -s -p %VITE_CLIENT_PORT% dist/client",
