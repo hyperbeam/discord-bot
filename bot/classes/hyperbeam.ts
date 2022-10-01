@@ -1,5 +1,5 @@
 import { PermissionData } from "@hyperbeam/web";
-import fetch from "node-fetch"
+import fetch from "node-fetch";
 
 export type VMResponse = {
 	session_id: string;
@@ -89,6 +89,7 @@ export class HyperbeamAPI {
 			...sessionData,
 			control_disable_default: false,
 			offline_timeout: 300,
+			hide_cursor: true,
 			ublock: true,
 			start_url: sessionData?.start_url
 				? this.hasProtocol(sessionData.start_url)

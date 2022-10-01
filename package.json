@@ -16,7 +16,7 @@
 		"client:dev": "pnpm run client:syncschemas && vite --host",
 		"client:build": "pnpm run client:syncschemas && vite build",
 		"client:preview": "vite preview",
-		"client:serve": "dotenv -e .env -- cross-var sirv -s -p %VITE_CLIENT_PORT% dist/client",
+		"client:serve": "dotenv -e .env -- cross-var sirv -H -s -p %VITE_CLIENT_PORT% dist/client",
 		"client:syncschemas": "ts-node ./scripts/syncSchemas.ts",
 		"db:migrate": "pnpm exec prisma migrate dev && pnpm exec prisma generate",
 		"db:update": "pnpm exec prisma migrate deploy && pnpm exec prisma generate",
