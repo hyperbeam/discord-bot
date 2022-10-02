@@ -57,6 +57,7 @@
 		top: 0;
 		width: 24px;
 		height: 24px;
+		pointer-events: none;
 
 		transform: translate3d(calc(var(--adjustedLeft) * 1px), calc(var(--adjustedTop) * 1px), 0);
 
