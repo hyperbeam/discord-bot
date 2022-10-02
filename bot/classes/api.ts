@@ -56,6 +56,7 @@ const server = new Server({
 	transport: new WebSocketTransport({
 		server: createServer(app),
 	}),
+	gracefullyShutdown: false,
 });
 
 server
