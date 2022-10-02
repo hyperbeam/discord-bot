@@ -46,6 +46,7 @@
 		"morgan": "^1.10.0",
 		"nanoid": "3.3.4",
 		"node-fetch": "2.x",
+		"perfect-cursors": "^1.0.5",
 		"sass": "^1.54.8",
 		"sirv-cli": "^2.0.2",
 		"slash-create": "^5.9.0",

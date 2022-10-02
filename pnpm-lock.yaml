@@ -41,6 +41,7 @@ specifiers:
   nanoid: 3.3.4
   node-fetch: 2.x
   nodemon: ^2.0.20
+  perfect-cursors: ^1.0.5
   prettier: ^2.7.1
   prettier-plugin-svelte: ^2.7.0
   prisma: ^4.3.1
@@ -80,6 +81,7 @@ dependencies:
   morgan: 1.10.0
   nanoid: 3.3.4
   node-fetch: 2.6.7
+  perfect-cursors: 1.0.5
   sass: 1.54.9
   sirv-cli: 2.0.2
   slash-create: 5.9.0_express@4.18.1
@@ -463,6 +465,10 @@ packages:
       vite: 3.1.0_sass@1.54.9
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /@tldraw/vec/1.7.1:
+    resolution: {integrity: sha512-qM6Z9RvkLFFEzr91mmsA4HI14msyDgDDOu36csIzG5BYu2bFmEz5siQ8WntHgDtUjzJHP+VSSOTbAXhklEZHLA==}
     dev: false
 
   /@tokenizer/token/0.3.0:
@@ -4030,6 +4036,12 @@ packages:
   /peek-readable/5.0.0:
     resolution: {integrity: sha512-YtCKvLUOvwtMGmrniQPdO7MwPjgkFBtFIrmfSbYmYuq3tKDV/mcfAhBth1+C3ru7uXIZasc/pHnb+YDYNkkj4A==}
     engines: {node: '>=14.16'}
+    dev: false
+
+  /perfect-cursors/1.0.5:
+    resolution: {integrity: sha512-LgQJj6QtF6VzYODurlhF9Ayt2liiadJZBocK98brcCC6D/dRtZlSU/r0mXWDoCdGPiO24oJB1+PZKz4p9hblWg==}
+    dependencies:
+      '@tldraw/vec': 1.7.1
     dev: false
 
   /picocolors/1.0.0:

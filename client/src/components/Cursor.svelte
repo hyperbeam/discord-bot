@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { PerfectCursor } from "perfect-cursors";
 	import { onMount } from "svelte";
 
 	/** Reference to the Hyperbeam iframe */
@@ -13,19 +14,28 @@
 	let adjustedLeft = 0;
 	let adjustedTop = 0;
 
-	function adjustPosition() {
-		const vmNodeRect = vmNode.getBoundingClientRect();
-		adjustedLeft = vmNodeRect.left + left * vmNodeRect.width;
-		adjustedTop = vmNodeRect.top + top * vmNodeRect.height;
+	let vmNodeRect = vmNode.getBoundingClientRect();
+
+	function updateMyCursor(point: number[]) {
+		adjustedLeft = vmNodeRect.left + point[0] * vmNodeRect.width;
+		adjustedTop = vmNodeRect.top + point[1] * vmNodeRect.height;
 	}
 
-	const resizeObserver = new ResizeObserver(adjustPosition);
-	onMount(async () => {
-		adjustPosition();
-		resizeObserver.observe(vmNode);
+	const pc = new PerfectCursor(updateMyCursor);
+
+	const resizeObserver = new ResizeObserver(() => {
+		vmNodeRect = vmNode.getBoundingClientRect();
+		pc.addPoint([left, top]);
 	});
 
-	$: if (left && top) adjustPosition();
+	onMount(async () => {
+		resizeObserver.observe(vmNode);
+		pc.addPoint([left, top]);
+	});
+
+	$: if (left && top) {
+		pc.addPoint([left, top]);
+	}
 </script>
 
 <div class="cursor" style:--adjustedLeft={adjustedLeft} style:--adjustedTop={adjustedTop}>
@@ -43,10 +53,12 @@
 <style lang="scss">
 	.cursor {
 		position: absolute;
-		left: calc(var(--adjustedLeft) * 1px);
-		top: calc(var(--adjustedTop) * 1px);
+		left: 0;
+		top: 0;
 		width: 24px;
 		height: 24px;
+
+		transform: translate3d(calc(var(--adjustedLeft) * 1px), calc(var(--adjustedTop) * 1px), 0);
 
 		&__icon {
 			path {
