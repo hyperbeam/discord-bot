@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { PerfectCursor } from "perfect-cursors";
 	import { onMount } from "svelte";
+	export let color: string = "#000000";
 
 	/** Reference to the Hyperbeam iframe */
 	export let vmNode: HTMLDivElement;
@@ -39,15 +40,17 @@
 </script>
 
 <div class="cursor" style:--adjustedLeft={adjustedLeft} style:--adjustedTop={adjustedTop}>
-	<div class="cursor__icon">
-		<!-- TODO: Show platform-specific cursor -->
-		<svg style="width:24px;height:24px" viewBox="0 0 24 24">
-			<path
-				fill="currentColor"
-				d="M13.64,21.97C13.14,22.21 12.54,22 12.31,21.5L10.13,16.76L7.62,18.78C7.45,18.92 7.24,19 7,19A1,1 0 0,1 6,18V3A1,1 0 0,1 7,2C7.24,2 7.47,2.09 7.64,2.23L7.65,2.22L19.14,11.86C19.57,12.22 19.62,12.85 19.27,13.27C19.12,13.45 18.91,13.57 18.7,13.61L15.54,14.23L17.74,18.96C18,19.46 17.76,20.05 17.26,20.28L13.64,21.97Z" />
-		</svg>
-	</div>
-	<div class="cursor__text">{text}</div>
+	<svg class="cursor__icon" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<path
+			d="M14.3331 24.4662C14.4454 24.758 14.8616 24.7486 14.9605 24.4519L17.3333 17.3333L24.4519 14.9605C24.7486 14.8616 24.758 14.4454 24.4662 14.3331L8.70001 8.26923C8.43043 8.16555 8.16555 8.43043 8.26923 8.70001L14.3331 24.4662Z"
+			fill={color} />
+		<path
+			d="M14.3331 24.4662C14.4454 24.758 14.8616 24.7486 14.9605 24.4519L17.3333 17.3333L24.4519 14.9605C24.7486 14.8616 24.758 14.4454 24.4662 14.3331L8.70001 8.26923C8.43043 8.16555 8.16555 8.43043 8.26923 8.70001L14.3331 24.4662Z"
+			stroke="white"
+			stroke-linejoin="round" />
+	</svg>
+
+	<div class="cursor__text" style:--cursorColor={color}>{text}</div>
 </div>
 
 <style lang="scss">
@@ -55,31 +58,35 @@
 		position: absolute;
 		left: 0;
 		top: 0;
-		width: 24px;
-		height: 24px;
+		width: 32px;
+		height: 32px;
 		pointer-events: none;
 
-		transform: translate3d(calc(var(--adjustedLeft) * 1px), calc(var(--adjustedTop) * 1px), 0);
+		transform: translate(calc(var(--adjustedLeft) * 1px), calc(var(--adjustedTop) * 1px));
 
 		&__icon {
-			path {
-				fill: #fff;
-				stroke: #000;
-				stroke-width: 2px;
-			}
+			width: 32px;
+			height: 32px;
+			translate: -8px -8px;
 		}
 
 		&__text {
 			position: absolute;
 			left: 24px;
 			top: 24px;
-			background-color: grey;
+			translate: -8px -8px;
+			color: white;
+			background-color: var(--cursorColor);
 			font-size: 12px;
 			white-space: nowrap;
 			position: absolute;
-			box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
-			padding: 4px 8px;
+			padding: 2px 6px;
 			border-radius: 4px;
+			pointer-events: none;
+			border: 1px solid #fffb;
+			&::selection {
+				background: transparent;
+			}
 		}
 	}
 </style>
