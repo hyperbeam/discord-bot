@@ -57,7 +57,7 @@
 		{#if vmNode}
 			{#each $members as member}
 				{#if member.cursor}
-					<Cursor left={member.cursor.x} top={member.cursor.y} {vmNode} text={member.name} />
+					<Cursor left={member.cursor.x} top={member.cursor.y} {vmNode} text={member.name} color={member.color} />
 				{/if}
 			{/each}
 		{/if}
