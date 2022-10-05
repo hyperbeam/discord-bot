@@ -7,7 +7,7 @@
 	import Toolbar from "../components/Toolbar.svelte";
 	import RoomState from "../schemas/room";
 	import { client } from "../scripts/api";
-	import { members, room } from "../store";
+	import { currentUser, cursorInterval, members, room, trackedCursor } from "../store";
 
 	export let roomUrl: string;
 	const getToken = () => {
@@ -29,13 +29,70 @@
 		}
 	};
 
+	const attemptReconnect = async () => {
+		console.log("Attempting reconnect");
+		window.clearInterval($cursorInterval);
+		$cursorInterval = undefined;
+		let isConnected = false;
+		let i = 1;
+		while (!isConnected) {
+			const sec = Math.min(i, 15);
+			try {
+				await attemptJoin();
+				isConnected = true;
+				break;
+			} catch (err) {
+				console.log(`Disconnected, reconnecting in ${sec} seconds...`);
+			}
+			await new Promise((resolve) => setTimeout(resolve, sec * 1000));
+			i++;
+		}
+	};
+
 	const attemptJoin = async () =>
 		client.joinById(roomUrl, { token: getToken(), deviceId: getDeviceId() }).then((roomData: Room<RoomState>) => {
 			$room = roomData;
 			$members = [...$room.state.members.values()];
 			$room.onStateChange((state) => {
 				$members = [...state.members.values()];
+				if ($currentUser) $members = $members.sort((a) => (a.id === $currentUser.id ? -1 : 1));
 			});
+			$room.onMessage("identify", (data: { id: string }) => {
+				$currentUser = $members.find((m) => m.id === data.id);
+			});
+			$room.onLeave((code) => {
+				if (code >= 1001 && code <= 1015) attemptReconnect();
+			});
+			$room.onError((code, message) => {
+				console.log("Error", code, message);
+				attemptReconnect();
+			});
+			$room.connection.events.onclose = () => {
+				attemptReconnect();
+			};
+			$room.connection.events.onopen = () => {
+				console.log("Connected!");
+			};
+			$room.connection.events.onerror = (err) => {
+				console.error("Connection Error", err);
+				attemptReconnect();
+			};
+
+			const transport = $room.connection.transport as typeof $room.connection.transport & {
+				ws: WebSocket;
+			};
+			$cursorInterval = window.setInterval(() => {
+				try {
+					if (transport.ws.readyState !== WebSocket.OPEN) {
+						console.log("Not connected, skipping cursor update");
+						throw new Error("WebSocket connection not open.");
+					}
+					$room.send("setCursor", $trackedCursor);
+				} catch (err) {
+					console.error(err);
+					attemptReconnect();
+				}
+			}, 40);
 		});
 
 	onMount(async () => {
@@ -53,7 +110,7 @@
 
 {#if $room && $room.state.embedUrl}
 	<div class="room">
-		<Hyperbeam embedUrl={$room.state.embedUrl} bind:vmNode />
+		<Hyperbeam embedUrl={$room.state.embedUrl} bind:vmNode {attemptReconnect} />
 		{#if vmNode}
 			{#each $members as member}
 				{#if member.cursor}

@@ -1,8 +1,9 @@
 <script lang="ts">
 	import Hyperbeam from "@hyperbeam/web";
 	import { onMount } from "svelte";
-	import { hyperbeamEmbed, room } from "../store";
+	import { hyperbeamEmbed, room, trackedCursor } from "../store";
 
+	export let attemptReconnect: () => void;
 	export let embedUrl: string;
 	export const iframeAspect = 16 / 9;
 	let node: HTMLElement;
@@ -11,6 +12,7 @@
 	let vmHeight: number = 0;
 
 	function maintainAspectRatio() {
+		if (!node) return;
 		const nodeRect = node.getBoundingClientRect();
 		const nodeAspect = nodeRect.width / nodeRect.height;
 		if (iframeAspect > nodeAspect) {
@@ -23,23 +25,21 @@
 	}
 
 	onMount(async () => {
+		if ($hyperbeamEmbed) $hyperbeamEmbed.destroy();
 		$hyperbeamEmbed = await Hyperbeam(vmNode, embedUrl);
 		maintainAspectRatio();
+		$room.send("connectHbUser", { hbId: $hyperbeamEmbed.userId });
 	});
 
-	/** Send the cursor position to the server
-	 * @param {number} x - The x position of the cursor relative to the VM as a value between 0 and 1
-	 * @param {number} y - The y position of the cursor relative to the VM as a value between 0 and 1
-	 */
-	function setCursor(x: number, y: number) {
-		$room.send("setCursor", { x, y });
-	}
+	$room.onError((code, message) => {
+		console.log("Error", code, message);
+		attemptReconnect();
+	});
 
 	function onMousemove(event: MouseEvent) {
 		const vmNodeRect = vmNode.getBoundingClientRect();
-		const x = (event.clientX - vmNodeRect.left) / vmWidth;
-		const y = (event.clientY - vmNodeRect.top) / vmHeight;
-		setCursor(x, y);
+		$trackedCursor.x = (event.clientX - vmNodeRect.left) / vmWidth;
+		$trackedCursor.y = (event.clientY - vmNodeRect.top) / vmHeight;
 	}
 </script>
 

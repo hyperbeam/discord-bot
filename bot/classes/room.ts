@@ -10,6 +10,8 @@ import {
 	leaveSession,
 	StartSessionOptions,
 	setCursor,
+	setControl,
+	connectHbUser,
 } from "./sessions";
 import Member from "../schemas/member";
 import { customAlphabet } from "nanoid";
@@ -33,7 +35,7 @@ export class BotRoom extends Room<RoomState> {
 	multiplayer = true;
 
 	async onCreate(options: StartSessionOptions) {
-		this.roomId = nanoid();
+		this.roomId = options.url || nanoid();
 		this.setState(new RoomState());
 		this.setPatchRate(40);
 		this.state.ownerId = options.ownerId;
@@ -67,6 +69,18 @@ export class BotRoom extends Room<RoomState> {
 			"setCursor",
 			async (client: AuthenticatedClient, message) => {
 				setCursor({ room: this, client, x: message.x, y: message.y });
+			},
+		);
+		this.onMessage<{ type: "setControl"; targetId: string; control: Member["control"] }>(
+			"setControl",
+			async (client: AuthenticatedClient, message) => {
+				setControl({ room: this, client, targetId: message.targetId, control: message.control });
+			},
+		);
+		this.onMessage<{ type: "connectHbUser"; hbId: string }>(
+			"connectHbUser",
+			async (client: AuthenticatedClient, message) => {
+				connectHbUser({ room: this, client, hbId: message.hbId });
 			},
 		);
 	}

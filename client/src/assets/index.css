@@ -151,6 +151,7 @@ a:not([class]) {
 	:focus-visible {
 		transition: outline-offset 150ms ease-out;
 	}
+
 	:where(:not(:active)):focus-visible {
 		transition-duration: 150ms;
 	}
@@ -190,4 +191,5 @@ button {
 body {
 	background-color: #1b1c21;
 	color: white;
+	overflow-x: hidden;
 }

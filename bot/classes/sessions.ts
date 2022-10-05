@@ -1,14 +1,18 @@
-import { Client, ServerError } from "colyseus";
+import { Client, matchMaker, ServerError } from "colyseus";
 import Member from "../schemas/member";
 import { AuthenticatedClient, AuthOptions, BotRoom } from "./room";
 import TokenHandler from "../utils/tokenHandler";
 import db from "./database";
-import Hyperbeam from "./hyperbeam";
+import Hyperbeam, { HyperbeamSession } from "./hyperbeam";
 import Cursor from "../schemas/cursor";
+import { Session, User } from "@prisma/client";
+import color from "../utils/color";
 
 export type StartSessionOptions = {
 	ownerId: string;
 	region: "NA" | "EU" | "AS";
+	url?: string;
+	existingSession?: BotRoom["session"] & { members?: User[] };
 };
 
 type BaseContext = { room: BotRoom };
@@ -26,6 +30,7 @@ export async function authenticateUser(
 		} else {
 			member = new Member();
 			member.id = id;
+			member.color = color(id);
 			member.name = "Guest ";
 			let guestNumber = 1;
 			while (ctx.room.guests.includes(guestNumber)) guestNumber++;
@@ -42,6 +47,7 @@ export async function authenticateUser(
 		if (!verify(user)) throw new ServerError(401, "Invalid token");
 		member = new Member();
 		member.id = user.id;
+		member.color = color(user.id);
 		member.name = user.username + "#" + user.discriminator;
 		member.avatarUrl = user.avatar
 			? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
@@ -49,32 +55,53 @@ export async function authenticateUser(
 	}
 	if (!member) throw new ServerError(401, "Could not authenticate user");
 	ctx.client.userData = member;
+	ctx.client.send("identify", { id: member.id });
 	return { token: ctx.token, guest: !ctx.token, deviceId: ctx.deviceId || ctx.client.sessionId };
 }
 
 export async function startSession(ctx: BaseContext & { options: StartSessionOptions }) {
 	let hbSession: Awaited<ReturnType<typeof Hyperbeam.createSession>>;
-	try {
-		hbSession = await Hyperbeam.createSession({
-			region: ctx.options.region || "NA",
+	const existingSession = ctx.options.existingSession;
+	if (existingSession && existingSession.instance) {
+		ctx.room.session = existingSession;
+		ctx.room.state.embedUrl = existingSession.embedUrl;
+		ctx.room.state.sessionId = existingSession.sessionId;
+		// if (existingSession.members?.length) {
+		// 	for (const member of existingSession.members) {
+		// 		const m = new Member();
+		// 		m.id = member.id;
+		// 		m.color = color(member.id);
+		// 		m.name = member.username + "#" + member.discriminator;
+		// 		m.avatarUrl = member.avatar
+		// 			? `https://cdn.discordapp.com/avatars/${member.id}/${member.avatar}.png`
+		// 			: `https://cdn.discordapp.com/embed/avatars/${+member.discriminator % 5}.png`;
+		// 		ctx.room.state.members.set(m.id, m);
+		// 	}
+		// }
+	} else {
+		try {
+			hbSession = await Hyperbeam.createSession({
+				region: ctx.options.region || "NA",
+			});
+		} catch (e) {
+			throw new ServerError(500, "Could not create session");
+		}
+		const session = await db.session.create({
+			data: {
+				embedUrl: hbSession.embedUrl,
+				sessionId: hbSession.sessionId,
+				adminToken: hbSession.adminToken,
+				ownerId: ctx.options.ownerId,
+				createdAt: new Date(),
+				url: ctx.room.roomId,
+				region: ctx.options.region,
+			},
 		});
-	} catch (e) {
-		throw new ServerError(500, "Could not create session");
+		if (!ctx.room.state.ownerId) ctx.room.state.ownerId = ctx.options.ownerId;
+		ctx.room.session = { ...session, instance: hbSession };
+		ctx.room.state.embedUrl = hbSession.embedUrl;
+		ctx.room.state.sessionId = hbSession.sessionId;
 	}
-	const session = await db.session.create({
-		data: {
-			embedUrl: hbSession.embedUrl,
-			sessionId: hbSession.sessionId,
-			adminToken: hbSession.adminToken,
-			ownerId: ctx.options.ownerId,
-			createdAt: new Date(),
-			url: ctx.room.roomId,
-		},
-	});
-	if (!ctx.room.state.ownerId) ctx.room.state.ownerId = ctx.options.ownerId;
-	ctx.room.session = { ...session, instance: hbSession };
-	ctx.room.state.embedUrl = hbSession.embedUrl;
-	ctx.room.state.sessionId = hbSession.sessionId;
 }
 
 export async function joinSession(ctx: AuthContext) {
@@ -137,6 +164,12 @@ export async function endAllSessions() {
 	}
 }
 
+export async function connectHbUser(ctx: AuthContext & { hbId: string }) {
+	const member = ctx.client.userData;
+	if (!member) return;
+	member.hbId = ctx.hbId;
+}
+
 export async function setControl(ctx: AuthContext & { targetId: string; control: Member["control"] }) {
 	const target = ctx.room.state.members.get(ctx.targetId);
 	if (!target || target.control === ctx.control) return;
@@ -145,7 +178,14 @@ export async function setControl(ctx: AuthContext & { targetId: string; control:
 	const isOwner = ctx.room.state.ownerId === ctx.client.userData.id;
 	const isNotEnabling = ctx.control === "requesting" || ctx.control === "disabled";
 	// check conditions for setting control
-	if (!target.hbId || !ctx.room.session?.instance) return;
+	if (!target.hbId) {
+		console.log(`Hyperbeam user ID not connected to target member ${target.id} (${target.name}).`);
+		return;
+	}
+	if (!ctx.room.session?.instance) {
+		console.log("Hyperbeam session not initialized.");
+		return;
+	}
 	if (isOwner) {
 		await ctx.room.session.instance.setPermissions(target.hbId, { control_disabled: ctx.control === "disabled" });
 		target.control = ctx.control === "disabled" ? "disabled" : "enabled";
@@ -183,9 +223,48 @@ export async function setMultiplayer(ctx: AuthContext & { multiplayer: boolean }
 }
 
 export async function setCursor(ctx: AuthContext & { x: number; y: number }) {
+	ctx.room.state.members.set(ctx.client.userData.id, ctx.client.userData);
 	if (!ctx.client.userData.cursor) ctx.client.userData.cursor = new Cursor();
 	if (ctx.client.userData.cursor.x === ctx.x && ctx.client.userData.cursor.y === ctx.y) return;
 	if (ctx.x < 0 || ctx.y < 0 || ctx.x > 1 || ctx.y > 1) return;
 	ctx.client.userData.cursor.x = ctx.x;
 	ctx.client.userData.cursor.y = ctx.y;
+}
+
+export async function restartActiveSessions(): Promise<Session[]> {
+	const restartedSessions: Session[] = [];
+	const sessions = await db.session.findMany({
+		where: { endedAt: { equals: null } },
+		include: { members: true },
+	});
+	for (const session of sessions) {
+		let instance: HyperbeamSession;
+		try {
+			instance = await Hyperbeam.getSession(session.sessionId);
+		} catch (e) {
+			console.error("Failed to get session", e);
+			await db.session.update({
+				where: { sessionId: session.sessionId },
+				data: {
+					endedAt: new Date(),
+				},
+			});
+			continue;
+		}
+		if (instance && !matchMaker.getRoomById(session.url)) {
+			try {
+				await matchMaker.createRoom("room", {
+					url: session.url,
+					ownerId: session.ownerId,
+					region: session.region,
+					existingSession: { ...session, instance },
+				} as StartSessionOptions);
+			} catch (e) {
+				console.error("Failed to create room", e);
+				continue;
+			}
+			restartedSessions.push(session);
+		}
+	}
+	return restartedSessions;
 }
