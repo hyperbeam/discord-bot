@@ -17,7 +17,11 @@ export default class Stop extends SlashCommand<BotClient> {
 		if (sessions.length === 0) return ctx.send("You don't have an active session!");
 
 		for (const session of sessions) {
-			await matchMaker.remoteRoomCall(session.url, "disconnect");
+			try {
+				await matchMaker.remoteRoomCall(session.url, "disconnect");
+			} catch (e) {
+				console.error(e);
+			}
 			console.log(`Stopped session ${session.url}`);
 		}
 
