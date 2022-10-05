@@ -28,6 +28,7 @@ model Session {
   embedUrl   String // iframe embed url
   adminToken String // admin token for this session
   createdAt  DateTime  @default(now())
+  region     String    @default("NA") // region of the session
   updatedAt  DateTime  @default(now()) @updatedAt
   endedAt    DateTime? // when the session ended
   owner      User      @relation("owner", fields: [ownerId], references: [id])
