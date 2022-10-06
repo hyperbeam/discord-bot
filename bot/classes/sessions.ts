@@ -46,6 +46,7 @@ export async function authenticateUser(
 		if (!user) throw new ServerError(401, "Invalid token");
 		if (!verify(user)) throw new ServerError(401, "Invalid token");
 		member = new Member();
+		member.isAuthenticated = true;
 		member.id = user.id;
 		member.color = color(user.id) || swatches[Math.floor(Math.random() * swatches.length)];
 		member.name = user.username + "#" + user.discriminator;
