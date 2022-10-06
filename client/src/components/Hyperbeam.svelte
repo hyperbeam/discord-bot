@@ -45,7 +45,7 @@
 
 <svelte:window on:resize={maintainAspectRatio} />
 <div class="hyperbeam" style:--vmWidth={vmWidth} style:--vmHeight={vmHeight} bind:this={node}>
-	<div class="hyperbeam__vm" bind:this={vmNode} on:mousemove={onMousemove} />
+	<div id="vm" class="hyperbeam__vm" bind:this={vmNode} on:mousemove={onMousemove} />
 </div>
 
 <style>
