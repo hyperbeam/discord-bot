@@ -30,6 +30,10 @@
 	};
 
 	const attemptReconnect = async () => {
+		if ($room) {
+			await $room.leave(true);
+			$room = undefined;
+		}
 		console.log("Attempting reconnect");
 		window.clearInterval($cursorInterval);
 		$cursorInterval = undefined;
@@ -49,7 +53,11 @@
 		}
 	};
 
-	const attemptJoin = async () =>
+	const attemptJoin = async () => {
+		if ($room) {
+			await $room.leave(true);
+			$room = undefined;
+		}
 		client.joinById(roomUrl, { token: getToken(), deviceId: getDeviceId() }).then((roomData: Room<RoomState>) => {
 			$room = roomData;
 			$members = [...$room.state.members.values()];
@@ -67,16 +75,6 @@
 				console.log("Error", code, message);
 				attemptReconnect();
 			});
-			$room.connection.events.onclose = () => {
-				attemptReconnect();
-			};
-			$room.connection.events.onopen = () => {
-				console.log("Connected!");
-			};
-			$room.connection.events.onerror = (err) => {
-				console.error("Connection Error", err);
-				attemptReconnect();
-			};
 
 			const transport = $room.connection.transport as typeof $room.connection.transport & {
 				ws: WebSocket;
@@ -94,6 +92,7 @@
 				}
 			}, 40);
 		});
+	};
 
 	onMount(async () => {
 		try {
@@ -106,14 +105,31 @@
 	});
 
 	let vmNode: HTMLDivElement;
+	let showNativeCursor = false;
+
+	function onNativeCursorMove(e: MouseEvent) {
+		if (vmNode) {
+			const rect = vmNode.getBoundingClientRect();
+			showNativeCursor =
+				e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom;
+		}
+	}
 </script>
 
 {#if $room && $room.state.embedUrl}
-	<div class="room">
+	<div class="room" on:mousemove={onNativeCursorMove}>
 		<Hyperbeam embedUrl={$room.state.embedUrl} bind:vmNode {attemptReconnect} />
 		{#if vmNode}
 			{#each $members as member}
-				{#if member.cursor}
+				{#if $currentUser && member.id === $currentUser.id}
+					<Cursor
+						displayed={!showNativeCursor}
+						left={$trackedCursor.x}
+						top={$trackedCursor.y}
+						{vmNode}
+						text={member.name}
+						color={member.color} />
+				{:else if member.cursor}
 					<Cursor left={member.cursor.x} top={member.cursor.y} {vmNode} text={member.name} color={member.color} />
 				{/if}
 			{/each}

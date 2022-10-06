@@ -2,6 +2,7 @@
 	import { PerfectCursor } from "perfect-cursors";
 	import { onMount } from "svelte";
 	export let color: string = "#000000";
+	export let displayed: boolean = true;
 
 	/** Reference to the Hyperbeam iframe */
 	export let vmNode: HTMLDivElement;
@@ -36,12 +37,25 @@
 		pc.addPoint([left, top]);
 	});
 
-	$: if (left && top) {
+	let hidden: boolean = false;
+	let cursorTimeout: number = undefined;
+
+	$: if (left !== undefined && top !== undefined) {
 		pc.addPoint([left, top]);
+		hidden = false;
+		window.clearTimeout(cursorTimeout);
+		cursorTimeout = window.setTimeout(() => {
+			hidden = true;
+		}, 5 * 1000);
 	}
 </script>
 
-<div class="cursor" style:--adjustedLeft={adjustedLeft} style:--adjustedTop={adjustedTop}>
+<div
+	class="cursor"
+	style:display={displayed ? "block" : "none"}
+	style:--adjustedLeft={adjustedLeft}
+	style:--adjustedTop={adjustedTop}
+	style:--cursorOpacity={hidden ? 0 : 1}>
 	<svg class="cursor__icon" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
 		<path
 			d="M14.3331 24.4662C14.4454 24.758 14.8616 24.7486 14.9605 24.4519L17.3333 17.3333L24.4519 14.9605C24.7486 14.8616 24.758 14.4454 24.4662 14.3331L8.70001 8.26923C8.43043 8.16555 8.16555 8.43043 8.26923 8.70001L14.3331 24.4662Z"
@@ -57,6 +71,8 @@
 
 <style lang="scss">
 	.cursor {
+		opacity: var(--cursorOpacity, 1);
+		transition: opacity 150ms ease-in-out;
 		position: absolute;
 		left: 0;
 		top: 0;
