@@ -22,6 +22,8 @@
 		adjustedTop = vmNodeRect.top + point[1] * vmNodeRect.height;
 	}
 
+	$: computedColor = typeof color === "string" && color.length && color.startsWith("#") ? color : "#000000";
+
 	const pc = new PerfectCursor(updateMyCursor);
 
 	const resizeObserver = new ResizeObserver(() => {
@@ -43,14 +45,14 @@
 	<svg class="cursor__icon" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
 		<path
 			d="M14.3331 24.4662C14.4454 24.758 14.8616 24.7486 14.9605 24.4519L17.3333 17.3333L24.4519 14.9605C24.7486 14.8616 24.758 14.4454 24.4662 14.3331L8.70001 8.26923C8.43043 8.16555 8.16555 8.43043 8.26923 8.70001L14.3331 24.4662Z"
-			fill={color} />
+			fill={computedColor} />
 		<path
 			d="M14.3331 24.4662C14.4454 24.758 14.8616 24.7486 14.9605 24.4519L17.3333 17.3333L24.4519 14.9605C24.7486 14.8616 24.758 14.4454 24.4662 14.3331L8.70001 8.26923C8.43043 8.16555 8.16555 8.43043 8.26923 8.70001L14.3331 24.4662Z"
 			stroke="white"
 			stroke-linejoin="round" />
 	</svg>
 
-	<div class="cursor__text" style:--cursorColor={color}>{text}</div>
+	<div class="cursor__text" style:--cursorColor={computedColor}>{text}</div>
 </div>
 
 <style lang="scss">
