@@ -6,7 +6,7 @@ import db from "./database";
 import Hyperbeam, { HyperbeamSession } from "./hyperbeam";
 import Cursor from "../schemas/cursor";
 import { Session, User } from "@prisma/client";
-import color from "../utils/color";
+import color, { swatches } from "../utils/color";
 
 export type StartSessionOptions = {
 	ownerId: string;
@@ -30,7 +30,7 @@ export async function authenticateUser(
 		} else {
 			member = new Member();
 			member.id = id;
-			member.color = color(id);
+			member.color = color(id) || swatches[Math.floor(Math.random() * swatches.length)];
 			member.name = "Guest ";
 			let guestNumber = 1;
 			while (ctx.room.guests.includes(guestNumber)) guestNumber++;
@@ -47,7 +47,7 @@ export async function authenticateUser(
 		if (!verify(user)) throw new ServerError(401, "Invalid token");
 		member = new Member();
 		member.id = user.id;
-		member.color = color(user.id);
+		member.color = color(user.id) || swatches[Math.floor(Math.random() * swatches.length)];
 		member.name = user.username + "#" + user.discriminator;
 		member.avatarUrl = user.avatar
 			? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
@@ -70,7 +70,7 @@ export async function startSession(ctx: BaseContext & { options: StartSessionOpt
 		// 	for (const member of existingSession.members) {
 		// 		const m = new Member();
 		// 		m.id = member.id;
-		// 		m.color = color(member.id);
+		// 		m.color = color(member.id) || swatches[Math.floor(Math.random() * swatches.length)];
 		// 		m.name = member.username + "#" + member.discriminator;
 		// 		m.avatarUrl = member.avatar
 		// 			? `https://cdn.discordapp.com/avatars/${member.id}/${member.avatar}.png`

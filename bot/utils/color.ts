@@ -14,9 +14,7 @@ export const swatches = [
 ];
 
 export default function color(id: string) {
-	const randomNumber = Math.round(Math.random() * swatches.length);
-	let seed = `${randomNumber}${id}`;
-	seed = seed.substring(seed.length - 5);
-	const index = parseInt(seed, 16) % swatches.length;
+	const seed = id.length ? id : Math.round(Math.random() * 100).toString();
+	const index = seed.charCodeAt(seed.length - 1) % swatches.length;
 	return swatches[index];
 }
