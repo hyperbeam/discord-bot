@@ -209,10 +209,10 @@ export async function setControl(ctx: AuthContext & { targetId: string; control:
 		return;
 	}
 	if (isOwner) {
-		await ctx.room.session.instance.setPermissions(target.hbId, { control_disabled: ctx.control === "disabled" });
+		await ctx.room.session.instance.setPermissions(target.hbId, { control_disabled: ctx.control !== "enabled" });
 		target.control = ctx.control === "disabled" ? "disabled" : "enabled";
 	} else if ((isSelf && isNotEnabling) || ctx.client.userData.id === ctx.room.state.ownerId) {
-		await ctx.room.session.instance.setPermissions(target.hbId, { control_disabled: ctx.control === "disabled" });
+		await ctx.room.session.instance.setPermissions(target.hbId, { control_disabled: ctx.control !== "enabled" });
 		target.control = ctx.control;
 	}
 }
