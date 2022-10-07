@@ -199,6 +199,7 @@ export async function setControl(ctx: AuthContext & { targetId: string; control:
 	const isSelf = target.id === ctx.client.userData.id;
 	const isOwner = ctx.room.state.ownerId === ctx.client.userData.id;
 	const isNotEnabling = ctx.control === "requesting" || ctx.control === "disabled";
+	const isAlreadyEnabled = target.control === "enabled";
 	// check conditions for setting control
 	if (!target.hbId) {
 		console.log(`Hyperbeam user ID not connected to target member ${target.id} (${target.name}).`);
@@ -208,6 +209,7 @@ export async function setControl(ctx: AuthContext & { targetId: string; control:
 		console.log("Hyperbeam session not initialized.");
 		return;
 	}
+	if (isAlreadyEnabled && ctx.control === "requesting") return; // already enabled, no need to request again
 	if (isOwner) {
 		await ctx.room.session.instance.setPermissions(target.hbId, { control_disabled: ctx.control !== "enabled" });
 		target.control = ctx.control === "disabled" ? "disabled" : "enabled";
