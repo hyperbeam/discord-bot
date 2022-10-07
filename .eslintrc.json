@@ -41,12 +41,6 @@
 	},
 	"overrides": [
 		{
-			"files": ["slash-up.config.js"],
-			"env": {
-				"node": true
-			}
-		},
-		{
 			"files": ["./client/**/*.ts", "./client/**/*.d.ts"],
 			"env": {
 				"browser": true
