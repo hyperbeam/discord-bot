@@ -2,12 +2,15 @@
 	import { Room } from "colyseus.js";
 	import { nanoid } from "nanoid";
 	import { onMount } from "svelte";
+	import { getNotificationsContext } from "svelte-notifications";
 	import Cursor from "../components/Cursor.svelte";
 	import Hyperbeam from "../components/Hyperbeam.svelte";
 	import Toolbar from "../components/Toolbar.svelte";
 	import RoomState from "../schemas/room";
 	import { client } from "../scripts/api";
 	import { currentUser, cursorInterval, members, room, trackedCursor } from "../store";
+
+	const { addNotification } = getNotificationsContext();
 
 	export let roomUrl: string;
 	const getToken = () => {
@@ -113,6 +116,20 @@
 			showNativeCursor =
 				e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom;
 		}
+	}
+
+	/** Check if authentification was successful after clicking sign in button */
+	function wasAuthSuccessful() {
+		return !(localStorage.getItem("redirectAfterAuth") === `/${roomUrl}`);
+	}
+
+	$: if (!wasAuthSuccessful()) {
+		addNotification({
+			text: "Failed to sign in to Discord. Please try again.",
+			type: "error",
+			position: "top-right",
+		});
+		localStorage.removeItem("redirectAfterAuth");
 	}
 </script>
 

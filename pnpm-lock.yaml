@@ -54,6 +54,7 @@ specifiers:
   svelte-check: ^2.9.0
   svelte-eslint-parser: ^0.18.2
   svelte-navigator: ^3.2.2
+  svelte-notifications: ^0.9.97
   svelte-preprocess: ^4.10.7
   ts-node: ^10.9.1
   tslib: ^2.4.0
@@ -88,6 +89,7 @@ dependencies:
   svelte: 3.50.1
   svelte-check: 2.9.0_sass@1.54.9+svelte@3.50.1
   svelte-navigator: 3.2.2_l6wots2l5s2wjzdc4hh2utpmhq
+  svelte-notifications: 0.9.97
   svelte-preprocess: 4.10.7_xc4yl5da6nsq2qz545d3rrecaq
   vite: 3.1.0_sass@1.54.9
   vite-plugin-compression: 0.5.1_vite@3.1.0
@@ -4826,6 +4828,10 @@ packages:
       svelte2tsx: 0.1.193_l6wots2l5s2wjzdc4hh2utpmhq
     transitivePeerDependencies:
       - typescript
+    dev: false
+
+  /svelte-notifications/0.9.97:
+    resolution: {integrity: sha512-Ma89Ne6ClIy1kGDOHY2A+WpQ46knOC/6Ngj9IsvwiIBTmpmrvk+cD1Ixcib2rzn/fT0HHBFrsS60Owf2jh1m2Q==}
     dev: false
 
   /svelte-preprocess/4.10.7_xc4yl5da6nsq2qz545d3rrecaq:
