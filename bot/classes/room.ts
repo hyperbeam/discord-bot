@@ -33,7 +33,7 @@ export class BotRoom extends Room<RoomState> {
 	guests: number[] = [];
 	autoDispose = false;
 	multiplayer = true;
-	maxClients = 10;
+	maxClients = 50;
 
 	async onCreate(options: StartSessionOptions) {
 		this.roomId = options.url || nanoid();
