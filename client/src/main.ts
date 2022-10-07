@@ -1,4 +1,4 @@
-import "./index.css";
+import "./assets/index.css";
 
 import App from "./App.svelte";
 

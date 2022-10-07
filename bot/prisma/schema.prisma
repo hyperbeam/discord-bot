@@ -7,49 +7,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Room {
-  id           String       @id @default(uuid())
-  url          String       @unique // rooms have a unique url
-  name         String // name can be anything
-  createdAt    DateTime     @default(now())
-  accessedAt   DateTime     @default(now())
-  owner        User         @relation(fields: [ownerId], references: [id])
-  ownerId      String       @unique // one room per user for now
-  requiresAuth Boolean      @default(false) // unused
-  memberCount  Int          @default(0)
-  Session      Session[] // one to many
-  RoomMembers  RoomMember[] // one to many
-}
-
 model User {
-  id            String       @id @unique
-  hash          String?      @unique // keep serverside only
-  email         String?      @unique
+  id            String    @id @unique
+  hash          String?   @unique // keep serverside only
+  email         String?   @unique
   avatar        String?
   username      String
   discriminator String
   accessToken   String? // keep serverside only
   refreshToken  String? // keep serverside only
-  Room          Room[] // owner map
-  RoomMembers   RoomMember[] // member map
+  ownedSessions Session[] @relation("owner")
+  memberOf      Session[] @relation("members")
+  bannedFrom    Session[] @relation("banned")
+  updatedAt     DateTime  @default(now()) @updatedAt
 }
 
 model Session {
-  id              Int      @id @default(autoincrement())
-  room            Room     @relation(fields: [roomId], references: [id])
-  roomId          String
-  sessionId       String // hyperbeam session id
-  embedUrl        String // iframe embed url
-  adminToken      String // admin token for this session
-  terminationDate String? // usually null, returned by hb api
-  createdAt       DateTime @default(now())
-  duration        Int      @default(0) // unused
-}
-
-model RoomMember {
-  id     Int    @id @default(autoincrement())
-  room   Room   @relation(fields: [roomId], references: [id])
-  user   User   @relation(fields: [userId], references: [id])
-  roomId String // use select in query to get the room
-  userId String // use select in query to get the member as user
+  url        String    @unique // session url
+  sessionId  String    @id @unique // hyperbeam session id
+  embedUrl   String // iframe embed url
+  adminToken String // admin token for this session
+  createdAt  DateTime  @default(now())
+  region     String    @default("NA") // region of the session
+  updatedAt  DateTime  @default(now()) @updatedAt
+  endedAt    DateTime? // when the session ended
+  owner      User      @relation("owner", fields: [ownerId], references: [id])
+  ownerId    String
+  members    User[]    @relation("members")
+  bans       User[]    @relation("banned")
 }

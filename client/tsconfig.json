@@ -1,5 +1,6 @@
 {
 	"compilerOptions": {
+		"experimentalDecorators": true,
 		"moduleResolution": "node",
 		"target": "ESNext",
 		"module": "ESNext",
@@ -11,11 +12,7 @@
 		"forceConsistentCasingInFileNames": true,
 		"composite": true,
 		"outDir": "../dist/client",
-		"rootDir": "./",
+		"rootDirs": ["./", "../shared"]
 	},
-	"include": [
-		"./**/*.ts",
-		"./**/*.d.ts",
-		"./**/*.svelte",
-	]
+	"include": ["./**/*.ts", "./**/*.d.ts", "./**/*.svelte", "../shared/*.ts", "../shared/*.d.ts"]
 }
