@@ -1,6 +1,6 @@
 import { CommandContext, CommandOptionType, SlashCommand, SlashCreator } from "slash-create";
 import { BotClient } from "../types";
-import { createSession } from "../classes/sessions";
+import { createSession, endAllSessions } from "../classes/sessions";
 import inviteUrl from "../utils/inviteUrl";
 
 export default class Start extends SlashCommand<BotClient> {
@@ -39,6 +39,7 @@ export default class Start extends SlashCommand<BotClient> {
 
 	async run(ctx: CommandContext) {
 		try {
+			await endAllSessions(ctx.user.id).catch(() => {});
 			const session = await createSession({
 				region: ctx.options.region || "NA",
 				ownerId: ctx.user.id,
