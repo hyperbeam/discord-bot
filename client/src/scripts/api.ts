@@ -1,7 +1,8 @@
 import { Client } from "colyseus.js";
 import { nanoid } from "nanoid";
 
-export const client = new Client(`ws://${import.meta.env.VITE_API_SERVER_BASE_URL.split("://")[1]}`);
+const protocol = import.meta.env.VITE_API_SERVER_BASE_URL.startsWith("https") ? "wss" : "ws";
+export const client = new Client(`${protocol}://${import.meta.env.VITE_API_SERVER_BASE_URL.split("://")[1]}`);
 
 // adds headers and token for convenience
 export async function apiRequest<T>(route: string, method = "GET", body?: any): Promise<T> {
