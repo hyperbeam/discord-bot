@@ -18,6 +18,18 @@ export type StartSessionOptions = {
 type BaseContext = { room: BotRoom };
 type AuthContext = BaseContext & { client: AuthenticatedClient };
 
+export async function createSession(options: StartSessionOptions): Promise<Session> {
+	let url: string = "";
+	try {
+		const roomData = await matchMaker.createRoom("room", options);
+		url = roomData.roomId;
+		return db.session.findUniqueOrThrow({ where: { url } });
+	} catch (error) {
+		if (url) await db.session.delete({ where: { url } }).catch(() => {});
+		throw new Error("Failed to create session");
+	}
+}
+
 export async function authenticateUser(
 	ctx: BaseContext & { client: Client } & AuthOptions,
 ): Promise<{ token: string | undefined; guest: boolean; deviceId: string }> {
@@ -154,15 +166,24 @@ export async function disposeSession(ctx: BaseContext) {
 	});
 }
 
-export async function getActiveSessions(ownerId: string) {
-	return db.session.findMany({ where: { ownerId, endedAt: { not: null } } });
+export async function getActiveSessions(ownerId?: string): Promise<Session[]> {
+	return ownerId
+		? db.session.findMany({ where: { ownerId, endedAt: { equals: null } } })
+		: db.session.findMany({ where: { endedAt: { equals: null } } });
 }
 
-export async function endAllSessions() {
-	const sessions = await db.session.findMany();
+export async function endAllSessions(ownerId?: string): Promise<Session[]> {
+	const sessions = await getActiveSessions(ownerId);
 	for (const session of sessions) {
-		await Hyperbeam.deleteSession(session.sessionId).catch();
+		try {
+			await db.session.update({ where: { sessionId: session.sessionId }, data: { endedAt: new Date() } });
+			await Hyperbeam.deleteSession(session.sessionId).catch(() => {});
+			await matchMaker.remoteRoomCall(session.url, "disconnect").catch(() => {});
+		} catch {
+			continue;
+		}
 	}
+	return sessions;
 }
 
 export async function connectHbUser(ctx: AuthContext & { hbId: string }) {

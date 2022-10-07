@@ -14,7 +14,7 @@ const port = parseInt(process.env.VITE_API_SERVER_PORT || "3000", 10);
 server.listen(port).then(async () => {
 	console.log(`API server listening on port ${port}`);
 	await restartActiveSessions().then((sessions) => {
-		console.log(`Restarted ${sessions.length} sessions`);
+		if (sessions.length) console.log(`Restarted ${sessions.length} sessions`);
 	});
 });
 

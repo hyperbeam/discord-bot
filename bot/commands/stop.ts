@@ -1,6 +1,6 @@
-import { matchMaker } from "colyseus";
+import { Session } from "@prisma/client";
 import { CommandContext, SlashCommand, SlashCreator } from "slash-create";
-import { getActiveSessions } from "../classes/sessions";
+import { endAllSessions } from "../classes/sessions";
 import { BotClient } from "../types";
 import inviteUrl from "../utils/inviteUrl";
 
@@ -13,22 +13,19 @@ export default class Stop extends SlashCommand<BotClient> {
 	}
 
 	async run(ctx: CommandContext) {
-		const sessions = await getActiveSessions(ctx.user.id);
-		if (sessions.length === 0) return ctx.send("You don't have an active session!");
-
-		for (const session of sessions) {
-			try {
-				await matchMaker.remoteRoomCall(session.url, "disconnect");
-			} catch (e) {
-				console.error(e);
-			}
-			console.log(`Stopped session ${session.url}`);
+		let sessions: Session[] = [];
+		try {
+			sessions = await endAllSessions(ctx.user.id);
+		} catch (err) {
+			console.error(err);
 		}
 
 		return ctx.send({
 			embeds: [
 				{
-					title: sessions.length ? "Session stopped successfully" : "No session was active",
+					title: sessions.length
+						? `${sessions.length ? `${sessions.length} sessions` : "Session"} stopped successfully`
+						: "No session was active",
 					fields: [
 						{
 							name: "Love the Discord bot?",

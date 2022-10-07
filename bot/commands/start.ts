@@ -1,7 +1,6 @@
 import { CommandContext, CommandOptionType, SlashCommand, SlashCreator } from "slash-create";
 import { BotClient } from "../types";
-import { matchMaker } from "colyseus";
-import { StartSessionOptions } from "../classes/sessions";
+import { createSession } from "../classes/sessions";
 import inviteUrl from "../utils/inviteUrl";
 
 export default class Start extends SlashCommand<BotClient> {
@@ -40,10 +39,10 @@ export default class Start extends SlashCommand<BotClient> {
 
 	async run(ctx: CommandContext) {
 		try {
-			const room = await matchMaker.createRoom("room", {
+			const session = await createSession({
 				region: ctx.options.region || "NA",
 				ownerId: ctx.user.id,
-			} as StartSessionOptions);
+			});
 
 			return ctx.send({
 				embeds: [
@@ -53,7 +52,7 @@ export default class Start extends SlashCommand<BotClient> {
 						fields: [
 							{
 								name: "Start browsing at",
-								value: `${process.env.VITE_CLIENT_BASE_URL}/${room.roomId}`,
+								value: `${process.env.VITE_CLIENT_BASE_URL}/${session.url}`,
 							},
 							{
 								name: "Love the Discord bot?",
@@ -62,6 +61,19 @@ export default class Start extends SlashCommand<BotClient> {
 							{
 								name: "Need help?",
 								value: `Join the [support server](${process.env.VITE_DISCORD_SUPPORT_SERVER}).`,
+							},
+						],
+					},
+				],
+				components: [
+					{
+						type: 1,
+						components: [
+							{
+								type: 2,
+								label: "Start browsing",
+								style: 5,
+								url: `${process.env.VITE_CLIENT_BASE_URL}/${session.url}`,
 							},
 						],
 					},
