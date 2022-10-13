@@ -7,6 +7,8 @@ import { authorize } from "./discord";
 import { BotRoom } from "./room";
 import { WebSocketTransport } from "@colyseus/ws-transport";
 import { networkInterfaces } from "os";
+import { monitor } from "@colyseus/monitor";
+import basicAuth from "express-basic-auth";
 
 const defaultAddresses = Object.values(networkInterfaces())
 	.flatMap((nInterface) => nInterface ?? [])
@@ -30,6 +32,17 @@ defaultAddresses.forEach((address) => {
 });
 
 const app: Express = express();
+
+app.use(
+	"/monitor",
+	basicAuth({
+		users: {
+			[process.env.MONITOR_USERNAME]: process.env.MONITOR_PASSWORD,
+		},
+		challenge: true,
+	}),
+	monitor(),
+);
 
 app.use(morgan("dev"));
 app.use(express.json());

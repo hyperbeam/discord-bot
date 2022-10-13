@@ -26,6 +26,7 @@
 		"format": "prettier --plugin-search-dir=. --write **/*.{ts,js,json,svelte,css,scss,html} --ignore-path .gitignore"
 	},
 	"dependencies": {
+		"@colyseus/monitor": "0.15.0-preview.1",
 		"@colyseus/schema": "^1.0.38",
 		"@colyseus/ws-transport": "0.15.0-preview.2",
 		"@hyperbeam/web": "^0.0.20",
@@ -41,6 +42,7 @@
 		"dotenv": "^16.0.2",
 		"dotenv-cli": "^6.0.0",
 		"express": "^4.18.1",
+		"express-basic-auth": "^1.2.1",
 		"jsonwebtoken": "^8.5.1",
 		"morgan": "^1.10.0",
 		"nanoid": "3.3.4",
