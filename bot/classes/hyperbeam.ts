@@ -130,12 +130,18 @@ export class HyperbeamSession {
 	embedUrl: string;
 	adminToken: string;
 	api: HyperbeamAPI;
+	terminationDate?: Date;
+	isTerminated: boolean = false;
 
 	constructor(api: HyperbeamAPI, props: VMResponse) {
 		this.api = api;
 		this.sessionId = props.session_id;
 		this.embedUrl = props.embed_url;
 		this.adminToken = props.admin_token;
+		if (props.termination_date) {
+			this.terminationDate = new Date(props.termination_date);
+			this.isTerminated = this.terminationDate < new Date();
+		}
 	}
 
 	get baseUrl(): string {
