@@ -20,6 +20,7 @@ server.listen(port).then(async () => {
 
 const client = new Client({
 	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
+	shards: "auto",
 }) as BotClient;
 client.db = database;
 
