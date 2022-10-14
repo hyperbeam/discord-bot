@@ -3,7 +3,7 @@ import Member from "../schemas/member";
 import { AuthenticatedClient, AuthOptions, BotRoom } from "./room";
 import TokenHandler from "../utils/tokenHandler";
 import db from "./database";
-import Hyperbeam, { HyperbeamSession } from "./hyperbeam";
+import Hyperbeam from "./hyperbeam";
 import Cursor from "../schemas/cursor";
 import { Session, User } from "@prisma/client";
 import color, { swatches } from "../utils/color";
@@ -26,7 +26,7 @@ export async function createSession(options: StartSessionOptions): Promise<Sessi
 		return db.session.findUniqueOrThrow({ where: { url } });
 	} catch (error) {
 		if (url) await db.session.delete({ where: { url } }).catch(() => {});
-		throw new Error("Failed to create session");
+		throw new Error(`Failed to create session: ${error}`);
 	}
 }
 
@@ -75,10 +75,23 @@ export async function authenticateUser(
 export async function startSession(ctx: BaseContext & { options: StartSessionOptions }) {
 	let hbSession: Awaited<ReturnType<typeof Hyperbeam.createSession>>;
 	const existingSession = ctx.options.existingSession;
-	if (existingSession && existingSession.instance) {
+	if (existingSession && existingSession.sessionId && existingSession.embedUrl) {
 		ctx.room.session = existingSession;
 		ctx.room.state.embedUrl = existingSession.embedUrl;
 		ctx.room.state.sessionId = existingSession.sessionId;
+		if (!existingSession.instance) {
+			try {
+				const instance = await Hyperbeam.getSession(existingSession.sessionId);
+				if (instance.isTerminated) {
+					await endSession(existingSession.sessionId, instance.terminationDate);
+					throw new ServerError(500, "Session is terminated");
+				}
+				ctx.room.session.instance = instance;
+			} catch (error) {
+				console.error(`Failed to get session instance: ${error}`);
+				throw new ServerError(500, "Failed to get session instance");
+			}
+		}
 		// if (existingSession.members?.length) {
 		// 	for (const member of existingSession.members) {
 		// 		const m = new Member();
@@ -91,33 +104,46 @@ export async function startSession(ctx: BaseContext & { options: StartSessionOpt
 		// 		ctx.room.state.members.set(m.id, m);
 		// 	}
 		// }
+		// users should automatically reconnect, so we don't need to do anything else
+		return;
 	} else {
 		try {
 			hbSession = await Hyperbeam.createSession({
 				region: ctx.options.region || "NA",
 			});
 		} catch (e) {
+			console.error(e);
 			throw new ServerError(500, "Could not create session");
 		}
-		const session = await db.session.create({
-			data: {
-				embedUrl: hbSession.embedUrl,
-				sessionId: hbSession.sessionId,
-				adminToken: hbSession.adminToken,
-				ownerId: ctx.options.ownerId,
-				createdAt: new Date(),
-				url: ctx.room.roomId,
-				region: ctx.options.region,
-			},
-		});
-		if (!ctx.room.state.ownerId) ctx.room.state.ownerId = ctx.options.ownerId;
-		ctx.room.session = { ...session, instance: hbSession };
-		ctx.room.state.embedUrl = hbSession.embedUrl;
-		ctx.room.state.sessionId = hbSession.sessionId;
+		if (hbSession && !hbSession.isTerminated) {
+			const session = await db.session.create({
+				data: {
+					embedUrl: hbSession.embedUrl,
+					sessionId: hbSession.sessionId,
+					adminToken: hbSession.adminToken,
+					ownerId: ctx.options.ownerId,
+					createdAt: new Date(),
+					url: ctx.room.roomId,
+					region: ctx.options.region,
+				},
+			});
+			if (!ctx.room.state.ownerId) ctx.room.state.ownerId = ctx.options.ownerId;
+			ctx.room.session = { ...session, instance: hbSession };
+			ctx.room.state.embedUrl = hbSession.embedUrl;
+			ctx.room.state.sessionId = hbSession.sessionId;
+		} else {
+			throw new ServerError(500, "Could not create session");
+		}
 	}
 }
 
 export async function joinSession(ctx: AuthContext) {
+	if (!ctx.room.session) throw new ServerError(500, "Session does not exist");
+	if (!ctx.room.session.instance) {
+		const instance = await Hyperbeam.getSession(ctx.room.session.sessionId);
+		if (!instance) throw new ServerError(500, "Session does not exist");
+		ctx.room.session.instance = instance;
+	}
 	const member = ctx.client.userData;
 	if (!member) return;
 	ctx.room.state.members.set(member.id, member);
@@ -158,12 +184,7 @@ export async function leaveSession(ctx: AuthContext) {
 export async function disposeSession(ctx: BaseContext) {
 	if (!ctx.room.session) return;
 	await Hyperbeam.deleteSession(ctx.room.session.sessionId);
-	await db.session.update({
-		where: { sessionId: ctx.room.session.sessionId },
-		data: {
-			endedAt: new Date(),
-		},
-	});
+	await endSession(ctx.room.session.sessionId);
 }
 
 export async function getActiveSessions(ownerId?: string): Promise<Session[]> {
@@ -176,7 +197,7 @@ export async function endAllSessions(ownerId?: string): Promise<Session[]> {
 	const sessions = await getActiveSessions(ownerId);
 	for (const session of sessions) {
 		try {
-			await db.session.update({ where: { sessionId: session.sessionId }, data: { endedAt: new Date() } });
+			await endSession(session.sessionId);
 			await Hyperbeam.deleteSession(session.sessionId).catch(() => {});
 			await matchMaker.remoteRoomCall(session.url, "disconnect").catch(() => {});
 		} catch {
@@ -207,6 +228,13 @@ export async function setControl(ctx: AuthContext & { targetId: string; control:
 	}
 	if (!ctx.room.session?.instance) {
 		console.log("Hyperbeam session not initialized.");
+		if (ctx.room.session?.sessionId) {
+			try {
+				ctx.room.session.instance = await Hyperbeam.getSession(ctx.room.session.sessionId);
+			} catch {
+				console.log("Hyperbeam session not found.");
+			}
+		}
 		return;
 	}
 	if (isAlreadyEnabled && ctx.control === "requesting") return; // already enabled, no need to request again
@@ -255,40 +283,40 @@ export async function setCursor(ctx: AuthContext & { x: number; y: number }) {
 	ctx.client.userData.cursor.y = ctx.y;
 }
 
+export async function endSession(sessionId: string, endedAt = new Date()) {
+	try {
+		return db.session.update({ where: { sessionId }, data: { endedAt } });
+	} catch {}
+}
+
 export async function restartActiveSessions(): Promise<Session[]> {
-	const restartedSessions: Session[] = [];
 	const sessions = await db.session.findMany({
 		where: { endedAt: { equals: null } },
 		include: { members: true },
 	});
-	for (const session of sessions) {
-		let instance: HyperbeamSession;
-		try {
-			instance = await Hyperbeam.getSession(session.sessionId);
-		} catch (e) {
-			console.error("Failed to get session", e);
-			await db.session.update({
-				where: { sessionId: session.sessionId },
-				data: {
-					endedAt: new Date(),
-				},
-			});
-			continue;
-		}
-		if (instance && !matchMaker.getRoomById(session.url)) {
-			try {
-				await matchMaker.createRoom("room", {
-					url: session.url,
-					ownerId: session.ownerId,
-					region: session.region,
-					existingSession: { ...session, instance },
-				} as StartSessionOptions);
-			} catch (e) {
-				console.error("Failed to create room", e);
-				continue;
-			}
-			restartedSessions.push(session);
-		}
-	}
-	return restartedSessions;
+	const restartedSessions: Session[] = [];
+	return Promise.allSettled(
+		sessions
+			.map(async (session) => {
+				const room = matchMaker.getRoomById(session.url);
+				if (!room) {
+					try {
+						await matchMaker
+							.createRoom("room", {
+								url: session.url,
+								ownerId: session.ownerId,
+								region: session.region,
+								existingSession: session,
+							} as StartSessionOptions)
+							.then(() => restartedSessions.push(session))
+							.catch(() => {});
+					} catch (e) {
+						console.error("Failed to create room", e);
+						await endSession(session.sessionId);
+						return;
+					}
+				}
+			})
+			.filter((p) => !!p),
+	).then(() => restartedSessions);
 }
