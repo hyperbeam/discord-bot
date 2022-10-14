@@ -1,4 +1,4 @@
-import { Client, Server } from "colyseus";
+import { Server } from "colyseus";
 import cors from "cors";
 import express, { Express } from "express";
 import { createServer } from "http";
@@ -70,7 +70,7 @@ server
 	.on("join", (room: BotRoom, client: AuthenticatedClient) => {
 		console.log(`${client.userData.name} (${client.userData.id} - ${client.sessionId}) joined room ${room.roomId}`);
 	})
-	.on("leave", (room: BotRoom, client: Client) => {
+	.on("leave", (room: BotRoom, client: AuthenticatedClient) => {
 		console.log(`${client.userData.name} (${client.userData.id} - ${client.sessionId}) left room ${room.roomId}`);
 	});
 
