@@ -4,7 +4,7 @@ import express, { Express } from "express";
 import { createServer } from "http";
 import morgan from "morgan";
 import { authorize } from "./discord";
-import { BotRoom } from "./room";
+import { AuthenticatedClient, BotRoom } from "./room";
 import { WebSocketTransport } from "@colyseus/ws-transport";
 import { networkInterfaces } from "os";
 
@@ -62,16 +62,16 @@ const server = new Server({
 server
 	.define("room", BotRoom)
 	.on("create", (room: BotRoom) => {
-		console.log(`Room ${room.roomId} created.`);
+		console.log(`Room ${room.roomId} created by user ${room.state.ownerId}.`);
 	})
 	.on("dispose", (room: BotRoom) => {
 		console.log(`Room ${room.roomId} disposed.`);
 	})
-	.on("join", (room: BotRoom, client: Client) => {
-		console.log(`Client ${client.sessionId} joined room ${room.roomId}`);
+	.on("join", (room: BotRoom, client: AuthenticatedClient) => {
+		console.log(`${client.userData.name} (${client.userData.id} - ${client.sessionId}) joined room ${room.roomId}`);
 	})
 	.on("leave", (room: BotRoom, client: Client) => {
-		console.log(`Client ${client.sessionId} left room ${room.roomId}`);
+		console.log(`${client.userData.name} (${client.userData.id} - ${client.sessionId}) left room ${room.roomId}`);
 	});
 
 export default server;
