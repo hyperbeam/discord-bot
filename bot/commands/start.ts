@@ -48,11 +48,10 @@ export default class Start extends SlashCommand<BotClient> {
 			return ctx.send({
 				embeds: [
 					{
-						title: "Started a multiplayer browser session!",
-						description: "Share the link below with your friends to browse together!",
+						title: "Started a multiplayer browser session",
 						fields: [
 							{
-								name: "Start browsing at",
+								name: "Share this link:",
 								value: `${process.env.VITE_CLIENT_BASE_URL}/${session.url}`,
 							},
 							{
@@ -75,6 +74,12 @@ export default class Start extends SlashCommand<BotClient> {
 								label: "Start browsing",
 								style: 5,
 								url: `${process.env.VITE_CLIENT_BASE_URL}/${session.url}`,
+							},
+							{
+								type: 2,
+								label: "View on GitHub",
+								style: 5,
+								url: process.env.VITE_GITHUB_URL,
 							},
 						],
 					},
