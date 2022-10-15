@@ -131,10 +131,16 @@
 		});
 		localStorage.removeItem("redirectAfterAuth");
 	}
+
+	$: isFullscreen = false;
+
+	window.addEventListener("fullscreenchange", () => {
+		isFullscreen = document.fullscreenElement !== null;
+	});
 </script>
 
 {#if $room && $room.state.embedUrl}
-	<div class="room" on:mousemove={onNativeCursorMove}>
+	<div class="room" on:mousemove={onNativeCursorMove} style:--isFullscreen={isFullscreen ? 1 : 0}>
 		<Hyperbeam embedUrl={$room.state.embedUrl} bind:vmNode {attemptReconnect} />
 		{#if vmNode}
 			{#each $members as member}
@@ -163,7 +169,7 @@
 	:global(.hyperbeam) {
 		position: absolute;
 		inset: 0;
-		margin: 0 0 56px 0; /* Toolbar height */
+		margin-bottom: calc((1 - var(--isFullscreen)) * 56px);
 	}
 
 	/* TODO: align toolbar to bottom of VM */

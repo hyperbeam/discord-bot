@@ -41,6 +41,8 @@
 		$trackedCursor.x = (event.clientX - vmNodeRect.left) / vmWidth;
 		$trackedCursor.y = (event.clientY - vmNodeRect.top) / vmHeight;
 	}
+
+	window.addEventListener("fullscreenchange", maintainAspectRatio);
 </script>
 
 <svelte:window on:resize={maintainAspectRatio} />
