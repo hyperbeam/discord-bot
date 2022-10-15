@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { PerfectCursor } from "perfect-cursors";
-	import { onMount } from "svelte";
+	import { onDestroy, onMount } from "svelte";
+
 	export let color: string = "#000000";
 	export let displayed: boolean = true;
+	export let interpolate = true;
 
 	/** Reference to the Hyperbeam iframe */
 	export let vmNode: HTMLDivElement;
@@ -13,48 +14,43 @@
 	/** Text to display in the cursor */
 	export let text = "";
 
-	let adjustedLeft = 0;
-	let adjustedTop = 0;
-
-	let vmNodeRect = vmNode.getBoundingClientRect();
-
-	function updateMyCursor(point: number[]) {
-		adjustedLeft = vmNodeRect.left + point[0] * vmNodeRect.width;
-		adjustedTop = vmNodeRect.top + point[1] * vmNodeRect.height;
-	}
-
 	$: computedColor = typeof color === "string" && color.length && color.startsWith("#") ? color : "#000000";
-
-	const pc = new PerfectCursor(updateMyCursor);
-
-	const resizeObserver = new ResizeObserver(() => {
-		vmNodeRect = vmNode.getBoundingClientRect();
-		pc.addPoint([left, top]);
-	});
-
-	onMount(async () => {
-		resizeObserver.observe(vmNode);
-		pc.addPoint([left, top]);
-	});
 
 	let hidden: boolean = false;
 	let cursorTimeout: number = undefined;
 
 	$: if (left !== undefined && top !== undefined) {
-		pc.addPoint([left, top]);
 		hidden = false;
 		window.clearTimeout(cursorTimeout);
 		cursorTimeout = window.setTimeout(() => {
 			hidden = true;
 		}, 5 * 1000);
 	}
+
+	let vmNodeRect = vmNode.getBoundingClientRect();
+	const resizeObserver = new ResizeObserver(() => {
+		vmNodeRect = vmNode.getBoundingClientRect();
+	});
+	onMount(() => {
+		resizeObserver.observe(vmNode);
+	});
+	onDestroy(() => {
+		resizeObserver.disconnect();
+	});
+
+	import { spring } from "svelte/motion";
+	import { writable } from "svelte/store";
+	const coords = interpolate
+		? spring({ x: vmNodeRect.left + left * vmNodeRect.width, y: vmNodeRect.top + top * vmNodeRect.height })
+		: writable({ x: vmNodeRect.left + left * vmNodeRect.width, y: vmNodeRect.top + top * vmNodeRect.height });
+	$: $coords = { x: vmNodeRect.left + left * vmNodeRect.width, y: vmNodeRect.top + top * vmNodeRect.height };
 </script>
 
 <div
 	class="cursor"
 	style:display={displayed ? "block" : "none"}
-	style:--adjustedLeft={adjustedLeft}
-	style:--adjustedTop={adjustedTop}
+	style:--coords-x={$coords.x}
+	style:--coords-y={$coords.y}
 	style:--cursorOpacity={hidden ? 0 : 1}>
 	<svg class="cursor__icon" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
 		<path
@@ -80,7 +76,7 @@
 		height: 32px;
 		pointer-events: none;
 
-		transform: translate(calc(var(--adjustedLeft) * 1px), calc(var(--adjustedTop) * 1px));
+		transform: translate(calc(var(--coords-x) * 1px), calc(var(--coords-y) * 1px));
 
 		&__icon {
 			width: 32px;

@@ -151,7 +151,8 @@
 						top={$trackedCursor.y}
 						{vmNode}
 						text={member.name}
-						color={member.color} />
+						color={member.color}
+						interpolate={false} />
 				{:else if member.cursor}
 					<Cursor left={member.cursor.x} top={member.cursor.y} {vmNode} text={member.name} color={member.color} />
 				{/if}
