@@ -12,7 +12,7 @@
 	});
 
 	function requestFullscreen() {
-		const element = document.getElementById("vm");
+		const element = document.documentElement;
 		if (element.requestFullscreen) {
 			element.requestFullscreen();
 		} else if (element.mozRequestFullScreen) {
