@@ -4,10 +4,10 @@ import fetch from "node-fetch";
 import duration from "pretty-ms";
 import db from "../classes/database";
 
-export default class Status extends SlashCommand<BotClient> {
+export default class Stats extends SlashCommand<BotClient> {
 	constructor(creator: SlashCreator) {
 		super(creator, {
-			name: "status",
+			name: "stats",
 			description: "Display details about the bot",
 		});
 	}
@@ -17,10 +17,10 @@ export default class Status extends SlashCommand<BotClient> {
 		// const activeSessionCount = await db.session.count({ where: { endedAt: null } });
 		const dispatchTime = new Date();
 		const regions = ["NA", "EU", "AS"];
-		const dispatchStatus = await fetch("https://engine.hyperbeam.com/ok").then((res) =>
+		const dispatchStats = await fetch("https://engine.hyperbeam.com/ok").then((res) =>
 			res.ok ? `${new Date().getTime() - dispatchTime.getTime()}ms` : "Offline",
 		);
-		const regionStatus = await Promise.all(
+		const regionStats = await Promise.all(
 			regions.map(async (region) => {
 				const regionTime = new Date();
 				return fetch(`https://engine.hyperbeam.com/vm/ok?reg=${region}`).then((res) => ({
@@ -40,11 +40,11 @@ export default class Status extends SlashCommand<BotClient> {
 						},
 						{
 							name: "API Status",
-							value: `Online (**Discord**: ${this.client.ws.ping}ms, **Hyperbeam**: ${dispatchStatus})`,
+							value: `Online (**Discord**: ${this.client.ws.ping}ms, **Hyperbeam**: ${dispatchStats})`,
 						},
 						{
 							name: "Regions",
-							value: regionStatus.map((r) => `**${r.region}**: ${r.status}`).join(", "),
+							value: regionStats.map((r) => `**${r.region}**: ${r.status}`).join(", "),
 						},
 					],
 					footer: {
