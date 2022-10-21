@@ -3,7 +3,6 @@
 	import { onMount } from "svelte";
 	import { hyperbeamEmbed, room, trackedCursor } from "../store";
 
-	export let attemptReconnect: () => void;
 	export let embedUrl: string;
 	export const iframeAspect = 16 / 9;
 	let node: HTMLElement;
@@ -29,11 +28,6 @@
 		$hyperbeamEmbed = await Hyperbeam(vmNode, embedUrl);
 		maintainAspectRatio();
 		$room.send("connectHbUser", { hbId: $hyperbeamEmbed.userId });
-	});
-
-	$room.onError((code, message) => {
-		console.log("Error", code, message);
-		attemptReconnect();
 	});
 
 	function onMousemove(event: MouseEvent) {

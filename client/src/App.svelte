@@ -9,9 +9,9 @@
 <div>
 	<Notifications>
 		<Router primary={false}>
-			<Route path="/" component={Lander} />
-			<Route path="/authorize" component={Authorize} />
-			<Route path="/:roomUrl" component={Room} />
+			<Route path="/"><Lander /></Route>
+			<Route path="/authorize" let:navigate><Authorize {navigate} /></Route>
+			<Route path="/:roomUrl" let:params><Room roomUrl={params.roomUrl} /></Route>
 		</Router>
 	</Notifications>
 </div>
