@@ -39,6 +39,7 @@ export class BotRoom extends Room<RoomState> {
 		this.roomId = options.url || nanoid();
 		this.setState(new RoomState());
 		this.setPatchRate(40);
+		this.setPrivate(true);
 		this.state.ownerId = options.ownerId;
 		await this.registerMessageHandlers();
 		await startSession({ room: this, options });
