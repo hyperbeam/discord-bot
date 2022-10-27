@@ -6,12 +6,10 @@
 	import Notifications from "svelte-notifications";
 </script>
 
-<div>
-	<Notifications>
-		<Router primary={false}>
-			<Route path="/"><Lander /></Route>
-			<Route path="/authorize" let:navigate><Authorize {navigate} /></Route>
-			<Route path="/:roomUrl" let:params><Room roomUrl={params.roomUrl} /></Route>
-		</Router>
-	</Notifications>
-</div>
+<Notifications>
+	<Router primary={false}>
+		<Route path="/"><Lander /></Route>
+		<Route path="/authorize" let:navigate><Authorize {navigate} /></Route>
+		<Route path="/:roomUrl" let:params><Room roomUrl={params.roomUrl} /></Route>
+	</Router>
+</Notifications>
