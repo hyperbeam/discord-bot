@@ -71,12 +71,12 @@ export async function connect(url: string, initialAttempt = true) {
 				const response = await fetch(`${import.meta.env.VITE_API_SERVER_BASE_URL}/info/${url}`);
 				if (!response.ok) {
 					roomExists = false;
-					console.log(`Room ${url} not found`);
+					console.log(`Session ${url} not found`);
 					extendedError.set({
 						code: response.status,
-						title: `Room ${url} not found`,
+						title: `Session not found`,
 						description: [
-							"The room you are trying to join does not exist.",
+							"The session you are trying to join does not exist.",
 							"Please check the URL and try again.",
 						].join("\n"),
 					});
@@ -85,13 +85,13 @@ export async function connect(url: string, initialAttempt = true) {
 				const roomInfo = (await response.json()) as PartialRoom;
 				if (!roomInfo.active) {
 					roomExists = false;
-					console.log(`Room ${url} is not active`);
+					console.log(`Session ${url} is not active`);
 					extendedError.set({
 						code: response.status,
-						title: `Room ${url} is not active`,
+						title: "This session is not active",
 						description: [
-							"This room has already ended.",
-							`Late to the party? Ask ${roomInfo.owner.username}#${roomInfo.owner.discriminator} for an updated link or start a new room yourself.`,
+							"Late to the party?",
+							`Ask ${roomInfo.owner.username}#${roomInfo.owner.discriminator} for a new link or start a new session yourself.`,
 						].join("\n"),
 					});
 					break;
