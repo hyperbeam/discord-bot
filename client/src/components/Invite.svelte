@@ -1,18 +1,20 @@
 <script>
 	import Tooltip from "./Tooltip.svelte";
 	let tooltipText = "Invite";
+	const handleClick = () => {
+		tooltipText = "Copied invite link to clipboard";
+		setTimeout(() => {
+			tooltipText = "Invite";
+		}, 5000);
+		navigator.clipboard.writeText(window.location.href);
+	};
+	const handleKeypress = (e) => {
+		if (e.key === "Enter") handleClick();
+	};
 </script>
 
 <Tooltip text={tooltipText}>
-	<div
-		class="icon"
-		on:click={() => {
-			tooltipText = "Copied invite link to clipboard";
-			setTimeout(() => {
-				tooltipText = "Invite";
-			}, 5000);
-			navigator.clipboard.writeText(window.location.href);
-		}}>
+	<div class="icon" on:click={handleClick} on:keypress={handleKeypress}>
 		<svg style="width:24px;height:24px" viewBox="0 0 24 24">
 			<path
 				fill="currentColor"

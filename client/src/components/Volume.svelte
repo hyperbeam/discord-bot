@@ -12,6 +12,12 @@
 	onMount(() => {
 		volume = parseFloat(localStorage.getItem("volume") || "1.0");
 	});
+
+	function handleKeypress(action: () => void, ...args) {
+		return (event: KeyboardEvent) => {
+			if (event.key === "Enter") action.call(this, ...args);
+		};
+	}
 </script>
 
 <div class="volume">
@@ -21,7 +27,10 @@
 				class="icon"
 				on:click={() => {
 					isMuted = false;
-				}}>
+				}}
+				on:keypress={handleKeypress(() => {
+					isMuted = false;
+				})}>
 				<svg style="width:24px;height:24px" viewBox="0 0 24 24">
 					<path
 						fill="currentColor"
@@ -33,7 +42,10 @@
 				class="icon"
 				on:click={() => {
 					isMuted = true;
-				}}>
+				}}
+				on:keypress={handleKeypress(() => {
+					isMuted = true;
+				})}>
 				{#if volume > 0.5}
 					<svg style="width:24px;height:24px" viewBox="0 0 24 24">
 						<path

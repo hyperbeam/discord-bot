@@ -39,12 +39,16 @@
 				});
 		}
 	}
+
+	function handleAvatarKeypress(event: KeyboardEvent, member: Member) {
+		if (event.key === "Enter") setControl(member);
+	}
 </script>
 
 <div class="members">
 	{#each $members as member}
 		<Tooltip text={member.name}>
-			<div class="member" on:click={() => setControl(member)}>
+			<div class="member" on:click={() => setControl(member)} on:keypress={(e) => handleAvatarKeypress(e, member)}>
 				<Avatar src={member.avatarUrl} alt={member.name} borderStyle={getBorderStyle(member.control)} />
 			</div>
 		</Tooltip>
