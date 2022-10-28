@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { onMount } from "svelte";
 	import { getNotificationsContext } from "svelte-notifications";
 	import Cursor from "../components/Cursor.svelte";
 	import ErrorPage from "../components/ErrorPage.svelte";
 	import Hyperbeam from "../components/Hyperbeam.svelte";
+	import Loading from "../components/Loading.svelte";
 	import Toolbar from "../components/Toolbar.svelte";
 	import { connect } from "../scripts/api";
 	import { currentUser, members, room, trackedCursor } from "../store";
@@ -12,7 +12,7 @@
 
 	export let roomUrl: string;
 
-	onMount(async () => {
+	async function loadRoom() {
 		try {
 			await connect(roomUrl);
 		} catch (e) {
@@ -20,7 +20,7 @@
 			localStorage.removeItem("token");
 			await connect(roomUrl);
 		}
-	});
+	}
 
 	let vmNode: HTMLDivElement;
 	let showNativeCursor = false;
@@ -52,32 +52,38 @@
 	window.addEventListener("fullscreenchange", () => {
 		isFullscreen = document.fullscreenElement !== null;
 	});
+
+	let showLoading = true;
 </script>
 
-{#if $room && $room.state.embedUrl}
-	<div class="room" on:mousemove={onNativeCursorMove} style:--isFullscreen={isFullscreen ? 1 : 0}>
-		<Hyperbeam embedUrl={$room.state.embedUrl} bind:vmNode />
-		{#if vmNode}
-			{#each $members as member}
-				{#if $currentUser && member.id === $currentUser.id}
-					<Cursor
-						displayed={!showNativeCursor}
-						left={$trackedCursor.x}
-						top={$trackedCursor.y}
-						{vmNode}
-						text={member.name}
-						color={member.color}
-						interpolate={false} />
-				{:else if member.cursor}
-					<Cursor left={member.cursor.x} top={member.cursor.y} {vmNode} text={member.name} color={member.color} />
-				{/if}
-			{/each}
-		{/if}
-		<Toolbar />
-	</div>
-{:else}
-	<ErrorPage />
-{/if}
+{#await loadRoom()}
+	<Loading bind:showLoading />
+{:then}
+	{#if $room && $room.state.embedUrl}
+		<div class="room" on:mousemove={onNativeCursorMove} style:--isFullscreen={isFullscreen ? 1 : 0}>
+			<Hyperbeam embedUrl={$room.state.embedUrl} bind:vmNode />
+			{#if vmNode}
+				{#each $members as member}
+					{#if $currentUser && member.id === $currentUser.id}
+						<Cursor
+							displayed={!showNativeCursor}
+							left={$trackedCursor.x}
+							top={$trackedCursor.y}
+							{vmNode}
+							text={member.name}
+							color={member.color}
+							interpolate={false} />
+					{:else if member.cursor}
+						<Cursor left={member.cursor.x} top={member.cursor.y} {vmNode} text={member.name} color={member.color} />
+					{/if}
+				{/each}
+			{/if}
+			<Toolbar />
+		</div>
+	{:else}
+		<ErrorPage />
+	{/if}
+{/await}
 
 <style lang="scss">
 	.room {
