@@ -4,7 +4,7 @@
 	export let borderStyle: "none" | "dashed" | "solid" = "none";
 </script>
 
-<div class={`avatar ${borderStyle}`} on:click>
+<div class={`avatar ${borderStyle}`} on:click on:keypress>
 	<img {src} {alt} />
 </div>
 

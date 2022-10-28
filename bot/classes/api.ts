@@ -7,6 +7,7 @@ import { authorize } from "./discord";
 import { AuthenticatedClient, BotRoom } from "./room";
 import { WebSocketTransport } from "@colyseus/ws-transport";
 import { networkInterfaces } from "os";
+import db from "./database";
 
 const defaultAddresses = Object.values(networkInterfaces())
 	.flatMap((nInterface) => nInterface ?? [])
@@ -50,6 +51,34 @@ app.get("/authorize/:code", async (req, res) => {
 	} catch (err) {
 		return res.status(500).send({ error: "Could not authorize user." });
 	}
+});
+
+app.get("/info/:url", async (req, res) => {
+	if (!req.params.url) return res.status(400).send({ error: "No url provided" });
+	const room = await db.session.findUnique({
+		where: { url: req.params.url },
+		select: {
+			createdAt: true,
+			endedAt: true,
+			owner: {
+				select: {
+					username: true,
+					discriminator: true,
+				},
+			},
+		},
+	});
+	if (!room) return res.status(404).send({ error: "Room not found" });
+	if (room.endedAt) {
+		const lastDay = Date.now() - 1000 * 60 * 60 * 24;
+		if (room.endedAt.getTime() <= lastDay) {
+			return res.status(404).send({ error: "Room not found" });
+		}
+	}
+	return res.status(200).send({
+		...room,
+		active: !room.endedAt,
+	});
 });
 
 const server = new Server({

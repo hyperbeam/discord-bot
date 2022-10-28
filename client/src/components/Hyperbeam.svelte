@@ -1,9 +1,8 @@
 <script lang="ts">
 	import Hyperbeam from "@hyperbeam/web";
 	import { onMount } from "svelte";
-	import { hyperbeamEmbed, room, trackedCursor } from "../store";
+	import { extendedError, ExtendedErrorType, hyperbeamEmbed, members, room, trackedCursor } from "../store";
 
-	export let attemptReconnect: () => void;
 	export let embedUrl: string;
 	export const iframeAspect = 16 / 9;
 	let node: HTMLElement;
@@ -26,14 +25,50 @@
 
 	onMount(async () => {
 		if ($hyperbeamEmbed) $hyperbeamEmbed.destroy();
-		$hyperbeamEmbed = await Hyperbeam(vmNode, embedUrl);
+		try {
+			$hyperbeamEmbed = await Hyperbeam(vmNode, embedUrl, {
+				onDisconnect: async (e) => {
+					const err: ExtendedErrorType = {
+						title: "This session has ended",
+						description: "Want to browse together?\nUse /start to start a new session.",
+					};
+					if ($room && $members) {
+						const owner = $members.find((member) => $room.state.ownerId === member.id);
+						if (owner) {
+							err.description = [
+								"Late to the party?",
+								`Ask ${owner.name} for a new link or start a new session yourself.`,
+							].join("\n");
+						}
+					}
+					if (e.type === "inactive") err.title = "This session has been inactive for too long";
+					else if (e.type === "kicked") {
+						err.title = "You have been kicked from this session";
+						err.description = "Want to browse together?\nUse /start to start a new session.";
+					} else if (e.type === "absolute") err.title = "This session hit the time limit";
+					$extendedError = err;
+					if ($room) {
+						await $room.leave(false).then(() => {
+							$room = undefined;
+							$members = undefined;
+						});
+					}
+				},
+			});
+		} catch (e) {
+			$extendedError = {
+				title: "Failed to load session",
+				description: "Please try again later.",
+			};
+			if ($room) {
+				await $room.leave(false).then(() => {
+					$room = undefined;
+					$members = undefined;
+				});
+			}
+		}
 		maintainAspectRatio();
 		$room.send("connectHbUser", { hbId: $hyperbeamEmbed.userId });
-	});
-
-	$room.onError((code, message) => {
-		console.log("Error", code, message);
-		attemptReconnect();
 	});
 
 	function onMousemove(event: MouseEvent) {

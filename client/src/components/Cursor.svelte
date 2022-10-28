@@ -75,6 +75,7 @@
 		width: 32px;
 		height: 32px;
 		pointer-events: none;
+		z-index: 1;
 
 		transform: translate(calc(var(--coords-x) * 1px), calc(var(--coords-y) * 1px));
 
