@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { navigate } from "svelte-navigator";
-	import { currentUser, room } from "../store";
+	import { attemptSignIn, currentUser } from "../store";
 	import Members from "./Members.svelte";
 	import Tooltip from "./Tooltip.svelte";
 	import Volume from "./Volume.svelte";
@@ -25,14 +25,14 @@
 	}
 
 	const handleSignIn = async () => {
+		$attemptSignIn = true;
 		localStorage.setItem("redirectAfterAuth", window.location.pathname);
-		if ($room) await $room.leave(true);
 		navigate("/authorize");
 	};
 
 	const handleSignOut = async () => {
+		$attemptSignIn = false;
 		localStorage.removeItem("token");
-		if ($room) await $room.leave(true);
 		location.reload();
 	};
 
