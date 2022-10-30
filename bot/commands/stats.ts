@@ -1,8 +1,9 @@
-import { CommandContext, SlashCommand, SlashCreator } from "slash-create";
-import { BotClient } from "../types";
 import fetch from "node-fetch";
 import duration from "pretty-ms";
+import { CommandContext, SlashCommand, SlashCreator } from "slash-create";
+
 import db from "../classes/database";
+import { BotClient } from "../types";
 
 export default class Stats extends SlashCommand<BotClient> {
 	constructor(creator: SlashCreator) {

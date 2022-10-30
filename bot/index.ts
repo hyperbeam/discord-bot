@@ -1,12 +1,13 @@
-import dotenv from "dotenv";
-import { SlashCreator, GatewayServer } from "slash-create";
 import { ActivityType, Client, GatewayDispatchEvents, GatewayIntentBits } from "discord.js";
+import dotenv from "dotenv";
 import path from "path";
-import database from "./classes/database";
+import { GatewayServer, SlashCreator } from "slash-create";
+
 import server from "./classes/api";
-import { BotClient } from "./types";
+import database from "./classes/database";
 import { updateUser } from "./classes/discord";
 import { restartActiveSessions } from "./classes/sessions";
+import { BotClient } from "./types";
 
 dotenv.config({ path: path.join(__dirname, "../../.env") });
 

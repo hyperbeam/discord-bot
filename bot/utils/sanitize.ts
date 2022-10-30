@@ -1,4 +1,4 @@
-import { User, Session } from "@prisma/client";
+import { Session, User } from "@prisma/client";
 
 export function pick<T, K extends keyof T>(obj: T, ...keys: K[]): Pick<T, K> {
 	const ret: any = {};

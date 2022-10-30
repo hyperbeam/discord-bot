@@ -1,4 +1,5 @@
 import { Schema, type } from "@colyseus/schema";
+
 import { Cursor } from "./cursor";
 
 export class Member extends Schema {

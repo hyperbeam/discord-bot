@@ -15,7 +15,7 @@
 		"ecmaVersion": 11,
 		"sourceType": "module"
 	},
-	"plugins": ["@typescript-eslint"],
+	"plugins": ["@typescript-eslint", "simple-import-sort"],
 	"rules": {
 		"no-cond-assign": [2, "except-parens"],
 		"no-unused-vars": "off",
@@ -37,7 +37,9 @@
 		"no-empty-pattern": "off",
 		"no-return-await": "warn",
 		"no-unneeded-ternary": "warn",
-		"object-shorthand": ["warn", "always"]
+		"object-shorthand": ["warn", "always"],
+		"simple-import-sort/imports": "warn",
+		"simple-import-sort/exports": "warn"
 	},
 	"overrides": [
 		{
@@ -68,7 +70,6 @@
 				"browser": true
 			},
 			"extends": ["plugin:svelte/recommended"],
-			"plugins": ["simple-import-sort", "import"],
 			"rules": {
 				"simple-import-sort/imports": "warn",
 				"simple-import-sort/exports": "warn"
