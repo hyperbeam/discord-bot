@@ -5,6 +5,7 @@ import { User as BotUser } from "slash-create";
 
 import TokenHandler from "../utils/tokenHandler";
 import db from "./database";
+import { User } from "@prisma/client";
 
 // make sure you set the redirect uri to the same url as the one in the discord app
 const discord = new Discord({
@@ -78,6 +79,51 @@ export async function authorize(code: string): Promise<AuthorizedUserData> {
 
 	const token = TokenHandler.generate(dbUser.id, userData.hash);
 	return { ...dbUser, token };
+}
+
+export async function refreshUser(user: User) {
+	try {
+		let accessToken = user.accessToken;
+		let refreshToken = user.refreshToken;
+		if (!accessToken || !refreshToken) return;
+		let data: Discord.User;
+		try {
+			data = await discord.getUser(accessToken);
+		} catch {
+			const authorizationData = await fetch("https://discordapp.com/api/oauth2/token", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded",
+				},
+				body: new URLSearchParams({
+					grant_type: "refresh_token",
+					refresh_token: refreshToken,
+					redirect_uri: process.env.VITE_CLIENT_BASE_URL! + "/authorize",
+					client_id: process.env.DISCORD_CLIENT_ID!,
+					client_secret: process.env.DISCORD_CLIENT_SECRET!,
+				}).toString(),
+			}).then((response) => response.json() as unknown as Discord.TokenRequestResult);
+
+			data = await discord.getUser(authorizationData.access_token);
+			accessToken = authorizationData.access_token;
+			refreshToken = authorizationData.refresh_token;
+		}
+		await db.user.update({
+			where: {
+				id: user.id,
+			},
+			data: {
+				avatar: data.avatar,
+				username: data.username,
+				email: data.email || user.email,
+				discriminator: data.discriminator,
+				accessToken,
+				refreshToken,
+			},
+		});
+	} catch (err) {
+		console.log(`Error refreshing user ${user.id}: `, err);
+	}
 }
 
 export async function updateUser(user: BotUser): Promise<BasicUser> {
