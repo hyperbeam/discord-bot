@@ -1,6 +1,7 @@
 import { CommandContext, CommandOptionType, SlashCommand, SlashCreator } from "slash-create";
-import { BotClient } from "../types";
+
 import { createSession, endAllSessions } from "../classes/sessions";
+import { BotClient } from "../types";
 import inviteUrl from "../utils/inviteUrl";
 
 export default class Start extends SlashCommand<BotClient> {

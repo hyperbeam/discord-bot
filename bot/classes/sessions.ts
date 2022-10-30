@@ -1,12 +1,13 @@
+import { Session, User } from "@prisma/client";
 import { Client, matchMaker, ServerError } from "colyseus";
+
+import Cursor from "../schemas/cursor";
 import Member from "../schemas/member";
-import { AuthenticatedClient, AuthOptions, BotRoom } from "./room";
+import color, { swatches } from "../utils/color";
 import TokenHandler from "../utils/tokenHandler";
 import db from "./database";
 import Hyperbeam from "./hyperbeam";
-import Cursor from "../schemas/cursor";
-import { Session, User } from "@prisma/client";
-import color, { swatches } from "../utils/color";
+import { AuthenticatedClient, AuthOptions, BotRoom } from "./room";
 
 export type StartSessionOptions = {
 	ownerId: string;

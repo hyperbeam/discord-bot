@@ -1,13 +1,14 @@
+import { WebSocketTransport } from "@colyseus/ws-transport";
 import { Server } from "colyseus";
 import cors from "cors";
 import express, { Express } from "express";
 import { createServer } from "http";
 import morgan from "morgan";
+import { networkInterfaces } from "os";
+
+import db from "./database";
 import { authorize } from "./discord";
 import { AuthenticatedClient, BotRoom } from "./room";
-import { WebSocketTransport } from "@colyseus/ws-transport";
-import { networkInterfaces } from "os";
-import db from "./database";
 
 const defaultAddresses = Object.values(networkInterfaces())
 	.flatMap((nInterface) => nInterface ?? [])

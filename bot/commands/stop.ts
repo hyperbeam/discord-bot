@@ -1,5 +1,6 @@
 import { Session } from "@prisma/client";
 import { CommandContext, SlashCommand, SlashCreator } from "slash-create";
+
 import { endAllSessions } from "../classes/sessions";
 import { BotClient } from "../types";
 import inviteUrl from "../utils/inviteUrl";

@@ -1,20 +1,21 @@
 import { Session } from "@prisma/client";
 import { Client, Room } from "colyseus";
+import { customAlphabet } from "nanoid";
+
+import Member from "../schemas/member";
 import { RoomState } from "../schemas/room";
 import { HyperbeamSession } from "./hyperbeam";
 import {
 	authenticateUser,
-	startSession,
+	connectHbUser,
 	disposeSession,
 	joinSession,
 	leaveSession,
-	StartSessionOptions,
-	setCursor,
 	setControl,
-	connectHbUser,
+	setCursor,
+	startSession,
+	StartSessionOptions,
 } from "./sessions";
-import Member from "../schemas/member";
-import { customAlphabet } from "nanoid";
 
 const nanoid = customAlphabet("6789BCDFGHJKLMNPQRTWbcdfghjkmnpqrtwz", 8);
 
