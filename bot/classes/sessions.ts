@@ -6,13 +6,12 @@ import Member from "../schemas/member";
 import color, { swatches } from "../utils/color";
 import TokenHandler from "../utils/tokenHandler";
 import db from "./database";
-import Hyperbeam from "./hyperbeam";
+import Hyperbeam, { HyperbeamSession, VMRequestBody } from "./hyperbeam";
 import { AuthenticatedClient, AuthOptions, BotRoom } from "./room";
 
-export type StartSessionOptions = {
-	ownerId: string;
-	region: "NA" | "EU" | "AS";
+export type StartSessionOptions = VMRequestBody & {
 	url?: string;
+	ownerId: string;
 	existingSession?: BotRoom["session"] & { members?: User[] };
 };
 
@@ -74,7 +73,7 @@ export async function authenticateUser(
 }
 
 export async function startSession(ctx: BaseContext & { options: StartSessionOptions }) {
-	let hbSession: Awaited<ReturnType<typeof Hyperbeam.createSession>>;
+	let hbSession: HyperbeamSession | undefined = undefined;
 	const existingSession = ctx.options.existingSession;
 	if (existingSession && existingSession.sessionId && existingSession.embedUrl) {
 		ctx.room.session = existingSession;
@@ -109,9 +108,7 @@ export async function startSession(ctx: BaseContext & { options: StartSessionOpt
 		return;
 	} else {
 		try {
-			hbSession = await Hyperbeam.createSession({
-				region: ctx.options.region || "NA",
-			});
+			hbSession = await Hyperbeam.createSession(ctx.options);
 		} catch (e) {
 			console.error(e);
 			throw new ServerError(500, "Could not create session");
