@@ -1,6 +1,6 @@
 import { CommandContext, CommandOptionType, SlashCommand, SlashCreator } from "slash-create";
 
-import { createSession, endAllSessions } from "../classes/sessions";
+import { createSession, endAllSessions, StartSessionOptions } from "../classes/sessions";
 import { BotClient } from "../types";
 import inviteUrl from "../utils/inviteUrl";
 
@@ -12,8 +12,8 @@ export default class Start extends SlashCommand<BotClient> {
 			options: [
 				{
 					type: CommandOptionType.STRING,
-					name: "start_url",
-					description: "The initial URL that is set in the browser",
+					name: "website",
+					description: "The website to open in the session",
 				},
 				{
 					type: CommandOptionType.STRING,
@@ -34,6 +34,11 @@ export default class Start extends SlashCommand<BotClient> {
 						},
 					],
 				},
+				{
+					type: CommandOptionType.STRING,
+					name: "extra",
+					description: "Extra options 👀",
+				},
 			],
 		});
 	}
@@ -41,11 +46,25 @@ export default class Start extends SlashCommand<BotClient> {
 	async run(ctx: CommandContext) {
 		try {
 			await endAllSessions(ctx.user.id).catch(() => {});
-			const session = await createSession({
+			const options = {
 				region: ctx.options.region || "NA",
 				ownerId: ctx.user.id,
-			});
+				start_url: ctx.options.website,
+			} as StartSessionOptions;
 
+			const extraOptions = ctx.options.extra?.split(" ") ?? [];
+			if (extraOptions.includes("--1080p")) {
+				options.width = 1920;
+				options.height = 1080;
+			}
+			if (extraOptions.includes("--60fps")) {
+				options.fps = 60;
+			}
+			if (extraOptions.includes("--kiosk")) {
+				options.kiosk = true;
+			}
+
+			const session = await createSession(options);
 			return ctx.send({
 				embeds: [
 					{
