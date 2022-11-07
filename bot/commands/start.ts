@@ -109,8 +109,21 @@ export default class Start extends SlashCommand<BotClient> {
 			return ctx.send({
 				embeds: [
 					{
-						title: "Failed to start a multiplayer browser session",
-						description: "Please try again later.",
+						title: "We ran into an error",
+						description: "We couldn't start your session. Please try again later.",
+					},
+				],
+				components: [
+					{
+						type: 1,
+						components: [
+							{
+								type: 2,
+								label: "Get support",
+								style: 5,
+								url: process.env.VITE_DISCORD_SUPPORT_SERVER,
+							},
+						],
 					},
 				],
 			});
