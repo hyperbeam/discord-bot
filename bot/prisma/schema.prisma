@@ -35,4 +35,8 @@ model Session {
   ownerId    String
   members    User[]    @relation("members")
   bans       User[]    @relation("banned")
+  channelId  String? // discord channel id
+  guildId    String? // discord guild id
+  messageId  String? // discord message id
+  feedback   String? // feedback from the user
 }

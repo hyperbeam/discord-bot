@@ -1,8 +1,16 @@
+import { Session } from "@prisma/client";
+import { time } from "discord.js";
 import { CommandContext, CommandOptionType, SlashCommand, SlashCreator } from "slash-create";
 
+import db from "../classes/database";
 import { createSession, endAllSessions, StartSessionOptions } from "../classes/sessions";
 import { BotClient } from "../types";
-import inviteUrl from "../utils/inviteUrl";
+
+const regions = {
+	NA: "North America",
+	EU: "Europe",
+	AS: "Asia",
+};
 
 export default class Start extends SlashCommand<BotClient> {
 	constructor(creator: SlashCreator) {
@@ -19,20 +27,7 @@ export default class Start extends SlashCommand<BotClient> {
 					type: CommandOptionType.STRING,
 					name: "region",
 					description: "The region to use for the session",
-					choices: [
-						{
-							name: "North America",
-							value: "NA",
-						},
-						{
-							name: "Europe",
-							value: "EU",
-						},
-						{
-							name: "Asia",
-							value: "AS",
-						},
-					],
+					choices: Object.entries(regions).map(([value, name]) => ({ name, value })),
 				},
 				{
 					type: CommandOptionType.STRING,
@@ -65,24 +60,20 @@ export default class Start extends SlashCommand<BotClient> {
 			}
 
 			const session = await createSession(options);
-			return ctx.send({
+			await ctx.send({
 				embeds: [
 					{
-						title: "Started a multiplayer browser session",
+						title: "Session started!",
+						description: `Started ${time(session.createdAt, "R")} by ${ctx.user.mention}`,
 						fields: [
 							{
-								name: "Share this link:",
+								name: "Share the link below",
 								value: `${process.env.VITE_CLIENT_BASE_URL}/${session.url}`,
 							},
-							{
-								name: "Love the Discord bot?",
-								value: `[Invite it](${inviteUrl}) to your server, star us on [GitHub](${process.env.VITE_GITHUB_URL}) and help spread the word!`,
-							},
-							{
-								name: "Need help?",
-								value: `Join the [support server](${process.env.VITE_DISCORD_SUPPORT_SERVER}).`,
-							},
 						],
+						footer: {
+							text: this.getFeatures(session, options),
+						},
 					},
 				],
 				components: [
@@ -95,16 +86,24 @@ export default class Start extends SlashCommand<BotClient> {
 								style: 5,
 								url: `${process.env.VITE_CLIENT_BASE_URL}/${session.url}`,
 							},
-							{
-								type: 2,
-								label: "View on GitHub",
-								style: 5,
-								url: process.env.VITE_GITHUB_URL,
-							},
 						],
 					},
 				],
 			});
+
+			const startMessage = await ctx.fetch();
+			await db.session.update({
+				where: {
+					url: session.url,
+				},
+				data: {
+					messageId: startMessage.id,
+					channelId: ctx.channelID,
+					guildId: ctx.guildID,
+				},
+			});
+
+			return startMessage;
 		} catch (e) {
 			console.error(e);
 			return ctx.send({
@@ -116,5 +115,19 @@ export default class Start extends SlashCommand<BotClient> {
 				],
 			});
 		}
+	}
+
+	getFeatures(session: Session, options: StartSessionOptions) {
+		const features: string[] = [];
+		features.push(regions[session.region || "NA"]);
+
+		if (options.width === 1920 && options.height === 1080) {
+			features.push("1080p");
+		} else {
+			features.push("720p");
+		}
+		if (options.fps === 60) features.push("60fps");
+		if (options.kiosk) features.push("kiosk");
+		return features.join(" | ");
 	}
 }

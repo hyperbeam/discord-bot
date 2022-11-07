@@ -58,6 +58,6 @@ creator.on("commandError", (command, error) => console.error(`Command ${command.
 creator
 	.withServer(new GatewayServer((handler) => client.ws.on(GatewayDispatchEvents.InteractionCreate, handler)))
 	.registerCommandsIn(path.join(__dirname, "commands"))
-	.syncCommands();
+	.syncCommands({ syncPermissions: false });
 
 client.login(process.env.DISCORD_BOT_TOKEN);
