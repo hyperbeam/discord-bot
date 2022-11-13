@@ -24,7 +24,7 @@
 		"lint": "eslint . --ignore-path .gitignore",
 		"lint:fix": "eslint . --ignore-path .gitignore --fix",
 		"format": "prettier --plugin-search-dir=. --write **/*.{ts,js,json,svelte,css,scss,html} --ignore-path .gitignore",
-		"type-check": "tsc --project client/tsconfig.json --noEmit && tsc --project bot/tsconfig.json --noEmit"
+		"type-check": "tsc --project bot/tsconfig.json --noEmit && tsc --project client/tsconfig.json --noEmit && svelte-check"
 	},
 	"dependencies": {
 		"@colyseus/schema": "^1.0.42",
@@ -52,7 +52,6 @@
 		"sirv-cli": "^2.0.2",
 		"slash-create": "^5.10.0",
 		"svelte": "^3.52.0",
-		"svelte-check": "^2.9.2",
 		"svelte-navigator": "^3.2.2",
 		"svelte-notifications": "^0.9.98",
 		"svelte-preprocess": "^4.10.7",
@@ -84,6 +83,7 @@
 		"prettier-plugin-svelte": "^2.8.0",
 		"prisma": "^4.5.0",
 		"rimraf": "^3.0.2",
+		"svelte-check": "^2.9.2",
 		"svelte-eslint-parser": "^0.18.4",
 		"ts-node": "^10.9.1",
 		"tslib": "^2.4.0",
