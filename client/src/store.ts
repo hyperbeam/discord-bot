@@ -1,9 +1,9 @@
-import { HyperbeamEmbed } from "@hyperbeam/web";
-import { Room } from "colyseus.js";
+import type { HyperbeamEmbed } from "@hyperbeam/web";
+import type { Room } from "colyseus.js";
 import { writable } from "svelte/store";
 
-import Member from "./schemas/member";
-import RoomState from "./schemas/room";
+import type Member from "./schemas/member";
+import type RoomState from "./schemas/room";
 
 export const hyperbeamEmbed = writable<HyperbeamEmbed>();
 export const room = writable<Room<RoomState>>();
