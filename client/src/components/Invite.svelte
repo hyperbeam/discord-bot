@@ -1,5 +1,5 @@
 <script>
-	import IconButton from "./icon-button";
+	import IconButton from "./IconButton.svelte";
 	import Tooltip from "./Tooltip.svelte";
 	let tooltipText = "Invite";
 	const handleClick = () => {

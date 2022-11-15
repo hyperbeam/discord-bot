@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import { hyperbeamEmbed } from "../store";
-	import IconButton from "./icon-button";
+	import IconButton from "./IconButton.svelte";
 	import Tooltip from "./Tooltip.svelte";
 
 	let isMuted = false;

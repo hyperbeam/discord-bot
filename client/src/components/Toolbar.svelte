@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { navigate } from "svelte-navigator";
 	import { attemptSignIn, currentUser } from "../store";
-	import IconButton from "./icon-button";
+	import IconButton from "./IconButton.svelte";
 	import Members from "./Members.svelte";
 	import Tooltip from "./Tooltip.svelte";
 	import Volume from "./Volume.svelte";
