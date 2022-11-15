@@ -4,8 +4,7 @@ A bot to integrate the Hyperbeam API with Discord.
 
 ## Setup
 
-- Get pnpm from <https://pnpm.io/installation>
-- Run `pnpm install` to install all dependencies
+- Run `npm install` to install all dependencies
 
 ## Configuration
 
@@ -21,38 +20,38 @@ A bot to integrate the Hyperbeam API with Discord.
 
 ## Development notes
 
-- Update typings with `pnpm envtypes` after modifying the `.env` file structure
-- Generate migration files with `pnpm db:migrate` and commit them after changing the database schema
-- Lint and fix issues before committing with `pnpm lint:fix`
-- Use `pnpm dlx` (or `pnpm exec` if its already installed) instead of `npx` everywhere
+- Update typings with `npm envtypes` after modifying the `.env` file structure
+- Generate migration files with `npm db:migrate` and commit them after changing the database schema
+- Lint and fix issues before committing with `npm lint:fix`
+- Use `npm dlx` (or `npm exec` if its already installed) instead of `npx` everywhere
 
 ## Scripts
 
 ### Deploying
 
-- `pnpm start`
+- `npm start`
   Builds and starts a PM2 instance with both the bot/API and the frontend client processes
-- `pnpm run bot`
+- `npm run bot`
   Builds and starts the bot and the API server
-- `pnpm run client`
+- `npm run client`
   Builds and starts the frontend client server
 
 ### Building/Compiling
 
-- `pnpm run bot:build`
+- `npm run bot:build`
   Builds the bot to the `dist/bot` folder
-- `pnpm run client:build`
+- `npm run client:build`
   Builds the frontend client to the `dist/client` folder
 
 ### Development
 
-- `pnpm run client:dev`
+- `npm run client:dev`
   Launches the frontend client server without typechecking
-- `pnpm run listcommands`
+- `npm run listcommands`
   Lists all local commands
-- `pnpm run lint` (or `lint:fix`)
+- `npm run lint` (or `lint:fix`)
   Lints (and optionally fixes) code style, formatting and linting errors with the ESLint config
-- `pnpm run envtypes`
+- `npm run envtypes`
   Generates typings from the `.env` file for typedefs in code
 
 ## Managing the database
