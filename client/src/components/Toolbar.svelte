@@ -94,21 +94,20 @@
 					</IconButton>
 				</Tooltip>
 			{:else}
-				<Tooltip text="Sign in">
-					<IconButton on:click={handleSignIn} on:keypress={handleKeypress(handleSignIn)}>
-						<svg style="width:24px;height:24px" viewBox="0 0 24 24">
-							<path
-								fill="currentColor"
-								d="M10,17V14H3V10H10V7L15,12L10,17M10,2H19A2,2 0 0,1 21,4V20A2,2 0 0,1 19,22H10A2,2 0 0,1 8,20V18H10V20H19V4H10V6H8V4A2,2 0 0,1 10,2Z" />
-						</svg>
-					</IconButton>
-				</Tooltip>
+				<button class="sign-in-button" on:click={handleSignIn} on:keypress={handleKeypress(handleSignIn)}>
+					<svg style="width:24px;height:24px" viewBox="0 0 24 24">
+						<path
+							fill="currentColor"
+							d="M10,17V14H3V10H10V7L15,12L10,17M10,2H19A2,2 0 0,1 21,4V20A2,2 0 0,1 19,22H10A2,2 0 0,1 8,20V18H10V20H19V4H10V6H8V4A2,2 0 0,1 10,2Z" />
+					</svg>
+					Sign in
+				</button>
 			{/if}
 		</div>
 	</div>
 {/if}
 
-<style>
+<style lang="css">
 	.toolbar {
 		display: flex;
 		align-items: center;
@@ -124,12 +123,14 @@
 	.toolbar__left {
 		flex: 1;
 		display: flex;
+		align-items: center;
 		justify-content: flex-start;
 	}
 
 	.toolbar__right {
 		flex: 1;
 		display: flex;
+		align-items: center;
 		justify-content: flex-end;
 	}
 
@@ -155,5 +156,15 @@
 			transform: none;
 			flex-wrap: wrap;
 		}
+	}
+
+	.sign-in-button {
+		height: 36px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0 12px;
+		margin: 0 12px;
+		gap: 8px;
 	}
 </style>
