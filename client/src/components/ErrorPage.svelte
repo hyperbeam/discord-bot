@@ -44,25 +44,25 @@
 <style lang="scss">
 	.errorContainer {
 		display: flex;
-		flex-grow: 1;
 		flex-direction: column;
+		flex-grow: 1;
 		justify-content: center;
 		align-items: flex-start;
-		gap: 24px;
-		margin: auto;
-		padding: 24px;
-		width: fit-content;
+		height: 100%;
 		min-width: min(100%, 768px);
 		max-width: 912px;
-		height: 100%;
+		width: fit-content;
+		margin: auto;
+		padding: 24px;
+		gap: 24px;
 	}
 
 	.errorInfo {
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-start;
-		gap: 8px;
 		width: 100%;
+		gap: 8px;
 		.title {
 			width: 100%;
 		}
@@ -73,10 +73,10 @@
 	}
 
 	.suggestion {
+		width: 100%;
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
-		width: 100%;
 		.actions {
 			display: flex;
 			flex-direction: row;
@@ -85,7 +85,7 @@
 	}
 
 	.issue-btn {
-		background-color: #fff2;
 		color: white;
+		background-color: #fff2;
 	}
 </style>

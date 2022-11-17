@@ -121,17 +121,17 @@
 	}
 
 	.toolbar__left {
-		display: flex;
 		flex: 1;
-		justify-content: flex-start;
+		display: flex;
 		align-items: center;
+		justify-content: flex-start;
 	}
 
 	.toolbar__right {
-		display: flex;
 		flex: 1;
-		justify-content: flex-end;
+		display: flex;
 		align-items: center;
+		justify-content: flex-end;
 	}
 
 	@media screen and (max-width: 767px) {
@@ -151,20 +151,20 @@
 		}
 
 		:global(.members) {
-			position: static;
 			grid-area: members;
-			flex-wrap: wrap;
+			position: static;
 			transform: none;
+			flex-wrap: wrap;
 		}
 	}
 
 	.sign-in-button {
-		display: inline-flex;
-		justify-content: center;
-		align-items: center;
-		gap: 8px;
-		margin: 0 12px;
-		padding: 0 12px;
 		height: 36px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0 12px;
+		margin: 0 12px;
+		gap: 8px;
 	}
 </style>

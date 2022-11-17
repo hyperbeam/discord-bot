@@ -92,8 +92,8 @@
 
 	:global(.hyperbeam) {
 		position: absolute;
-		margin-bottom: calc((1 - var(--isFullscreen)) * 56px);
 		inset: 0;
+		margin-bottom: calc((1 - var(--isFullscreen)) * 56px);
 	}
 
 	/* TODO: align toolbar to bottom of VM */
@@ -106,8 +106,8 @@
 	@media (max-width: 767px) {
 		:global(.hyperbeam) {
 			position: absolute;
-			margin: 0 0 112px 0; 0 0 112px 0; /* Tool
 			inset: 0;
+			margin: 0 0 112px 0; /* Toolbar height */
 		}
 	}
 </style>

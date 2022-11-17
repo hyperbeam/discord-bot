@@ -67,37 +67,38 @@
 
 <style lang="scss">
 	.cursor {
-		position: absolute;
-		top: 0;
-		left: 0;
-		transform: translate(calc(var(--coords-x) * 1px), calc(var(--coords-y) * 1px));
 		opacity: var(--cursorOpacity, 1);
-		z-index: 1;
 		transition: opacity 150ms ease-in-out;
+		position: absolute;
+		left: 0;
+		top: 0;
 		width: 32px;
 		height: 32px;
 		pointer-events: none;
+		z-index: 1;
+
+		transform: translate(calc(var(--coords-x) * 1px), calc(var(--coords-y) * 1px));
 
 		&__icon {
-			translate: -8px -8px;
 			width: 32px;
 			height: 32px;
+			translate: -8px -8px;
 		}
 
 		&__text {
 			position: absolute;
-			position: absolute;
-			top: 24px;
 			left: 24px;
+			top: 24px;
 			translate: -8px -8px;
-			border: 1px solid #fffb;
-			border-radius: 4px;
-			background-color: var(--cursorColor);
-			padding: 2px 6px;
-			pointer-events: none;
 			color: white;
+			background-color: var(--cursorColor);
 			font-size: 12px;
 			white-space: nowrap;
+			position: absolute;
+			padding: 2px 6px;
+			border-radius: 4px;
+			pointer-events: none;
+			border: 1px solid #fffb;
 			&::selection {
 				background: transparent;
 			}

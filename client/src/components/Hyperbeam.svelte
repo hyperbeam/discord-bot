@@ -87,12 +87,12 @@
 
 <style>
 	.hyperbeam__vm {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		cursor: none;
 		width: calc(var(--vmWidth) * 1px);
 		height: calc(var(--vmHeight) * 1px);
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		cursor: none;
 	}
 </style>
