@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Hyperbeam from "@hyperbeam/web";
 	import { onMount } from "svelte";
-	import { extendedError, ExtendedErrorType, hyperbeamEmbed, members, room, trackedCursor } from "../store";
+	import { extendedError, hyperbeamEmbed, members, room, trackedCursor, type ExtendedErrorType } from "../store";
 
 	export let embedUrl: string;
 	export const iframeAspect = 16 / 9;
