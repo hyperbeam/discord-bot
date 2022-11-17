@@ -33,18 +33,48 @@ export default class Stop extends SlashCommand<BotClient> {
 				emoji: {
 					name: "😀",
 				},
-				style: 3,
+				style: 2,
 				custom_id: "feedback-good",
 			},
 			{
 				type: 2,
 				emoji: {
-					name: "😕",
+					name: "🫤",
 				},
-				style: 4,
+				style: 2,
+				custom_id: "feedback-neutral",
+			},
+			{
+				type: 2,
+				emoji: {
+					name: "🙁",
+				},
+				style: 2,
 				custom_id: "feedback-bad",
 			},
 		];
+
+		const startHintFields: APIEmbedField[] = [];
+		if (startCommandId)
+		startHintFields.push({
+				name: "Want to browse the web together?",
+				value: `Use </start:${startCommandId}> and share the link. It's that easy!`,
+			});
+
+		const supportButtons = [
+			{
+				type: 2,
+				label: "Add to Server",
+				style: 5,
+				url: inviteUrl,
+			},
+			{
+				type: 2,
+				label: "Get support",
+				style: 5,
+				url: process.env.VITE_DISCORD_SUPPORT_SERVER,
+			},
+		]
 
 		if (sessions.length) {
 			for (const session of sessions) {
@@ -64,7 +94,7 @@ export default class Stop extends SlashCommand<BotClient> {
 				if (existingMessage) {
 					const description: string[] = [];
 					if (session.endedAt) {
-						let sessionInfo = `This session ended ${time(session.endedAt, "R")}`;
+						let sessionInfo = `This multiplayer browser was stopped at ${time(session.endedAt)}`;
 						if (session.members && session.members.length) {
 							sessionInfo += ` with ${session.members.length} participants`;
 						}
@@ -72,38 +102,18 @@ export default class Stop extends SlashCommand<BotClient> {
 						description.push(sessionInfo);
 					}
 
-					const fields: APIEmbedField[] = [];
-					if (startCommandId)
-						fields.push({
-							name: "Want to start a new session?",
-							value: `Use </start:${startCommandId}> and share the link. It's that easy!`,
-						});
-
 					await existingMessage.edit({
 						embeds: [
 							{
 								title: "Thanks for using the bot!",
 								description: description.length ? description.join("\n") : undefined,
-								fields,
+								fields: startHintFields,
 							},
 						],
 						components: [
 							{
 								type: 1,
-								components: [
-									{
-										type: 2,
-										label: "Add to server",
-										style: 5,
-										url: inviteUrl,
-									},
-									{
-										type: 2,
-										label: "Get help",
-										style: 5,
-										url: process.env.VITE_DISCORD_SUPPORT_SERVER,
-									},
-								],
+								components: supportButtons,
 							},
 						],
 					});
@@ -115,12 +125,15 @@ export default class Stop extends SlashCommand<BotClient> {
 			embeds: [
 				{
 					title: sessions.length
-						? `${sessions.length > 1 ? `${sessions.length} sessions` : "Session"} stopped successfully`
-						: "No session was active",
-					description: sessions.length ? "Let us know how it went!" : undefined,
+						? `Stopped ${sessions.length > 1 ? `${sessions.length} multiplayer browsers` : "multiplayer browser"}`
+						: "No multiplayer browser was active",
+					fields: !sessions.length ? startHintFields : [{
+						name: "Let us know how it went!",
+						value: "Your feedback helps us improve the bot.",
+					}],
 				},
 			],
-			components: sessions.length ? [{ type: 1, components: feedbackButtons }] : [],
+			components: [{ type: 1, components: sessions.length ? feedbackButtons:supportButtons }],
 			ephemeral: true,
 		});
 
@@ -131,15 +144,18 @@ export default class Stop extends SlashCommand<BotClient> {
 						embeds: [
 							{
 								title: "Thanks for your feedback!",
-								description: "We'll use it to improve the bot.",
+								description: "Join the support server to suggest new features, talk to the developers and more.",
 							},
 						],
-						components: [],
+						components: [{
+							type: 1,
+							components: supportButtons,
+						}],
 					});
 					sessions.forEach(async (session) => {
 						await database.session.update({
 							where: { url: session.url },
-							data: { feedback: button.custom_id === "feedback-good" ? "good" : "bad" },
+							data: { feedback: button.custom_id.replace("feedback-", "") },
 						});
 					});
 				});

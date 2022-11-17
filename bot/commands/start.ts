@@ -63,17 +63,15 @@ export default class Start extends SlashCommand<BotClient> {
 			await ctx.send({
 				embeds: [
 					{
-						title: "Session started!",
-						description: `Started ${time(session.createdAt, "R")} by ${ctx.user.mention}`,
-						fields: [
-							{
-								name: "Share the link below",
-								value: `${process.env.VITE_CLIENT_BASE_URL}/${session.url}`,
-							},
-						],
-						footer: {
-							text: this.getFeatures(session, options),
-						},
+						title: "Started a multiplayer browser!",
+						// description: `Started ${time(session.createdAt, "R")} by ${ctx.user.mention}`,
+						description: [
+							"Share this link to browse together -",
+							`${process.env.VITE_CLIENT_BASE_URL}/${session.url}`,
+							this.getFeatures(session, options),
+							"",
+							`[GitHub](${process.env.VITE_GITHUB_URL}) • [Support](${process.env.VITE_DISCORD_SUPPORT_SERVER})`,
+						].join("\n"),
 					},
 				],
 				components: [
@@ -110,7 +108,7 @@ export default class Start extends SlashCommand<BotClient> {
 				embeds: [
 					{
 						title: "We ran into an error",
-						description: "We couldn't start your session. Please try again later.",
+						description: "We couldn't start your multiplayer browser. Please try again later.",
 					},
 				],
 				components: [
@@ -141,6 +139,6 @@ export default class Start extends SlashCommand<BotClient> {
 		}
 		if (options.fps === 60) features.push("60fps");
 		if (options.kiosk) features.push("kiosk");
-		return features.join(" | ");
+		return `(${features.join(", ")})`;
 	}
 }
