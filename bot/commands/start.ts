@@ -1,5 +1,5 @@
 import { Session } from "@prisma/client";
-import { time } from "discord.js";
+// import { time } from "discord.js";
 import { CommandContext, CommandOptionType, SlashCommand, SlashCreator } from "slash-create";
 
 import db from "../classes/database";
