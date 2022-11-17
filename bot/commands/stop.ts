@@ -56,7 +56,7 @@ export default class Stop extends SlashCommand<BotClient> {
 
 		const startHintFields: APIEmbedField[] = [];
 		if (startCommandId)
-		startHintFields.push({
+			startHintFields.push({
 				name: "Want to browse the web together?",
 				value: `Use </start:${startCommandId}> and share the link. It's that easy!`,
 			});
@@ -74,7 +74,7 @@ export default class Stop extends SlashCommand<BotClient> {
 				style: 5,
 				url: process.env.VITE_DISCORD_SUPPORT_SERVER,
 			},
-		]
+		];
 
 		if (sessions.length) {
 			for (const session of sessions) {
@@ -121,19 +121,21 @@ export default class Stop extends SlashCommand<BotClient> {
 			}
 		}
 
+		const requestFeedbackField = {
+			name: "Let us know how it went!",
+			value: "Your feedback helps us improve the bot.",
+		};
+
 		await ctx.send({
 			embeds: [
 				{
 					title: sessions.length
 						? `Stopped ${sessions.length > 1 ? `${sessions.length} multiplayer browsers` : "multiplayer browser"}`
 						: "No multiplayer browser was active",
-					fields: !sessions.length ? startHintFields : [{
-						name: "Let us know how it went!",
-						value: "Your feedback helps us improve the bot.",
-					}],
+					fields: !sessions.length ? startHintFields : [requestFeedbackField],
 				},
 			],
-			components: [{ type: 1, components: sessions.length ? feedbackButtons:supportButtons }],
+			components: [{ type: 1, components: sessions.length ? feedbackButtons : supportButtons }],
 			ephemeral: true,
 		});
 
@@ -147,10 +149,12 @@ export default class Stop extends SlashCommand<BotClient> {
 								description: "Join the support server to suggest new features, talk to the developers and more.",
 							},
 						],
-						components: [{
-							type: 1,
-							components: supportButtons,
-						}],
+						components: [
+							{
+								type: 1,
+								components: supportButtons,
+							},
+						],
 					});
 					sessions.forEach(async (session) => {
 						await database.session.update({
