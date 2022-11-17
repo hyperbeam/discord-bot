@@ -29,15 +29,15 @@
 *:where(:not(fieldset, progress, meter)) {
 	border-width: 0;
 	border-style: solid;
-	background-repeat: no-repeat;
 	background-origin: border-box;
+	background-repeat: no-repeat;
 }
 
 html {
-	/* Making sure text size is only controlled by font-size */
-	-webkit-text-size-adjust: none;
 	/* Allow percentage-based heights in the application */
 	block-size: 100%;
+	/* Making sure text size is only controlled by font-size */
+	-webkit-text-size-adjust: none;
 }
 
 /* Smooth scrolling for users that don't prefer reduced motion */
@@ -50,10 +50,10 @@ html {
 body {
 	/* Improve text rendering */
 	-webkit-font-smoothing: antialiased;
-	/* Allow percentage-based heights in the application */
-	min-block-size: 100%;
 	/* https://marco.org/2012/11/15/text-rendering-optimize-legibility */
 	text-rendering: optimizeSpeed;
+	/* Allow percentage-based heights in the application */
+	min-block-size: 100%;
 	/* https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-gutter#example_2 */
 	/* scrollbar-gutter: stable both-edges; Removed until this bug is fixed: https://bugs.chromium.org/p/chromium/issues/detail?id=1318404#c2 */
 }
@@ -63,8 +63,8 @@ body {
 	display: block;
 }
 :where(img, svg, video) {
-	max-inline-size: 100%;
 	block-size: auto;
+	max-inline-size: 100%;
 }
 
 /* Remove stroke and set fill colour to the inherited font colour */

@@ -12,11 +12,11 @@
 	@use "../assets/scss/variables";
 
 	.avatar {
-		margin: 4px;
-		border-radius: 50%;
-		padding: 4px;
 		aspect-ratio: 1 / 1;
 		width: 40px;
+		padding: 4px;
+		margin: 4px;
+		border-radius: 50%;
 	}
 
 	.dashed,
@@ -25,8 +25,8 @@
 	}
 
 	.dashed {
-		animation: pulse 1s 1;
 		border: 2px dashed variables.$color-primary;
+		animation: pulse 1s 1;
 	}
 
 	.solid {
@@ -34,9 +34,9 @@
 	}
 
 	.avatar img {
-		border-radius: 50%;
 		width: 100%;
 		height: 100%;
+		border-radius: 50%;
 	}
 
 	@keyframes pulse {

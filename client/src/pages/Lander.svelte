@@ -67,10 +67,10 @@
 	main {
 		position: absolute;
 		top: 50%;
-		transform: translateY(-50%);
-		z-index: 1;
-		margin-left: 8.33%;
 		width: 33%;
+		margin-left: 8.33%;
+		z-index: 1;
+		transform: translateY(-50%);
 	}
 
 	svg {
@@ -78,13 +78,13 @@
 	}
 
 	h1 {
-		margin-bottom: 1rem;
 		font-size: 2.5rem;
+		margin-bottom: 1rem;
 	}
 
 	p {
-		margin-bottom: 1rem;
 		color: #fffd;
+		margin-bottom: 1rem;
 	}
 
 	button {
@@ -97,13 +97,13 @@
 
 	.support-btn {
 		margin-right: 1rem;
-		background-color: #fff2;
 		color: white;
+		background-color: #fff2;
 	}
 
 	ul {
-		margin-bottom: 1rem;
 		list-style: none;
+		margin-bottom: 1rem;
 	}
 
 	li {
@@ -126,15 +126,15 @@
 	@media (max-width: 992px) {
 		main {
 			position: initial;
-			transform: translate(0%);
 			margin: 144px 8.33% 0 8.33%;
 			width: auto;
+			transform: translate(0%);
 		}
 
 		video {
+			max-inline-size: 100%;
 			position: initial;
 			transform: translate(0%);
-			max-inline-size: 100%;
 		}
 	}
 

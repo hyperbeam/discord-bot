@@ -5,13 +5,13 @@
 <style lang="scss">
 	.icon-button {
 		display: inline-flex;
-		justify-content: center;
-		align-items: center;
-		cursor: pointer;
 		margin: 4px;
-		border-radius: 8px;
 		width: 40px;
 		height: 40px;
+		border-radius: 8px;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
 
 		&:hover {
 			background-color: rgba(255, 255, 255, 0.1);
