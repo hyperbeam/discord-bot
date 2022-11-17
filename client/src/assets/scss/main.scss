@@ -1,0 +1,15 @@
+@use "reset";
+
+body {
+	background-color: #1b1c21;
+	color: #fff;
+	font: 1rem "Lato", sans-serif;
+}
+
+button {
+	background-color: #a888ff;
+	color: #000;
+	font-weight: 700;
+	border-radius: 0.25rem;
+	padding: 0.5rem 0.75rem;
+}

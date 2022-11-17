@@ -1,9 +1,10 @@
 <script lang="ts">
+	import "./assets/scss/main.scss";
 	import { Route, Router } from "svelte-navigator";
+	import Notifications from "svelte-notifications";
 	import Authorize from "./pages/Authorize.svelte";
 	import Lander from "./pages/Lander.svelte";
 	import Room from "./pages/Room.svelte";
-	import Notifications from "svelte-notifications";
 </script>
 
 <Notifications>
