@@ -21,8 +21,8 @@
 
 <style>
 	.tooltip {
-		position: relative;
 		display: inline-block;
+		position: relative;
 	}
 
 	.tooltip__text {
@@ -30,10 +30,10 @@
 		top: -4px;
 		left: 50%;
 		transform: translate(-50%, -100%);
-		background-color: grey;
 		box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
-		padding: 4px 8px;
 		border-radius: 4px;
+		background-color: grey;
+		padding: 4px 8px;
 		white-space: nowrap;
 	}
 </style>

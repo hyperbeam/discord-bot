@@ -1,7 +1,7 @@
-import { defineConfig } from "vite";
-import dotenv from "dotenv";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
+import dotenv from "dotenv";
 import sveltePreprocess from "svelte-preprocess";
+import { defineConfig } from "vite";
 import viteCompression from "vite-plugin-compression";
 
 dotenv.config({ path: "./.env" });
