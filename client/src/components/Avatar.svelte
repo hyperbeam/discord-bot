@@ -8,7 +8,9 @@
 	<img {src} {alt} />
 </div>
 
-<style>
+<style lang="scss">
+	@use "../assets/scss/variables";
+
 	.avatar {
 		aspect-ratio: 1 / 1;
 		width: 40px;
@@ -23,12 +25,12 @@
 	}
 
 	.dashed {
-		border: 2px dashed blueviolet;
+		border: 2px dashed variables.$color-primary;
 		animation: pulse 1s 1;
 	}
 
 	.solid {
-		border: 2px solid blueviolet;
+		border: 2px solid variables.$color-primary;
 	}
 
 	.avatar img {

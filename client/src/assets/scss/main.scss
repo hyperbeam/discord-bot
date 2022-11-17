@@ -1,15 +1,16 @@
 @use "reset";
+@use "variables";
 
 body {
-	background-color: #1b1c21;
+	background-color: variables.$color-background;
 	color: #fff;
 	font: 1rem "Lato", sans-serif;
 }
 
 button {
-	background-color: #a888ff;
-	color: #000;
-	font-weight: 700;
 	border-radius: 0.25rem;
 	padding: 0.5rem 0.75rem;
+	background-color: variables.$color-primary;
+	color: #000;
+	font-weight: 700;
 }
