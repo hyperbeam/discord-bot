@@ -20,10 +20,9 @@ A bot to integrate the Hyperbeam API with Discord.
 
 ## Development notes
 
-- Update typings with `npm envtypes` after modifying the `.env` file structure
-- Generate migration files with `npm db:migrate` and commit them after changing the database schema
-- Lint and fix issues before committing with `npm lint:fix`
-- Use `npm dlx` (or `npm exec` if its already installed) instead of `npx` everywhere
+- Update typings with `npm run envtypes` after modifying the `.env` file structure
+- Generate migration files with `npm run db:migrate` and commit them after changing the database schema
+- Lint and fix issues before committing with `npm run lint:fix`
 
 ## Scripts
 
@@ -45,10 +44,10 @@ A bot to integrate the Hyperbeam API with Discord.
 
 ### Development
 
+- `npm run bot:dev`
+  Launches the bot in development mode and hot-reloads on file changes
 - `npm run client:dev`
   Launches the frontend client server without typechecking
-- `npm run listcommands`
-  Lists all local commands
 - `npm run lint` (or `lint:fix`)
   Lints (and optionally fixes) code style, formatting and linting errors with the ESLint config
 - `npm run envtypes`
@@ -56,11 +55,11 @@ A bot to integrate the Hyperbeam API with Discord.
 
 ## Managing the database
 
-- `prisma db push`
+- `npx prisma db push`
   Push current schema onto the database and generate a new client
-- `prisma generate`
+- `npx prisma generate`
   Generate a new database client
-- `prisma studio`
+- `npx prisma studio`
   Browse through database contents in your browser
 
 ## Recommended VSCode plugins
