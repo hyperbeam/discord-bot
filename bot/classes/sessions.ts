@@ -185,17 +185,19 @@ export async function disposeSession(ctx: BaseContext) {
 	await endSession(ctx.room.session.sessionId);
 }
 
-export async function getActiveSessions(ownerId?: string): Promise<Session[]> {
+export async function getActiveSessions(ownerId?: string): Promise<(Session & { members: User[] })[]> {
 	return ownerId
-		? db.session.findMany({ where: { ownerId, endedAt: { equals: null } } })
-		: db.session.findMany({ where: { endedAt: { equals: null } } });
+		? db.session.findMany({ where: { ownerId, endedAt: { equals: null } }, include: { members: true } })
+		: db.session.findMany({ where: { endedAt: { equals: null } }, include: { members: true } });
 }
 
-export async function endAllSessions(ownerId?: string): Promise<Session[]> {
+export async function endAllSessions(ownerId?: string): Promise<(Session & { members: User[] })[]> {
 	const sessions = await getActiveSessions(ownerId);
-	for (const session of sessions) {
+	for (let i = 0; i < sessions.length; i++) {
 		try {
-			await endSession(session.sessionId);
+			const session = sessions[i];
+			const endedSession = await endSession(session.sessionId);
+			if (endedSession) sessions[i] = endedSession;
 			await Hyperbeam.deleteSession(session.sessionId).catch(() => {});
 			await matchMaker.remoteRoomCall(session.url, "disconnect").catch(() => {});
 		} catch {
@@ -283,7 +285,7 @@ export async function setCursor(ctx: AuthContext & { x: number; y: number }) {
 
 export async function endSession(sessionId: string, endedAt = new Date()) {
 	try {
-		return db.session.update({ where: { sessionId }, data: { endedAt } });
+		return db.session.update({ where: { sessionId }, data: { endedAt }, include: { members: true } });
 	} catch {}
 }
 
