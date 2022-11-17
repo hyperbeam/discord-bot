@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Member from "../schemas/member";
+	import type Member from "../schemas/member";
 	import { currentUser, members, room } from "../store";
 	import Avatar from "./Avatar.svelte";
 	import Invite from "./Invite.svelte";
@@ -18,26 +18,18 @@
 
 	async function setControl(target: Member) {
 		if (!$room || !$currentUser) return;
-		const isOwner = $room.state.ownerId === $currentUser.id;
-		const isSelf = target.id === $currentUser.id;
-		if (isOwner) {
-			if (isSelf) {
-				return $room.send("setControl", {
-					targetId: target.id,
-					control: target.control === "disabled" ? "enabled" : "disabled",
-				});
-			} else if (!isSelf) {
-				if (target.control === "disabled" || target.control === "requesting")
-					return $room.send("setControl", { targetId: target.id, control: "enabled" });
-				else return $room.send("setControl", { targetId: target.id, control: "disabled" });
-			}
-		} else if (!isOwner) {
-			if (isSelf)
-				return $room.send("setControl", {
-					targetId: target.id,
-					control: target.control === "requesting" ? "disabled" : "requesting",
-				});
-		}
+
+		if ($room.state.ownerId === $currentUser.id)
+			return $room.send("setControl", {
+				targetId: target.id,
+				control: target.control === "enabled" ? "disabled" : "enabled",
+			});
+
+		if (target.id === $currentUser.id)
+			return $room.send("setControl", {
+				targetId: target.id,
+				control: target.control === "disabled" ? "requesting" : "disabled",
+			});
 	}
 
 	function handleAvatarKeypress(event: KeyboardEvent, member: Member) {
@@ -47,7 +39,7 @@
 
 <div class="members">
 	{#each $members as member}
-		<Tooltip text={member.name}>
+		<Tooltip text={member.name + ($currentUser && $currentUser.id === member.id ? "(You)" : "")}>
 			<div class="member" on:click={() => setControl(member)} on:keypress={(e) => handleAvatarKeypress(e, member)}>
 				<Avatar src={member.avatarUrl} alt={member.name} borderStyle={getBorderStyle(member.control)} />
 			</div>

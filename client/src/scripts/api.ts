@@ -2,7 +2,7 @@ import { Client, Room } from "colyseus.js";
 import { nanoid } from "nanoid";
 import { get } from "svelte/store";
 
-import RoomState from "../schemas/room";
+import type RoomState from "../schemas/room";
 import { currentUser, extendedError, members, room, trackedCursor } from "../store";
 
 const useSSL = import.meta.env.VITE_API_SERVER_BASE_URL.startsWith("https");
