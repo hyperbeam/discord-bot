@@ -74,7 +74,7 @@
 							color={member.color}
 							interpolate={false} />
 					{:else if member.cursor}
-						<Cursor left={member.cursor.x} top={member.cursor.y} {vmNode} text={member.name} color={member.color} displayed={member.control === 'enabled'}/>
+						<Cursor left={member.cursor.x} top={member.cursor.y} {vmNode} text={member.name} color={member.color} />
 					{/if}
 				{/each}
 			{/if}
