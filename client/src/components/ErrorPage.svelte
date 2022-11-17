@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { extendedError, ExtendedErrorType } from "../store";
+	import { extendedError, type ExtendedErrorType } from "../store";
 	let errorDetails: ExtendedErrorType;
 	$: errorDetails = {
 		title: "We ran into an error",
