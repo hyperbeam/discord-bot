@@ -1,6 +1,26 @@
 # Hyperbeam Discord Bot
 
-A bot to integrate the Hyperbeam API with Discord.
+## Overview
+
+Whether its studies, games, anime or more, the Hyperbeam Discord bot lets you enjoy the web together. With a full shared virtual browser at your fingertips, you can open any website and share the link with your friends for a quick and simple co-browsing experience.
+
+**Get started in seconds** - Use the **/start** command, share the link and that’s it. No hassle or fuss involved.
+
+**Works with any website** - Everyone sees the same video and hears the same music at the same time.
+
+**You’re in control** - Just click or tap on a user’s picture to enable or disable control for them.
+
+**Private by default** - Only the people you share the link with can access your room and see your browser.
+
+**Make the web multiplayer** - Queue videos, navigate pages, and play games together with multi cursor support.
+
+**Collaborate instantly** - Load websites at more than 1Gbps internet speed, no download or setup required.
+
+**Faster than screen sharing** - Smooth, high resolution streams for everyone regardless of your data plan or bandwidth limits.
+
+**Works great on mobile** - Click, tap, and type regardless of whether you’re on mobile, tablet or desktop.
+
+**100% safe and secure** - Our browsers run in our industry standard datacenter and nothing ever touches your device.
 
 ## Setup
 
