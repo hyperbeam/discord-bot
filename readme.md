@@ -1,33 +1,52 @@
 # Hyperbeam Discord Bot
 
+[<kbd>Add to Server</kbd>](https://discord.com/api/oauth2/authorize?client_id=983910226489126932&redirect_uri=https%3A%2F%2Fbot.hyperbeam.com%2Fauthorize&response_type=code&scope=identify+email+bot+applications.commands&permissions=277062470720)
+
 ## Overview
 
 Whether its studies, games, anime or more, the Hyperbeam Discord bot lets you enjoy the web together. With a full shared virtual browser at your fingertips, you can open any website and share the link with your friends for a quick and simple co-browsing experience.
 
-**Get started in seconds** - Use the **/start** command, share the link and that’s it. No hassle or fuss involved.
+## Features
 
-**Works with any website** - Everyone sees the same video and hears the same music at the same time.
+### Get started in seconds**
 
-**You’re in control** - Just click or tap on a user’s picture to enable or disable control for them.
+Use the **/start** command, share the link and that’s it. No hassle or fuss involved.
 
-**Private by default** - Only the people you share the link with can access your room and see your browser.
+### Works with any website**
 
-**Make the web multiplayer** - Queue videos, navigate pages, and play games together with multi cursor support.
+Everyone sees the same video and hears the same music at the same time.
 
-**Collaborate instantly** - Load websites at more than 1Gbps internet speed, no download or setup required.
+### You’re in control
 
-**Faster than screen sharing** - Smooth, high resolution streams for everyone regardless of your data plan or bandwidth limits.
+Just click or tap on a user’s picture to enable or disable control for them.
 
-**Works great on mobile** - Click, tap, and type regardless of whether you’re on mobile, tablet or desktop.
+### Private by default
 
-**100% safe and secure** - Our browsers run in our industry standard datacenter and nothing ever touches your device.
+Only the people you share the link with can access your room and see your browser.
+
+### Make the web multiplayer
+
+Queue videos, navigate pages, and play games together with multi cursor support.
+
+### Collaborate instantly
+
+Load websites at more than 1Gbps internet speed, no download or setup required.
+
+### Faster than screen sharing
+
+Smooth, high resolution streams for everyone regardless of your data plan or bandwidth limits.
+
+### Works great on mobile
+
+Click, tap, and type regardless of whether you’re on mobile, tablet or desktop.
+
+### 100% safe and secure
+
+Our browsers run in our industry standard datacenter and nothing ever touches your device.
 
 ## Setup
 
 - Run `npm install` to install all dependencies
-
-## Configuration
-
 - Get your `HYPERBEAM_API_KEY` from <https://hyperbeam.dev> and store it in the `.env` file in the project root folder.
 - Create a [Discord application](https://discord.com/developers/applications) and enable a bot user for the account.
 - Get your `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET` and `DISCORD_BOT_TOKEN` from there and add it to the `.env` file.
