@@ -39,9 +39,13 @@
 
 <div class="members">
 	{#each $members as member}
-		<Tooltip text={member.name + ($currentUser && $currentUser.id === member.id ? "(You)" : "")}>
+		<Tooltip text={member.name + ($currentUser && $currentUser.id === member.id ? " (You)" : "")}>
 			<div class="member" on:click={() => setControl(member)} on:keypress={(e) => handleAvatarKeypress(e, member)}>
-				<Avatar src={member.avatarUrl} alt={member.name} borderStyle={getBorderStyle(member.control)} />
+				<Avatar
+					src={member.avatarUrl}
+					alt={member.name}
+					borderStyle={getBorderStyle(member.control)}
+					color={member.color} />
 			</div>
 		</Tooltip>
 	{/each}
