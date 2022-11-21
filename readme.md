@@ -1,5 +1,7 @@
 # Hyperbeam Discord Bot
 
+![Discord online count](https://img.shields.io/discord/966073020336734308?style=flat) ![Issue count](https://img.shields.io/github/issues/hyperbeam/discord-bot?style=flat) ![License](https://img.shields.io/github/license/hyperbeam/discord-bot?style=flat) ![GitHub language count](https://img.shields.io/github/languages/count/hyperbeam/discord-bot) ![GitHub contributors](https://img.shields.io/github/contributors/hyperbeam/discord-bot)
+
 Whether its studies, games, anime or more, the Hyperbeam Discord bot lets you enjoy the web together. With a full shared virtual browser at your fingertips, you can open any website and share the link with your friends for a quick and simple co-browsing experience.
 
 |[Add to server][InviteLink]|[Get support][Support]|
