@@ -2,9 +2,10 @@
 	export let src: string;
 	export let alt: string;
 	export let borderStyle: "none" | "dashed" | "solid" = "none";
+	export let color: string = "#000000";
 </script>
 
-<div class={`avatar ${borderStyle}`} on:click on:keypress>
+<div class={`avatar ${borderStyle}`} style:--borderColor={color} on:click on:keypress>
 	<img {src} {alt} />
 </div>
 
@@ -25,12 +26,12 @@
 	}
 
 	.dashed {
-		border: 2px dashed variables.$color-primary;
+		border: 2px dashed var(--borderColor, variables.$color-primary);
 		animation: pulse 1s 1;
 	}
 
 	.solid {
-		border: 2px solid variables.$color-primary;
+		border: 2px solid var(--borderColor, variables.$color-primary);
 	}
 
 	.avatar img {
