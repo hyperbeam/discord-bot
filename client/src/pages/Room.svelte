@@ -6,7 +6,7 @@
 	import Loading from "../components/Loading.svelte";
 	import Toolbar from "../components/Toolbar.svelte";
 	import { connect } from "../scripts/api";
-	import { currentUser, members, room, trackedCursor } from "../store";
+	import { currentUser, members, room } from "../store";
 
 	const { addNotification } = getNotificationsContext();
 
@@ -23,15 +23,6 @@
 	}
 
 	let vmNode: HTMLDivElement;
-	let showNativeCursor = false;
-
-	function onNativeCursorMove(e: MouseEvent) {
-		if (vmNode) {
-			const rect = vmNode.getBoundingClientRect();
-			showNativeCursor =
-				e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom;
-		}
-	}
 
 	/** Check if authentification was successful after clicking sign in button */
 	function wasAuthSuccessful() {
@@ -60,20 +51,11 @@
 	<Loading bind:showLoading />
 {:then}
 	{#if $room && $room.state.embedUrl}
-		<div class="room" on:mousemove={onNativeCursorMove} style:--isFullscreen={isFullscreen ? 1 : 0}>
+		<div class="room" style:--isFullscreen={isFullscreen ? 1 : 0} class:isFullscreen>
 			<Hyperbeam embedUrl={$room.state.embedUrl} bind:vmNode />
 			{#if vmNode}
 				{#each $members as member}
-					{#if $currentUser && member.id === $currentUser.id}
-						<Cursor
-							displayed={!showNativeCursor}
-							left={$trackedCursor.x}
-							top={$trackedCursor.y}
-							{vmNode}
-							text={member.name}
-							color={member.color}
-							interpolate={false} />
-					{:else if member.cursor}
+					{#if member.cursor && $currentUser && member.id !== $currentUser.id}
 						<Cursor left={member.cursor.x} top={member.cursor.y} {vmNode} text={member.name} color={member.color} />
 					{/if}
 				{/each}
@@ -88,6 +70,10 @@
 <style lang="scss">
 	.room {
 		height: 100%;
+	}
+
+	:global(body):has(.isFullscreen) {
+		overflow: hidden;
 	}
 
 	:global(.hyperbeam) {

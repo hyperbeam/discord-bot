@@ -1,10 +1,18 @@
 @use "reset";
 @use "variables";
 
+html,
+body,
+#root {
+	height: 100%;
+	width: 100%;
+}
+
 body {
 	background-color: variables.$color-background;
 	color: #fff;
 	font: 1rem "Lato", sans-serif;
+	overflow-x: hidden;
 }
 
 button {
