@@ -1,4 +1,3 @@
-import { Session } from "@prisma/client";
 // import { time } from "discord.js";
 import { CommandContext, CommandOptionType, SlashCommand, SlashCreator } from "slash-create";
 
@@ -48,17 +47,24 @@ export default class Start extends SlashCommand<BotClient> {
 			} as StartSessionOptions;
 
 			const extraOptions = ctx.options.extra?.split(" ") ?? [];
+			const features: string[] = [];
 			if (extraOptions.includes("--1080p")) {
 				options.width = 1920;
 				options.height = 1080;
+				features.push("1080p");
 			}
 			if (extraOptions.includes("--60fps")) {
 				options.fps = 60;
+				features.push("60fps");
+			}
+			if (extraOptions.includes("--webgl")) {
+				options.webgl = true;
+				features.push("WebGL");
 			}
 			if (extraOptions.includes("--kiosk")) {
 				options.kiosk = true;
+				features.push("Kiosk");
 			}
-
 			const session = await createSession(options);
 			await ctx.send({
 				embeds: [
@@ -68,7 +74,7 @@ export default class Start extends SlashCommand<BotClient> {
 						description: [
 							"Share this link to browse together -",
 							`${process.env.VITE_CLIENT_BASE_URL}/${session.url}`,
-							this.getFeatures(session, options),
+							`(${[regions[session.region || "NA"], ...features].join(", ")})`,
 							"",
 							`[GitHub](${process.env.VITE_GITHUB_URL}) • [Support](${process.env.VITE_DISCORD_SUPPORT_SERVER})`,
 						].join("\n"),
@@ -126,19 +132,5 @@ export default class Start extends SlashCommand<BotClient> {
 				],
 			});
 		}
-	}
-
-	getFeatures(session: Session, options: StartSessionOptions) {
-		const features: string[] = [];
-		features.push(regions[session.region || "NA"]);
-
-		if (options.width === 1920 && options.height === 1080) {
-			features.push("1080p");
-		} else {
-			features.push("720p");
-		}
-		if (options.fps === 60) features.push("60fps");
-		if (options.kiosk) features.push("kiosk");
-		return `(${features.join(", ")})`;
 	}
 }
