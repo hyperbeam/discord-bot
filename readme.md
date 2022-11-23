@@ -1,13 +1,37 @@
 # Hyperbeam Discord Bot
 
-A bot to integrate the Hyperbeam API with Discord.
+![Discord online count](https://img.shields.io/discord/966073020336734308?style=flat) ![Issue count](https://img.shields.io/github/issues/hyperbeam/discord-bot?style=flat) ![License](https://img.shields.io/github/license/hyperbeam/discord-bot?style=flat) ![GitHub language count](https://img.shields.io/github/languages/count/hyperbeam/discord-bot) ![GitHub contributors](https://img.shields.io/github/contributors/hyperbeam/discord-bot)
+
+![Hyperbeam bot in action](https://user-images.githubusercontent.com/10488070/203178490-e4a065ef-ef9d-47c0-9dbf-8feb3a4f92cb.png)
+
+Whether its studies, games, anime or more, the Hyperbeam Discord bot lets you enjoy the web together. With a full shared virtual browser at your fingertips, you can open any website and share the link with your friends for a quick and simple co-browsing experience.
+
+|[Add to server][InviteLink]|[Get support][Support]|
+|---|---|
+
+## Features
+
+- **Get started in seconds** <br> Use the **/start** command, share the link and that’s it. No hassle or fuss involved.
+
+- **Works with any website** <br> Everyone sees the same video and hears the same music at the same time.
+
+- **You’re in control** <br> Just click or tap on a user’s picture to enable or disable control for them.
+
+- **Private by default** <br> Only the people you share the link with can access your room and see your browser.
+
+- **Make the web multiplayer** <br> Queue videos, navigate pages, and play games together with multi cursor support.
+
+- **Collaborate instantly** <br> Load websites at more than 1Gbps internet speed, no download or setup required.
+
+- **Faster than screen sharing** <br> Smooth, high resolution streams for everyone regardless of your data plan or bandwidth limits.
+
+- **Works great on mobile** <br> Click, tap, and type regardless of whether you’re on mobile, tablet or desktop.
+
+- **100% safe and secure** <br> Our browsers run in our industry standard datacenter and nothing ever touches your device.
 
 ## Setup
 
 - Run `npm install` to install all dependencies
-
-## Configuration
-
 - Get your `HYPERBEAM_API_KEY` from <https://hyperbeam.dev> and store it in the `.env` file in the project root folder.
 - Create a [Discord application](https://discord.com/developers/applications) and enable a bot user for the account.
 - Get your `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET` and `DISCORD_BOT_TOKEN` from there and add it to the `.env` file.
@@ -67,3 +91,6 @@ A bot to integrate the Hyperbeam API with Discord.
 - [DotENV](https://marketplace.visualstudio.com/items?itemName=mikestead.dotenv)
 - [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
 - [Prisma](https://marketplace.visualstudio.com/items?itemName=Prisma.prisma)
+
+[InviteLink]:<https://discord.com/api/oauth2/authorize?client_id=983910226489126932&redirect_uri=https%3A%2F%2Fbot.hyperbeam.com%2Fauthorize&response_type=code&scope=identify+email+bot+applications.commands&permissions=277062470720>
+[Support]:<https://discord.gg/D78RsGfQjq>
