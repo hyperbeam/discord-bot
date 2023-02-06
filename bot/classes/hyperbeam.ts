@@ -22,6 +22,7 @@ export type VMRequestBody = {
 	height?: number;
 	fps?: number;
 	hide_cursor?: boolean;
+	nsfw?: boolean;
 };
 
 type RequestInit = Exclude<Parameters<typeof fetch>[1], undefined>;

@@ -65,6 +65,10 @@ export default class Start extends SlashCommand<BotClient> {
 				options.kiosk = true;
 				features.push("Kiosk");
 			}
+			if (extraOptions.includes("--nsfw")) {
+				options.nsfw = true;
+				features.push("NSFW");
+			}
 			const session = await createSession(options);
 			await ctx.send({
 				embeds: [
