@@ -10,6 +10,7 @@ export class Member extends Schema {
 	@type("string") color: string = "#000000";
 	@type("string") control: "disabled" | "requesting" | "enabled" = "enabled";
 	@type("boolean") isAuthenticated: boolean = false;
+	@type("boolean") isPasswordAuthenticated: boolean = false;
 	@type(Cursor) cursor: Cursor;
 }
 
