@@ -39,13 +39,24 @@
 
 <div class="members">
 	{#each $members as member}
-		<Tooltip text={member.name + ($currentUser && $currentUser.id === member.id ? " (You)" : "")}>
-			<div class="member" on:click={() => setControl(member)} on:keypress={(e) => handleAvatarKeypress(e, member)}>
-				<Avatar src={member.avatarUrl} alt={member.name} borderStyle={getBorderStyle(member.control)} />
-			</div>
-		</Tooltip>
+		{#if !$room.state.isPasswordProtected || ($room.state.isPasswordProtected && member.isPasswordAuthenticated)}
+			<Tooltip text={member.name + ($currentUser && $currentUser.id === member.id ? " (You)" : "")}>
+				<div class="member" on:click={() => setControl(member)} on:keypress={(e) => handleAvatarKeypress(e, member)}>
+					<Avatar src={member.avatarUrl} alt={member.name} borderStyle={getBorderStyle(member.control)} />
+				</div>
+			</Tooltip>
+		{/if}
 	{/each}
 	<Invite />
+	{#if $room && $room.state.isPasswordProtected && $currentUser && !$currentUser.isPasswordAuthenticated}
+		<button
+			on:click={() => {
+				const password = prompt("Please enter the password for this room");
+				if (password) $room.send("authenticateMemberPassword", { password });
+			}}>
+			Take control
+		</button>
+	{/if}
 </div>
 
 <style>
