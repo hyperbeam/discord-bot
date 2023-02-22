@@ -43,6 +43,7 @@ export class BotRoom extends Room<RoomState> {
 		this.setPrivate(true);
 		this.state.ownerId = options.ownerId;
 		this.state.password = options.password;
+		this.state.isPasswordProtected = !!options.password;
 		await this.registerMessageHandlers();
 		await startSession({ room: this, options });
 	}
