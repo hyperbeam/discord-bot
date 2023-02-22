@@ -33,6 +33,11 @@ export default class Start extends SlashCommand<BotClient> {
 					name: "extra",
 					description: "Extra options 👀",
 				},
+				{
+					type: CommandOptionType.STRING,
+					name: "password",
+					description: "Password to protect the session",
+				},
 			],
 		});
 	}
@@ -44,6 +49,7 @@ export default class Start extends SlashCommand<BotClient> {
 				region: ctx.options.region || "NA",
 				ownerId: ctx.user.id,
 				start_url: ctx.options.website,
+				password: ctx.options.password,
 			} as StartSessionOptions;
 
 			const extraOptions = ctx.options.extra?.split(" ") ?? [];

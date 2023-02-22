@@ -7,6 +7,8 @@ export class RoomState extends Schema {
 	@type("string") embedUrl?: string;
 	@type("string") sessionId?: string;
 	@type("string") ownerId: string;
+	// Not synced
+	password?: string;
 }
 
 export default RoomState;

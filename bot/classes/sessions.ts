@@ -13,6 +13,7 @@ export type StartSessionOptions = VMRequestBody & {
 	url?: string;
 	ownerId: string;
 	existingSession?: BotRoom["session"] & { members?: User[] };
+	password?: string;
 };
 
 type BaseContext = { room: BotRoom };
@@ -120,6 +121,7 @@ export async function startSession(ctx: BaseContext & { options: StartSessionOpt
 					sessionId: hbSession.sessionId,
 					adminToken: hbSession.adminToken,
 					ownerId: ctx.options.ownerId,
+					password: ctx.options.password,
 					createdAt: new Date(),
 					url: ctx.room.roomId,
 					region: ctx.options.region,
@@ -307,6 +309,7 @@ export async function restartActiveSessions(): Promise<Session[]> {
 								ownerId: session.ownerId,
 								region: session.region,
 								existingSession: session,
+								password: session.password,
 							} as StartSessionOptions)
 							.then(() => restartedSessions.push(session))
 							.catch(() => {});
