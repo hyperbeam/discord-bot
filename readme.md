@@ -6,8 +6,8 @@
 
 Whether its studies, games, anime or more, the Hyperbeam Discord bot lets you enjoy the web together. With a full shared virtual browser at your fingertips, you can open any website and share the link with your friends for a quick and simple co-browsing experience.
 
-|[Add to server][InviteLink]|[Get support][Support]|
-|---|---|
+| [Add to server][invitelink] | [Get support][support] |
+| --------------------------- | ---------------------- |
 
 ## Features
 
@@ -92,5 +92,5 @@ Whether its studies, games, anime or more, the Hyperbeam Discord bot lets you en
 - [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
 - [Prisma](https://marketplace.visualstudio.com/items?itemName=Prisma.prisma)
 
-[InviteLink]:<https://discord.com/api/oauth2/authorize?client_id=983910226489126932&redirect_uri=https%3A%2F%2Fbot.hyperbeam.com%2Fauthorize&response_type=code&scope=identify+email+bot+applications.commands&permissions=277062470720>
-[Support]:<https://discord.gg/D78RsGfQjq>
+[invitelink]: https://discord.com/api/oauth2/authorize?client_id=983910226489126932&redirect_uri=https%3A%2F%2Fbot.hyperbeam.com%2Fauthorize&response_type=code&scope=identify+email+bot+applications.commands&permissions=277062470720
+[support]: https://discord.gg/D78RsGfQjq

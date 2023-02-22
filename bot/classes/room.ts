@@ -42,6 +42,8 @@ export class BotRoom extends Room<RoomState> {
 		this.setPatchRate(40);
 		this.setPrivate(true);
 		this.state.ownerId = options.ownerId;
+		this.state.password = options.password;
+		this.state.isPasswordProtected = !!options.password;
 		await this.registerMessageHandlers();
 		await startSession({ room: this, options });
 	}
@@ -84,6 +86,19 @@ export class BotRoom extends Room<RoomState> {
 			"connectHbUser",
 			async (client: AuthenticatedClient, message) => {
 				connectHbUser({ room: this, client, hbId: message.hbId });
+			},
+		);
+		this.onMessage<{ type: "authenticateMemberPassword"; password: string }>(
+			"authenticateMemberPassword",
+			async (client: AuthenticatedClient, message) => {
+				if (message.password === this.state.password) {
+					const target = this.state.members.get(client.userData.id);
+					if (target) {
+						await this.session?.instance?.setPermissions(target.hbId!, { control_disabled: false });
+						target.control = "enabled";
+						target.isPasswordAuthenticated = true;
+					}
+				}
 			},
 		);
 	}

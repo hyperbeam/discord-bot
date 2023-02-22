@@ -160,6 +160,7 @@ export async function sendCursorUpdates(room: Room<RoomState>, interval = 40) {
 		console.log("Websocket connection open, sending cursor updates");
 		window.clearInterval(cursorInterval);
 		cursorInterval = window.setInterval(async () => {
+			if (room.state.isPasswordProtected && !get(currentUser).isPasswordAuthenticated) return;
 			try {
 				if (transport.ws.readyState !== WebSocket.OPEN) {
 					window.clearInterval(cursorInterval);

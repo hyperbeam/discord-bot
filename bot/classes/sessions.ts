@@ -13,6 +13,7 @@ export type StartSessionOptions = VMRequestBody & {
 	url?: string;
 	ownerId: string;
 	existingSession?: BotRoom["session"] & { members?: User[] };
+	password?: string;
 };
 
 type BaseContext = { room: BotRoom };
@@ -120,6 +121,7 @@ export async function startSession(ctx: BaseContext & { options: StartSessionOpt
 					sessionId: hbSession.sessionId,
 					adminToken: hbSession.adminToken,
 					ownerId: ctx.options.ownerId,
+					password: ctx.options.password,
 					createdAt: new Date(),
 					url: ctx.room.roomId,
 					region: ctx.options.region,
@@ -144,7 +146,9 @@ export async function joinSession(ctx: AuthContext) {
 	}
 	const member = ctx.client.userData;
 	if (!member) return;
+	member.control = ctx.room.state.isPasswordProtected ? "disabled" : member.control;
 	ctx.room.state.members.set(member.id, member);
+
 	if (ctx.client.auth.guest) return;
 	const user = await db.user.findFirst({ where: { id: member.id } });
 	if (!user) return;
@@ -211,6 +215,7 @@ export async function connectHbUser(ctx: AuthContext & { hbId: string }) {
 	const member = ctx.client.userData;
 	if (!member) return;
 	member.hbId = ctx.hbId;
+	await ctx.room.session?.instance?.setPermissions(ctx.hbId, { control_disabled: member.control === "disabled" });
 }
 
 export async function setControl(ctx: AuthContext & { targetId: string; control: Member["control"] }) {
@@ -307,6 +312,7 @@ export async function restartActiveSessions(): Promise<Session[]> {
 								ownerId: session.ownerId,
 								region: session.region,
 								existingSession: session,
+								password: session.password,
 							} as StartSessionOptions)
 							.then(() => restartedSessions.push(session))
 							.catch(() => {});

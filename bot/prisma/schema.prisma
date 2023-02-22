@@ -39,4 +39,5 @@ model Session {
   guildId    String? // discord guild id
   messageId  String? // discord message id
   feedback   String? // feedback from the user
+  password   String? // password for the session
 }
