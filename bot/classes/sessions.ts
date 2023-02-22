@@ -146,7 +146,9 @@ export async function joinSession(ctx: AuthContext) {
 	}
 	const member = ctx.client.userData;
 	if (!member) return;
+	member.control = ctx.room.state.isPasswordProtected ? "disabled" : member.control;
 	ctx.room.state.members.set(member.id, member);
+
 	if (ctx.client.auth.guest) return;
 	const user = await db.user.findFirst({ where: { id: member.id } });
 	if (!user) return;
