@@ -213,6 +213,7 @@ export async function connectHbUser(ctx: AuthContext & { hbId: string }) {
 	const member = ctx.client.userData;
 	if (!member) return;
 	member.hbId = ctx.hbId;
+	await ctx.room.session?.instance?.setPermissions(ctx.hbId, { control_disabled: member.control === "disabled" });
 }
 
 export async function setControl(ctx: AuthContext & { targetId: string; control: Member["control"] }) {
