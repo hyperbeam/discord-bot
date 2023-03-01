@@ -1,7 +1,15 @@
 <script lang="ts">
 	import Hyperbeam from "@hyperbeam/web";
 	import { onMount } from "svelte";
-	import { extendedError, hyperbeamEmbed, members, room, trackedCursor, type ExtendedErrorType } from "../store";
+	import {
+		currentUser,
+		extendedError,
+		hyperbeamEmbed,
+		members,
+		room,
+		trackedCursor,
+		type ExtendedErrorType,
+	} from "../store";
 
 	export let embedUrl: string;
 	export const iframeAspect = 16 / 9;
@@ -93,6 +101,5 @@
 		left: 50%;
 		top: 50%;
 		transform: translate(-50%, -50%);
-		cursor: none;
 	}
 </style>
