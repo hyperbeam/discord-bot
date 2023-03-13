@@ -160,14 +160,22 @@ export async function sendCursorUpdates(room: Room<RoomState>, interval = 40) {
 		console.log("Websocket connection open, sending cursor updates");
 		window.clearInterval(cursorInterval);
 		cursorInterval = window.setInterval(async () => {
-			if (room.state.isPasswordProtected && !get(currentUser).isPasswordAuthenticated) return;
-			try {
-				if (transport.ws.readyState !== WebSocket.OPEN) {
+			// if (room.state.isPasswordProtected && !get(currentUser).isPasswordAuthenticated) return;
+			if (
+				room.state.isPasswordProtected != null &&
+				((room.state.isPasswordProtected &&
+					get(currentUser).isPasswordAuthenticated != null &&
+					get(currentUser).isPasswordAuthenticated) ||
+					!room.state.isPasswordProtected)
+			) {
+				try {
+					if (transport.ws.readyState !== WebSocket.OPEN) {
+						window.clearInterval(cursorInterval);
+						throw new Error("Websocket connection not open.");
+					} else room.send("setCursor", get(trackedCursor));
+				} catch (err) {
 					window.clearInterval(cursorInterval);
-					throw new Error("Websocket connection not open.");
-				} else room.send("setCursor", get(trackedCursor));
-			} catch (err) {
-				window.clearInterval(cursorInterval);
+				}
 			}
 		}, interval);
 	} else {
