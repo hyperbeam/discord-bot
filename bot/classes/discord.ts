@@ -17,7 +17,7 @@ type BasicUser = {
 	id: string;
 	avatar: string | null;
 	username: string;
-	discriminator: string;
+	discriminator: string | null;
 };
 
 type AuthorizedUserData = BasicUser & { token: string };
