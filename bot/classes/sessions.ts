@@ -62,10 +62,12 @@ export async function authenticateUser(
 		member.isAuthenticated = true;
 		member.id = user.id;
 		member.color = color(user.id) || swatches[Math.floor(Math.random() * swatches.length)];
-		member.name = user.username + "#" + user.discriminator;
+		member.name = `${user.username}${
+			user.discriminator ? (user.discriminator === "0" ? "" : `#${user.discriminator}`) : ""
+		}`;
 		member.avatarUrl = user.avatar
 			? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
-			: `https://cdn.discordapp.com/embed/avatars/${+user.discriminator % 5}.png`;
+			: `https://cdn.discordapp.com/embed/avatars/${parseInt(user.id) % 5}.png`;
 	}
 	if (!member) throw new ServerError(401, "Could not authenticate user");
 	ctx.client.userData = member;

@@ -13,7 +13,7 @@ model User {
   email         String?   @unique
   avatar        String?
   username      String
-  discriminator String
+  discriminator String?
   accessToken   String? // keep serverside only
   refreshToken  String? // keep serverside only
   ownedSessions Session[] @relation("owner")

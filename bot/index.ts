@@ -50,7 +50,12 @@ creator.on("error", (error) => console.error(error));
 creator.on("synced", () => console.info("Commands synced!"));
 creator.on("commandRun", (command, _, ctx) => {
 	updateUser(ctx.user);
-	console.info(`${ctx.user.username}#${ctx.user.discriminator} (${ctx.user.id}) ran command ${command.commandName}`);
+	const { id, username, discriminator } = ctx.user;
+	console.info(
+		`${username}${discriminator ? (discriminator === "0" ? "" : `#${discriminator}`) : ""} (${id}) ran command ${
+			command.commandName
+		}`,
+	);
 });
 creator.on("commandRegister", (command) => console.info(`Registered command ${command.commandName}`));
 creator.on("commandError", (command, error) => console.error(`Command ${command.commandName}:`, error));
